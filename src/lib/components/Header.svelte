@@ -3,17 +3,27 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { supabase } from '$lib/supabase';
+	import History from '@lucide/svelte/icons/history';
+	import Calendar from '@lucide/svelte/icons/calendar-days';
 
-	$: isAuthPage = $page.url.pathname === '/auth/signin' || $page.url.pathname === '/auth/signup';
+	$: isAuthPage = $page.url.pathname === '/signin' || $page.url.pathname === '/signup';
 
 	let userName = 'User';
 
 	onMount(async () => {
-		const { data } = await supabase.auth.getUser();
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
 
-		if (data?.user) {
-			userName = data.user.user_metadata?.first_name ?? data.user.email;
-		}
+		if (!user) return;
+
+		const { data: profile } = await supabase
+			.from('profiles')
+			.select('nickname, first_name')
+			.eq('id', user.id)
+			.single();
+
+		userName = profile?.nickname || profile?.first_name || user.email;
 	});
 
 	async function signOut() {
@@ -29,7 +39,11 @@
 	{#if !isAuthPage}
 		<div class="welcome">
 			<p>Welcome, <b>{userName}</b></p>
-			<button type="submit" on:click={signOut} class="button-primary">Sign Out</button>
+			<div class="calendar-history">
+				<a href="/hse/submission-history"><History /></a>
+				<a href="/hse/calendar-view"><Calendar /></a>
+				<button type="submit" on:click={signOut} class="button-primary">Sign Out</button>
+			</div>
 		</div>
 	{/if}
 </div>
@@ -38,6 +52,10 @@
 	* {
 		font-family: Arial, Helvetica, sans-serif;
 		color: #091747;
+	}
+
+	a:hover {
+		color: #091747b9;
 	}
 
 	button {
@@ -61,6 +79,12 @@
 
 	.button-primary:hover {
 		background-color: #091747b9;
+	}
+
+	.calendar-history {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 	}
 
 	.container {

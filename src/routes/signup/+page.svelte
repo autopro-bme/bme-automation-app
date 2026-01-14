@@ -4,9 +4,11 @@
 
 	let first_name = '';
 	let last_name = '';
+	let nickname = '';
 	let email = '';
 	let password = '';
-	let phone_number = '';
+	let phone = '';
+	let department = '';
 	let position = '';
 	let region = '';
 	let error = '';
@@ -14,7 +16,7 @@
 	async function signUp() {
 		error = '';
 
-		const { data, error: signUpError } = await supabase.auth.signUp({
+		const { error: signUpError } = await supabase.auth.signUp({
 			email,
 			password
 		});
@@ -24,25 +26,6 @@
 			return;
 		}
 
-		const user = data.user;
-
-		if (user) {
-			const { error: profileError } = await supabase.from('profiles').insert({
-				id: user.id,
-				first_name,
-				last_name,
-				phone_number,
-				position,
-				region
-			});
-
-			if (profileError) {
-				error = profileError.message;
-				return;
-			}
-		}
-
-		// redirect to sign in
 		goto('/auth/signin');
 	}
 </script>
@@ -73,6 +56,17 @@
 					required
 				/>
 			</p>
+			<p><label for="nickname">Nickname</label></p>
+			<p>
+				<input
+					name="nickname"
+					type="text"
+					bind:value={nickname}
+					placeholder="John"
+					class="input-box"
+					required
+				/>
+			</p>
 			<p><label for="email">E-mail</label></p>
 			<p>
 				<input
@@ -95,16 +89,30 @@
 					required
 				/>
 			</p>
-			<p><label for="phone_number">Phone Number</label></p>
+			<p><label for="phone">Phone Number</label></p>
 			<p>
 				<input
-					name="phone_number"
+					name="phone"
 					type="text"
-					bind:value={phone_number}
+					bind:value={phone}
 					placeholder="0123456789"
 					class="input-box"
 					required
 				/>
+			</p>
+			<p><label for="department">Department</label></p>
+			<p>
+				<select
+					name="department"
+					id="department"
+					bind:value={department}
+					class="input-box select-box"
+					required
+				>
+					<option value="" disabled selected>Choose a Department</option>
+					<option value="project">Project</option>
+					<option value="hse">HSE</option>
+				</select>
 			</p>
 			<p><label for="position">Position</label></p>
 			<p>
@@ -119,7 +127,7 @@
 			</p>
 			<p><label for="region">Region</label></p>
 			<p>
-				<select name="region" id="region" bind:value={region} class="input-box" required>
+				<select name="region" id="region" bind:value={region} class="input-box select-box" required>
 					<option value="" disabled selected>Choose a Region</option>
 					<option value="local">Local</option>
 					<option value="overseas">Overseas</option>
@@ -216,6 +224,10 @@
 
 	.no-account {
 		font-size: 14px;
+	}
+
+	.select-box {
+		cursor: pointer;
 	}
 
 	.signup {

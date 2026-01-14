@@ -5,17 +5,40 @@
 	let email = '';
 	let password = '';
 	let error = '';
+	let first_name = '';
+	let last_name = '';
+	let nickname = '';
+	let phone = '';
+	let department = '';
+	let position = '';
+	let region = '';
 
 	async function signIn() {
-		error = '';
-
-		const { error: signInError } = await supabase.auth.signInWithPassword({
+		const { data, error } = await supabase.auth.signInWithPassword({
 			email,
 			password
 		});
 
-		if (signInError) {
-			error = signInError.message;
+		if (error) {
+			formError = error.message;
+			return;
+		}
+
+		const { error: updateError } = await supabase
+			.from('profiles')
+			.update({
+				first_name,
+				last_name,
+				nickname,
+				phone,
+				department,
+				position,
+				region
+			})
+			.eq('id', data.user.id);
+
+		if (updateError) {
+			formError = updateError.message;
 			return;
 		}
 
