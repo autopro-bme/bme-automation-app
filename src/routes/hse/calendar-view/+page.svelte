@@ -127,7 +127,7 @@
 	}
 
 	button {
-		background-color: #05577ed7;
+		background-color: #064c6dd7;
 		color: #ffffff;
 		border: none;
 		font-size: small;
@@ -193,7 +193,7 @@
 		bottom: 6px;
 		right: 8px;
 		font-weight: bold;
-		color: #06173b;
+		color: #064c6dd7;
 	}
 
 	.download {
@@ -203,7 +203,7 @@
 
 	.nav {
 		background: none;
-		color: #091747;
+		color: #064c6dd7;
 		border: none;
 		font-size: 18px;
 		cursor: pointer;

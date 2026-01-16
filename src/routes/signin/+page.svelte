@@ -5,41 +5,69 @@
 	let email = '';
 	let password = '';
 	let error = '';
-	let first_name = '';
-	let last_name = '';
-	let nickname = '';
-	let phone = '';
-	let department = '';
-	let position = '';
-	let region = '';
 
 	async function signIn() {
-		const { data, error } = await supabase.auth.signInWithPassword({
+		error = '';
+		const { data, error: signInError } = await supabase.auth.signInWithPassword({
 			email,
 			password
 		});
 
-		if (error) {
-			formError = error.message;
+		if (signInError) {
+			error = signInError.message;
 			return;
 		}
 
-		const { error: updateError } = await supabase
-			.from('profiles')
-			.update({
-				first_name,
-				last_name,
-				nickname,
-				phone,
-				department,
-				position,
-				region
-			})
-			.eq('id', data.user.id);
+		// IMPORTANT: Do NOT overwrite profile fields on sign-in.
+		// Previously, empty variables here were wiping your profiles table.
+		// Instead, we only *fill missing* profile fields from Auth metadata (if any).
+		const user = data?.user;
+		if (user) {
+			const meta = user.user_metadata ?? {};
 
-		if (updateError) {
-			formError = updateError.message;
-			return;
+			const { data: profile, error: profileError } = await supabase
+				.from('profiles')
+				.select('id, email, first_name, last_name, nickname, phone, department, position, region')
+				.eq('id', user.id)
+				.single();
+
+			// If the row doesn't exist yet, try to create it (now that the user is authenticated).
+			if (profileError && !profile) {
+				await supabase.from('profiles').insert({
+					id: user.id,
+					email: user.email,
+					first_name: meta.first_name ?? null,
+					last_name: meta.last_name ?? null,
+					nickname: meta.nickname ?? null,
+					phone: meta.phone ?? null,
+					department: meta.department ?? null,
+					position: meta.position ?? null,
+					region: meta.region ?? null
+				});
+			} else if (profile) {
+				// Row exists: only patch fields that are currently empty.
+				const patch = {};
+				const keys = [
+					'first_name',
+					'last_name',
+					'nickname',
+					'phone',
+					'department',
+					'position',
+					'region'
+				];
+				for (const k of keys) {
+					if ((profile[k] == null || profile[k] === '') && meta[k]) {
+						patch[k] = meta[k];
+					}
+				}
+				if ((profile.email == null || profile.email === '') && user.email) {
+					patch.email = user.email;
+				}
+				if (Object.keys(patch).length) {
+					await supabase.from('profiles').update(patch).eq('id', user.id);
+				}
+			}
 		}
 
 		goto('/');
@@ -101,7 +129,7 @@
 	}
 
 	button {
-		background-color: #05577ed7;
+		background-color: #064c6dd7;
 		color: #ffffff;
 		border: none;
 		font-size: small;
@@ -111,7 +139,7 @@
 	}
 
 	button:hover {
-		background-color: #05577ea4;
+		background-color: #064c6da4;
 	}
 
 	.button-link {

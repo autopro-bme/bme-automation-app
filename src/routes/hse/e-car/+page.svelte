@@ -98,7 +98,7 @@
 	}
 
 	button {
-		background-color: #05577ed7;
+		background-color: #064c6dd7;
 		color: #ffffff;
 		border: none;
 		font-size: small;

@@ -21,7 +21,7 @@
 <h1 class="title">Main Menu</h1>
 
 {#each menuSections as section}
-	<h2 class="department">Department: {section.department}</h2>
+	<h2 class="department">Department: <span class="section">{section.department}</span></h2>
 
 	{#each section.items as item}
 		<div class="menu-card">
@@ -42,7 +42,7 @@
 	}
 
 	button {
-		background-color: #05577ed7;
+		background-color: #064c6dd7;
 		color: #ffffff;
 		border: none;
 		font-size: small;
@@ -52,7 +52,7 @@
 	}
 
 	button:hover {
-		background-color: #05577ea4;
+		background-color: #064c6da4;
 	}
 
 	.department {
@@ -64,6 +64,10 @@
 
 	h3 {
 		font-weight: bold;
+	}
+
+	.section {
+		color: #064c6dd7;
 	}
 
 	.title {

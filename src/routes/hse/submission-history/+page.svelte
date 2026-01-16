@@ -47,9 +47,9 @@
 		<div class="submission-type" onclick={() => toggleDiv(i)}>
 			<button class="button-toggle">{s.title} ({s.count})</button>
 			{#if openIndex === i}
-				<ChevronDown />
+				<ChevronDown color="#064c6dd7" />
 			{:else}
-				<ChevronLeft />
+				<ChevronLeft color="#064c6dd7" />
 			{/if}
 		</div>
 
@@ -87,7 +87,7 @@
 	}
 
 	button {
-		background-color: #05577ed7;
+		background-color: #064c6dd7;
 		color: #ffffff;
 		border: none;
 		font-size: small;

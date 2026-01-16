@@ -8,17 +8,68 @@
 	let email = '';
 	let password = '';
 	let phone = '';
-	let department = '';
+	let departments = [];
 	let position = '';
 	let region = '';
 	let error = '';
+	let emailError = '';
+	let showPasswordRules = false;
+
+	function validateEmail(value) {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+		if (!value) {
+			emailError: '';
+			return;
+		}
+
+		if (!emailRegex.test(value)) {
+			emailError: 'Please enter a valid e-mail address';
+		} else {
+			emailError: '';
+		}
+	}
+
+	$: hasUppercase = /[A-Z]/.test(password);
+	$: hasLowercase = /[a-z]/.test(password);
+	$: hasNumber = /[0-9]/.test(password);
+	$: hasSpecial = /[^A-Za-z0-9]/.test(password);
+	$: hasMinLength = password.length >= 8;
+
+	$: isPasswordValid = hasUppercase && hasLowercase && hasNumber && hasSpecial && hasMinLength;
 
 	async function signUp() {
 		error = '';
 
+		if (emailError) {
+			error = 'Please correct the e-mail format';
+			return;
+		}
+
+		if (!isPasswordValid) {
+			error = 'Password does not meet the requirements';
+			return;
+		}
+
+		if (departments.length === 0) {
+			error = 'Please select at least one department';
+			return;
+		}
+
 		const { error: signUpError } = await supabase.auth.signUp({
 			email,
-			password
+			password,
+			options: {
+				data: {
+					first_name,
+					last_name,
+					nickname,
+					phone,
+					department: departments,
+					position,
+					region
+				}
+			}
 		});
 
 		if (signUpError) {
@@ -73,13 +124,17 @@
 					name="email"
 					type="email"
 					bind:value={email}
-					placeholder="example@email.com"
+					placeholder="johnsmith@email.com"
 					class="input-box"
 					required
+					on:input={(e) => validateEmail(e.target.value)}
 				/>
 			</p>
+			{#if emailError}
+				<p class="input-error">{emailError}</p>
+			{/if}
 			<p><label for="password">Password</label></p>
-			<p>
+			<p class="password-wrapper">
 				<input
 					name="password"
 					type="password"
@@ -87,8 +142,20 @@
 					placeholder="********"
 					class="input-box"
 					required
+					on:focus={() => (showPasswordRules = true)}
+					on:blur={() => (showPasswordRules = false)}
 				/>
 			</p>
+			{#if showPasswordRules}
+				<ul class="password-rules">
+					<li class:valid={hasUppercase}>Uppercase letter</li>
+					<li class:valid={hasLowercase}>Lowercase letter</li>
+					<li class:valid={hasNumber}>Number</li>
+					<li class:valid={hasSpecial}>Special character (e.g. !?&lt;&gt;@#$%)</li>
+					<li class:valid={hasMinLength}>8 characters or more</li>
+				</ul>
+			{/if}
+
 			<p><label for="phone">Phone Number</label></p>
 			<p>
 				<input
@@ -100,20 +167,22 @@
 					required
 				/>
 			</p>
-			<p><label for="department">Department</label></p>
-			<p>
-				<select
-					name="department"
-					id="department"
-					bind:value={department}
-					class="input-box select-box"
-					required
-				>
-					<option value="" disabled selected>Choose a Department</option>
-					<option value="project">Project</option>
-					<option value="hse">HSE</option>
-				</select>
-			</p>
+			<p><label for="departments">Department(s)</label></p>
+			<div class="departments">
+				<p>
+					<label class="checkbox">
+						<input type="checkbox" value="Project" bind:group={departments} />
+						Project
+					</label>
+				</p>
+
+				<p>
+					<label class="checkbox">
+						<input type="checkbox" value="HSE" bind:group={departments} />
+						HSE
+					</label>
+				</p>
+			</div>
 			<p><label for="position">Position</label></p>
 			<p>
 				<input
@@ -128,11 +197,11 @@
 			<p><label for="region">Region</label></p>
 			<p>
 				<select name="region" id="region" bind:value={region} class="input-box select-box" required>
-					<option value="" disabled selected>Choose a Region</option>
-					<option value="local">Local</option>
-					<option value="overseas">Overseas</option>
-					<option value="sabah">Sabah</option>
-					<option value="sarawak">Sarawak</option>
+					<option value="" disabled>Choose a Region</option>
+					<option value="Local">Local</option>
+					<option value="Overseas">Overseas</option>
+					<option value="Sabah">Sabah</option>
+					<option value="Sarawak">Sarawak</option>
 				</select>
 			</p>
 			{#if error}
@@ -165,7 +234,7 @@
 	}
 
 	button {
-		background-color: #05577ed7;
+		background-color: #064c6dd7;
 		color: #ffffff;
 		border: none;
 		font-size: small;
@@ -175,7 +244,7 @@
 	}
 
 	button:hover {
-		background-color: #05577ea4;
+		background-color: #064c6da4;
 	}
 
 	.button-link {
@@ -193,6 +262,14 @@
 
 	.button-primary:hover {
 		background-color: #091747b9;
+	}
+
+	.checkbox {
+		font-weight: 400;
+	}
+
+	.departments {
+		margin-bottom: 5px;
 	}
 
 	.forgotpw {
@@ -218,12 +295,53 @@
 		margin-bottom: 10px;
 	}
 
+	.input-error {
+		color: #d32f2f;
+		font-size: 12px;
+		margin-top: -6px;
+		margin-bottom: 10px;
+	}
+
 	label {
 		font-weight: bold;
 	}
 
 	.no-account {
 		font-size: 14px;
+	}
+
+	.password-wrapper {
+		position: relative;
+	}
+
+	.password-rules {
+		list-style: none;
+		padding-left: 0;
+		margin-top: 2px;
+		font-size: 14px;
+	}
+
+	.password-rules li {
+		color: #8f8f8f;
+		margin: 4px 0;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.password-rules li::before {
+		content: '○';
+		color: #777;
+		font-weight: bold;
+	}
+
+	.password-rules li.valid {
+		color: #4caf50;
+	}
+
+	.password-rules li.valid::before {
+		content: '✔';
+		color: #4caf50;
 	}
 
 	.select-box {

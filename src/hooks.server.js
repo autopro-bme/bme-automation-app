@@ -1,21 +1,31 @@
-import { createServerClient } from '@supabase/auth-helpers-sveltekit';
+import { createClient } from '@supabase/supabase-js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
 
-/** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-	// Create Supabase server client
-	event.locals.supabase = createServerClient(
-		import.meta.env.VITE_SUPABASE_URL,
-		import.meta.env.VITE_SUPABASE_ANON_KEY,
-		{
-			cookies: event.cookies
-		}
-	);
+	if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+		throw new Error('Supabase environment variables are missing');
+	}
 
-	// Get current session
-	const { data } = await event.locals.supabase.auth.getSession();
+	const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+		auth: { persistSession: false }
+	});
 
-	event.locals.session = data?.session ?? null;
-	event.locals.user = data?.session?.user ?? null;
+	event.locals.supabase = supabase;
+
+	event.locals.getUser = async () => {
+		const access_token = event.cookies.get('sb-access-token');
+		const refresh_token = event.cookies.get('sb-refresh-token');
+
+		if (!access_token || !refresh_token) return null;
+
+		const { data, error } = await supabase.auth.setSession({
+			access_token,
+			refresh_token
+		});
+
+		if (error) return null;
+		return data.user;
+	};
 
 	return resolve(event);
 }
