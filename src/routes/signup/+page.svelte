@@ -77,7 +77,7 @@
 			return;
 		}
 
-		goto('/auth/signin');
+		goto('/confirmation');
 	}
 </script>
 

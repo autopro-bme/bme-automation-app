@@ -1,36 +1,415 @@
 <script>
+	/** @type {Array<{ items: Array<any>}>} */
 	import ListPlus from '@lucide/svelte/icons/list-plus';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
+	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+
+	let projects = [];
+	let errorMsg = '';
+	let isSaving = false;
+	let showEditModal = false;
+	let showCreateModal = false;
+	let selectedProject = null;
+	let searchText = '';
+	let selectedStatus = 'All';
+	let selectedDataOption = 'All';
+	let currentUserName = '';
+	let editForm = {
+		project_name: '',
+		project_id: '',
+		status: '',
+		region: '',
+		location: '',
+		start_date: '',
+		end_date: '',
+		pic_name: '',
+		pic_position: '',
+		pic_start_date: '',
+		pic_end_date: ''
+	};
+	let createForm = {
+		project_name: '',
+		project_id: '',
+		status: '',
+		region: '',
+		location: '',
+		start_date: '',
+		end_date: '',
+		pic_name: '',
+		pic_position: '',
+		pic_start_date: '',
+		pic_end_date: ''
+	};
+
+	$: filteredProjects = projects.filter((p) => {
+		const haystack =
+			`${p.project_name ?? ''} ${p.project_id ?? ''} ${p.status ?? ''}`.toLowerCase();
+
+		const matchesSearch = haystack.includes(searchText.toLowerCase());
+		const matchesStatus =
+			selectedStatus === 'All' || (p.status ?? '').toLowerCase() === selectedStatus.toLowerCase();
+		const matchesDataOption =
+			selectedDataOption === 'All' ||
+			(p.project_id ?? []).includes(selectedDataOption) ||
+			(p.project_name ?? []).includes(selectedDataOption) ||
+			(p.region ?? []).includes(selectedDataOption);
+
+		return matchesSearch && matchesStatus && matchesDataOption;
+	});
+
+	onMount(async () => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
+
+		if (!user) {
+			goto('/auth/signin');
+			return;
+		}
+
+		const { data: profileData, error: profileError } = await supabase
+			.from('profiles')
+			.select('first_name, last_name')
+			.eq('id', user.id)
+			.single();
+
+		if (profileError) {
+			errorMsg = profileError.message;
+		} else {
+			const firstName = profileData?.first_name ?? '';
+			const lastName = profileData?.last_name ?? '';
+			currentUserName = `${firstName} ${lastName}`.trim();
+		}
+
+		const { data, error } = await supabase
+			.from('projects')
+			.select(
+				'id, project_name, project_id, status, region, location, start_date, end_date, pic_name, pic_position, pic_start_date, pic_end_date, created_at'
+			)
+			.order('created_at', { ascending: false });
+
+		if (error) {
+			errorMsg = error.message;
+			projects = [];
+			return;
+		}
+
+		projects = data ?? [];
+	});
+
+	const openEditModal = (project) => {
+		selectedProject = project;
+		editForm = {
+			project_name: project.project_name ?? '',
+			project_id: project.project_id ?? '',
+			status: project.status ?? '',
+			region: project.region ?? '',
+			location: project.location ?? '',
+			start_date: project.start_date ?? '',
+			end_date: project.end_date ?? '',
+			pic_name: project.pic_name ?? '',
+			pic_position: project.pic_position ?? '',
+			pic_start_date: project.pic_start_date ?? '',
+			pic_end_date: project.pic_end_date ?? ''
+		};
+		showEditModal = true;
+	};
+
+	const closeEditModal = () => {
+		showEditModal = false;
+		selectedProject = null;
+	};
+
+	const openCreateModal = () => {
+		createForm = {
+			project_name: '',
+			project_id: '',
+			status: '',
+			region: '',
+			location: '',
+			start_date: '',
+			end_date: '',
+			pic_name: '',
+			pic_position: '',
+			pic_start_date: '',
+			pic_end_date: ''
+		};
+		showCreateModal = true;
+	};
+
+	const closeCreateModal = () => {
+		showCreateModal = false;
+	};
+
+	const saveProject = async () => {
+		if (!selectedProject) return;
+		isSaving = true;
+		errorMsg = '';
+
+		const payload = {
+			project_name: editForm.project_name.trim() || null,
+			project_id: editForm.project_id.trim() || null,
+			status: editForm.status.trim() || null,
+			region: editForm.region.trim() || null,
+			location: editForm.location.trim() || null,
+			start_date: editForm.start_date || null,
+			end_date: editForm.end_date || null,
+			pic_name: editForm.pic_name.trim() || null,
+			pic_position: editForm.pic_position.trim() || null,
+			pic_start_date: editForm.pic_start_date || null,
+			pic_end_date: editForm.pic_end_date || null
+		};
+
+		const { error } = await supabase.from('projects').update(payload).eq('id', selectedProject.id);
+
+		isSaving = false;
+
+		if (error) {
+			errorMsg = error.message;
+			return;
+		}
+
+		projects = projects.map((project) =>
+			project.id === selectedProject.id ? { ...project, ...payload } : project
+		);
+		closeEditModal();
+	};
+
+	const createProject = async () => {
+		isSaving = true;
+		errorMsg = '';
+
+		const payload = {
+			project_name: createForm.project_name.trim() || null,
+			project_id: createForm.project_id.trim() || null,
+			status: createForm.status.trim() || null,
+			region: createForm.region.trim() || null,
+			location: createForm.location.trim() || null,
+			start_date: createForm.start_date || null,
+			end_date: createForm.end_date || null,
+			pic_name: createForm.pic_name.trim() || null,
+			pic_position: createForm.pic_position.trim() || null,
+			pic_start_date: createForm.pic_start_date || null,
+			pic_end_date: createForm.pic_end_date || null,
+			created_by: currentUserName || null
+		};
+
+		const { data, error } = await supabase.from('projects').insert(payload).select().single();
+
+		isSaving = false;
+
+		if (error) {
+			errorMsg = error.message;
+			return;
+		}
+
+		projects = data ? [data, ...projects] : projects;
+		closeCreateModal();
+	};
 </script>
+
+<svelte:head>
+	<title>Project Information Management | BME Automation App</title>
+</svelte:head>
 
 <h1 class="title">Project Information Management</h1>
 
 <div class="filter-bar">
 	<h2 class="status">Project Status</h2>
-	<select name="" id="" class="status-select">
-		<option value="" disabled selected>Choose a Project Status</option>
-		<option value="commissioning">Commissioning</option>
-		<option value="delivery">Delivery</option>
-		<option value="factory">Factory</option>
-		<option value="installation">Installation</option>
-		<option value="mechanical-completion">Mechanical Completion</option>
-		<option value="n/a">N/A</option>
+	<select bind:value={selectedStatus} class="status-select">
+		<option value="All">Choose a Project Status</option>
+		<option value="Commissioning">Commissioning</option>
+		<option value="Delivery">Delivery</option>
+		<option value="Factory">Factory</option>
+		<option value="Installation">Installation</option>
+		<option value="Mechanical-completion">Mechanical Completion</option>
+		<option value="N/A">N/A</option>
 	</select>
 </div>
 
 <div class="filter-bar">
-	<select name="" id="" class="option-select">
-		<option value="" disabled selected>Choose a Data Option</option>
+	<select bind:value={selectedDataOption} class="option-select">
+		<option value="All">Choose a Data Option</option>
 		<option value="project-id">Project ID</option>
 		<option value="project-name">Project Name</option>
 		<option value="region">Region</option>
 	</select>
-	<input type="text" placeholder="Project ID/Project Name/Region" class="filter-input" />
+	<input
+		type="text"
+		placeholder="Project ID/Project Name/Region"
+		bind:value={searchText}
+		class="filter-input"
+	/>
 </div>
+
+{#if errorMsg}
+	<p class="error">{errorMsg}</p>
+{/if}
+
 <div class="button-modify">
-	<button class="button-assign"><ListPlus /><span>New Project</span></button>
+	<button class="button-assign" on:click={openCreateModal}>
+		<ListPlus /><span>New Project</span>
+	</button>
 	<button class="button-download"><CloudDownload /><span>Excel</span></button>
 </div>
+
+<div class="card-grid">
+	{#each filteredProjects as p (p.id)}
+		<div class="project-card">
+			<div class="project-info">
+				<h3>{p.project_name ?? '-'}</h3>
+				<p><b>Project ID:</b> {p.project_id ?? '-'}</p>
+				<p><b>Status:</b> {p.status ?? '-'}</p>
+				<p><b>Region:</b> {p.region ?? '-'}</p>
+				<p><b>Location:</b> {p.location ?? '-'}</p>
+				<p><b>Site Safety Supervisor:</b> Arunggani A/P Sunder</p>
+				<p><b>Start Date:</b> {p.start_date ?? '-'}</p>
+				<p><b>End Date:</b> {p.end_date ?? '-'}</p>
+				<br />
+				<h3>Person In Charge</h3>
+				<p><b>Name:</b> {p.pic_name ?? '-'}</p>
+				<p><b>Position:</b> {p.pic_position ?? '-'}</p>
+			</div>
+			<div class="button-edit">
+				<button id="button-edit" on:click={() => openEditModal(p)}>Edit</button>
+			</div>
+		</div>
+	{/each}
+</div>
+
+{#if showCreateModal}
+	<div class="modal-backdrop" role="presentation">
+		<div class="modal" role="dialog" aria-modal="true" aria-label="Create project">
+			<h2>New Project</h2>
+			<div class="modal-body">
+				<label>
+					Project Name:
+					<input type="text" bind:value={createForm.project_name} />
+				</label>
+				<label>
+					Project ID:
+					<input type="text" bind:value={createForm.project_id} />
+				</label>
+				<label>
+					Status:
+					<input type="text" bind:value={createForm.status} />
+				</label>
+				<label>
+					Region:
+					<input type="text" bind:value={createForm.region} />
+				</label>
+				<label>
+					Location:
+					<input type="text" bind:value={createForm.location} />
+				</label>
+				<label>
+					Start Date:
+					<input type="date" bind:value={createForm.start_date} />
+				</label>
+				<label>
+					End Date:
+					<input type="date" bind:value={createForm.end_date} />
+				</label>
+			</div>
+			<br />
+			<h2>Person In Charge Information</h2>
+			<div class="modal-body">
+				<label>
+					Full Name:
+					<input type="text" bind:value={createForm.pic_name} />
+				</label>
+				<label>
+					Position:
+					<input type="text" bind:value={createForm.pic_position} />
+				</label>
+				<label>
+					Start Date:
+					<input type="date" bind:value={createForm.pic_start_date} />
+				</label>
+				<label>
+					End Date:
+					<input type="date" bind:value={createForm.pic_end_date} />
+				</label>
+			</div>
+			<div class="modal-actions">
+				<button class="button-inverted" on:click={closeCreateModal} disabled={isSaving}>
+					Cancel
+				</button>
+				<button on:click={createProject} disabled={isSaving}>
+					{isSaving ? 'Saving...' : 'Confirm'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if showEditModal}
+	<div class="modal-backdrop" role="presentation">
+		<div class="modal" role="dialog" aria-modal="true" aria-label="Edit project information">
+			<h2>Edit Project Information</h2>
+			<div class="modal-body">
+				<label>
+					Project Name:
+					<input type="text" bind:value={editForm.project_name} />
+				</label>
+				<label>
+					Project ID:
+					<input type="text" bind:value={editForm.project_id} />
+				</label>
+				<label>
+					Status:
+					<input type="text" bind:value={editForm.status} />
+				</label>
+				<label>
+					Region:
+					<input type="text" bind:value={editForm.region} />
+				</label>
+				<label>
+					Location:
+					<input type="text" bind:value={editForm.location} />
+				</label>
+				<label>
+					Start Date:
+					<input type="date" bind:value={editForm.start_date} />
+				</label>
+				<label>
+					End Date:
+					<input type="date" bind:value={editForm.end_date} />
+				</label>
+			</div>
+			<br />
+			<h2>Edit Person In Charge Information</h2>
+			<div class="modal-body">
+				<label>
+					Full Name:
+					<input type="text" bind:value={editForm.pic_name} />
+				</label>
+				<label>
+					Position:
+					<input type="text" bind:value={editForm.pic_position} />
+				</label>
+				<label>
+					Start Date:
+					<input type="date" bind:value={editForm.pic_start_date} />
+				</label>
+				<label>
+					End Date:
+					<input type="date" bind:value={editForm.pic_end_date} />
+				</label>
+			</div>
+			<div class="modal-actions">
+				<button class="button-inverted" on:click={closeEditModal} disabled={isSaving}>
+					Cancel
+				</button>
+				<button on:click={saveProject} disabled={isSaving}>
+					{isSaving ? 'Saving...' : 'Confirm'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	* {
@@ -83,10 +462,40 @@
 		background-color: #31b647bd;
 	}
 
+	.button-edit {
+		width: 20%;
+		align-self: flex-start;
+	}
+
+	#button-edit {
+		width: 100%;
+	}
+
+	.button-inverted {
+		background-color: #ffffff;
+		color: #064c6dd7;
+		font-size: small;
+		margin-top: 5px;
+		padding: 6px 14px;
+		border: 2px solid #064c6dd7;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.button-inverted:hover {
+		background-color: #dedede;
+	}
+
 	.button-modify {
 		display: flex;
 		padding: 10px;
 		justify-content: space-between;
+	}
+
+	.card-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
 	}
 
 	.filter-bar {
@@ -98,11 +507,92 @@
 		font-size: 14px;
 	}
 
+	h2 {
+		font-weight: bold;
+	}
+
+	h3 {
+		margin-bottom: 5px;
+		font-weight: bold;
+	}
+
 	.option-select,
 	.status-select {
 		font-size: 14px;
 		width: 20%;
 		cursor: pointer;
+	}
+
+	.project-card {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		background-color: #ffffff;
+		border: 1px solid #dcdcdc;
+		border-radius: 4px;
+		padding: 15px 20px;
+		margin: 10px 10px 0;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	}
+
+	.project-info {
+		width: 80%;
+	}
+
+	.project-info p {
+		font-size: 14px;
+	}
+
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.45);
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		padding: 32px 20px;
+		z-index: 10;
+	}
+
+	.modal {
+		width: min(560px, 100%);
+		max-height: calc(100vh - 64px);
+		overflow: auto;
+		background: #ffffff;
+		border-radius: 8px;
+		padding: 20px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal h2 {
+		margin: 0 0 16px;
+		font-size: 20px;
+	}
+
+	.modal-body {
+		display: grid;
+		gap: 12px;
+	}
+
+	.modal-body label {
+		display: grid;
+		gap: 6px;
+		font-size: 13px;
+		font-weight: bold;
+	}
+
+	.modal-body input {
+		border: 1px solid #dcdcdc;
+		border-radius: 4px;
+		padding: 8px 10px;
+		font-size: 14px;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-end;
+		gap: 10px;
+		margin-top: 18px;
 	}
 
 	.title {

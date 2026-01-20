@@ -1,6 +1,8 @@
 <script>
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Search from '@lucide/svelte/icons/search';
+
+	let showAdditionalTraveller = false;
 </script>
 
 <h1 class="title">Travel Requisition Form Report (e-TRF) Submission</h1>
@@ -125,11 +127,62 @@
 		</div>
 		<br />
 		<hr />
-		<h2 class="heading">Additional Traveller Information</h2>
+		<h2 class="heading">Additional Traveller</h2>
 		<p>
-			<input type="checkbox" name="" id="" />&nbsp;&nbsp;Should there be more than one (1) traveller
+			<input type="checkbox" bind:checked={showAdditionalTraveller} />
+			&nbsp;&nbsp;Should there be more than one (1) traveller
 		</p>
-		<!-- show another traveller information form -->
+		{#if showAdditionalTraveller}
+			<h3 class="heading">Additional Traveller Information</h3>
+			<div class="forms-p">
+				<label for="traveller-2-name" class="forms-label">Traveller Name:</label>
+				<input id="traveller-2-name" type="text" class="forms-input" />
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-ic-passport" class="forms-label">IC or Passport No.:</label>
+				<input id="traveller-2-ic-passport" type="text" class="forms-input" />
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-company" class="forms-label">Company:</label>
+				<input id="traveller-2-company" type="text" class="forms-input" />
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-position" class="forms-label">Position:</label>
+				<input id="traveller-2-position" type="text" class="forms-input" />
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-department" class="forms-label">Department:</label>
+				<select id="traveller-2-department" class="select">
+					<option value="" disabled selected></option>
+					<option value="Project">Project</option>
+					<option value="HSE">HSE</option>
+				</select>
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-phone-no" class="forms-label">Phone No.:</label>
+				<input id="traveller-2-phone-no" type="text" class="forms-input" />
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-mode-of-travel" class="forms-label">Mode of Travel:</label>
+				<select id="traveller-2-mode-of-travel" class="select">
+					<option value="" disabled selected></option>
+					<option value="Road">Road</option>
+					<option value="Company-Vehicle">Company Vehicle</option>
+					<option value="Air">Air</option>
+				</select>
+			</div>
+			<div class="forms-p">
+				<label for="traveller-2-fare-borne-by" class="forms-label">Fare to be Borne by:</label>
+				<select id="traveller-2-fare-borne-by" class="select">
+					<option value="" disabled selected></option>
+					<option value="boilermech">Boilermech Sdn Bhd</option>
+					<option value="bm-greentech">BM GreenTech Bhd</option>
+					<option value="zenith">Zenith Index Sdn Bhd</option>
+					<option value="others">Others - Clients/Sub-Contractor/Supplier</option>
+					<option value="oretech">Boilermech Oretech Sdn Bhd</option>
+				</select>
+			</div>
+		{/if}
 		<br />
 		<hr />
 		<h2 class="heading">Acknowledgement and Submission</h2>

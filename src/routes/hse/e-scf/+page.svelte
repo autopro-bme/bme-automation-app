@@ -178,6 +178,7 @@
 	}
 
 	.department-select {
+		width: 150px;
 		height: 30px;
 		margin: 10px 0;
 	}

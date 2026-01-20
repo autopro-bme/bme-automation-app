@@ -67,8 +67,24 @@
 
 <Spinner active={$spinner || spinnerActive} />
 
-<Header />
+<div class="app-shell">
+	<Header />
 
-{@render children()}
+	<main class="app-main">
+		{@render children()}
+	</main>
 
-<Footer />
+	<Footer />
+</div>
+
+<style>
+	.app-shell {
+		min-height: 100vh;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.app-main {
+		flex: 1;
+	}
+</style>

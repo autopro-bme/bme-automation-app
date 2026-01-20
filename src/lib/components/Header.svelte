@@ -6,7 +6,10 @@
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 
-	$: isAuthPage = $page.url.pathname === '/signin' || $page.url.pathname === '/signup';
+	$: isAuthPage =
+		$page.url.pathname === '/signin' ||
+		$page.url.pathname === '/signup' ||
+		$page.url.pathname === '/confirmation';
 
 	let userName = 'User';
 
@@ -54,7 +57,7 @@
 	</div>
 	{#if !isAuthPage}
 		<div class="welcome">
-			<p>Welcome, <b>{userName}</b></p>
+			<p>Welcome, <b>{userName}</b>!</p>
 			<div class="calendar-history">
 				<a href="/hse/submission-history" class="navigation"><History />History</a>
 				<a href="/hse/calendar-view" class="navigation"><Calendar />Calendar</a>
@@ -101,6 +104,7 @@
 		display: flex;
 		align-items: center;
 		gap: 25px;
+		font-size: 14px;
 	}
 
 	.container {

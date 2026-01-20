@@ -4,23 +4,55 @@
 	import { menuSections } from '$lib/data/menu';
 	import { onMount } from 'svelte';
 
-	let user = null;
+	let allowedDepartments = [];
+	let visibleSections = [];
+	let errorMsg = '';
+
+	function deptKey(label) {
+		// Menu label is long, but DB stores "HSE"
+		if (label.startsWith('Health, Safety')) return 'HSE';
+		return label;
+	}
+
+	function computeVisible() {
+		const isAdmin = allowedDepartments.includes('Admin');
+
+		visibleSections = menuSections.filter((section) => {
+			if (isAdmin) return true;
+			return allowedDepartments.includes(deptKey(section.department));
+		});
+	}
 
 	onMount(async () => {
-		const { data } = await supabase.auth.getUser();
-
-		if (!data?.user) {
+		const { data: auth } = await supabase.auth.getUser();
+		if (!auth?.user) {
 			goto('/auth/signin');
 			return;
 		}
 
-		user = data.user;
+		const { data: profile, error } = await supabase
+			.from('profiles')
+			.select('department')
+			.eq('id', auth.user.id)
+			.single();
+
+		if (error) {
+			errorMsg = error.message;
+			return;
+		}
+
+		allowedDepartments = profile?.department ?? [];
+		computeVisible();
 	});
 </script>
 
+{#if errorMsg}
+	<p class="error">{errorMsg}</p>
+{/if}
+
 <h1 class="title">Main Menu</h1>
 
-{#each menuSections as section}
+{#each visibleSections as section}
 	<h2 class="department">Department: <span class="section">{section.department}</span></h2>
 
 	{#each section.items as item}
