@@ -4,45 +4,104 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 
-	let filterDate = '';
-	let date = '';
-	let name = '';
-	let etbm = false;
-	let eppe = false;
-	let ehkp = false;
-	let status = '';
-	let created_at = '';
-	let currentPage = 1;
-	const itemsPerPage = 10;
+	let selectedDate = $state(new Date().toISOString().slice(0, 10)); // YYYY-MM-DD
+	let rows = $state([]);
+	let errorMsg = $state('');
+	let loading = $state(false);
 
-	$: totalPages = Math.max(1, Math.ceil(records.length / itemsPerPage));
-	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
-	$: start = (currentPage - 1) * itemsPerPage;
-	$: paginated = records.slice(start, start + itemsPerPage);
+	function localDayRangeISO(dateStr) {
+		// interpret dateStr as local date; convert to UTC range for created_at query
+		const start = new Date(dateStr + 'T00:00:00');
+		const end = new Date(dateStr + 'T23:59:59.999');
+		return { startISO: start.toISOString(), endISO: end.toISOString() };
+	}
 
-	onMount(async () => {
-		const {
-			data: { user }
-		} = await supabase.getUser();
+	function displayName(profile) {
+		return (
+			profile.nickname ||
+			`${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() ||
+			profile.email
+		);
+	}
 
-		if (!user) {
-			goto('/auth/signin');
-			return;
+	async function loadAttendance() {
+		loading = true;
+		errorMsg = '';
+		rows = [];
+
+		try {
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+
+			if (!user) {
+				goto('/auth/signin');
+				return;
+			}
+
+			// 1) load all users (attendance view is for everyone)
+			const { data: users, error: usersErr } = await supabase
+				.from('profiles')
+				.select('id, nickname, first_name, last_name, email')
+				.order('first_name');
+
+			if (usersErr) throw usersErr;
+
+			// 2) load submissions for that day (all users)
+			const { startISO, endISO } = localDayRangeISO(selectedDate);
+
+			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
+				supabase
+					.from('tbm_submissions')
+					.select('created_by')
+					.gte('created_at', startISO)
+					.lte('created_at', endISO),
+
+				supabase
+					.from('ppe_submissions')
+					.select('created_by')
+					.gte('created_at', startISO)
+					.lte('created_at', endISO),
+
+				supabase
+					.from('hkp_submissions')
+					.select('created_by')
+					.gte('created_at', startISO)
+					.lte('created_at', endISO)
+			]);
+
+			if (tbmRes.error) throw tbmRes.error;
+			if (ppeRes.error) throw ppeRes.error;
+			if (hkpRes.error) throw hkpRes.error;
+
+			// 3) build sets of submitters
+			const tbmSet = new Set((tbmRes.data ?? []).map((r) => r.created_by));
+			const ppeSet = new Set((ppeRes.data ?? []).map((r) => r.created_by));
+			const hkpSet = new Set((hkpRes.data ?? []).map((r) => r.created_by));
+
+			// 4) build table rows for ALL users
+			rows = (users ?? []).map((u) => {
+				const etbm = tbmSet.has(u.id);
+				const eppe = ppeSet.has(u.id);
+				const ehkp = hkpSet.has(u.id);
+
+				return {
+					date: selectedDate,
+					name: displayName(u),
+					etbm: etbm ? 'Yes' : 'No',
+					eppe: eppe ? 'Yes' : 'No',
+					ehkp: ehkp ? 'Yes' : 'No',
+					status: etbm && eppe && ehkp ? 'Present' : 'Absent'
+				};
+			});
+		} catch (e) {
+			errorMsg = e?.message ?? String(e);
+		} finally {
+			loading = false;
 		}
+	}
 
-		const { data, error } = await supabase
-			.from('attendance_records')
-			.select('id, date, name, etbm, eppe, ehkp, status, created_at')
-			.order('created_at', { ascending: false });
-
-		if (error) {
-			errorMsg = error.message;
-			users = [];
-			return;
-		}
-
-		users = data ?? [];
-	});
+	onMount(loadAttendance);
 
 	// @ts-ignore
 	function gotoPage(n) {
@@ -62,20 +121,26 @@
 
 <h1 class="title">Working Day Attendance (e-WDA) Record</h1>
 
-{#if errorMsg}
-	<p class="error">{errorMsg}</p>
-{/if}
-
 <div class="project-box">
 	<div class="date-records">
 		<div>
 			<p>Filter by Date</p>
-			<input type="date" bind:value={filterDate} class="filter-date" />
+			<input
+				type="date"
+				class="filter-date"
+				bind:value={selectedDate}
+				onchange={loadAttendance}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="records">
 			Showing <b>{paginated.length}</b> of <b>{records.length}</b> records
 		</div>
 	</div>
+
+	{#if errorMsg}
+		<p class="error">{errorMsg}</p>
+	{/if}
 
 	<div class="table-container">
 		<table class="wda-table">
@@ -90,13 +155,13 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each paginated as r}
+				{#each rows as r (r.name)}
 					<tr>
-						<td style="text-align:center">{new Date(r.date).toLocaleDateString()}</td>
+						<td style="text-align:center">{r.date}</td>
 						<td>{r.name}</td>
-						<td style="text-align:center">{r.etbm ? 'Yes' : 'No'}</td>
-						<td style="text-align:center">{r.eppe ? 'Yes' : 'No'}</td>
-						<td style="text-align:center">{r.ehkp ? 'Yes' : 'No'}</td>
+						<td style="text-align:center">{r.etbm}</td>
+						<td style="text-align:center">{r.eppe}</td>
+						<td style="text-align:center">{r.ehkp}</td>
 						<td style="text-align:center">{r.status}</td>
 					</tr>
 				{/each}
@@ -104,11 +169,11 @@
 		</table>
 
 		<div class="pagination">
-			<button on:click={prev} disabled={currentPage === 1} aria-label="Previous">«</button>
+			<button onclick={prev} disabled={currentPage === 1} aria-label="Previous">«</button>
 			{#each pages as p}
-				<button class:active={p === currentPage} on:click={() => gotoPage(p)}>{p}</button>
+				<button class:active={p === currentPage} onclick={() => gotoPage(p)}>{p}</button>
 			{/each}
-			<button on:click={next} disabled={currentPage === totalPages} aria-label="Next">»</button>
+			<button onclick={next} disabled={currentPage === totalPages} aria-label="Next">»</button>
 		</div>
 	</div>
 </div>

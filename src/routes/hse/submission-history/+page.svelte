@@ -4,16 +4,17 @@
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 
-	let submissions = [];
-	let errorMsg = '';
-	let fromDate = '';
-	let toDate = '';
+	let submissions = $state([]);
+	let errorMsg = $state('');
+	let loading = $state(false);
+	let fromDate = $state('');
+	let toDate = $state('');
 
-	let open = {
+	let open = $state({
 		TBM: false,
 		PPE: false,
 		HKP: false
-	};
+	});
 
 	function toggle(type) {
 		open = { ...open, [type]: !open[type] };
@@ -24,63 +25,79 @@
 		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 	}
 
-	$: filtered = submissions.filter((s) => {
-		const d = new Date(s.created_at);
-		const fromOk = !fromDate || d >= new Date(fromDate);
-		const toOk = !toDate || d <= new Date(toDate + 'T23:59:59');
+	function withinRange(iso) {
+		const d = new Date(iso);
+		const fromOk = !fromDate || d >= new Date(fromDate + 'T00:00:00');
+		const toOk = !toDate || d <= new Date(toDate + 'T23:59:59.999');
 		return fromOk && toOk;
-	});
-
-	$: tbmRows = filtered.filter((s) => s.type === 'TBM');
-	$: ppeRows = filtered.filter((s) => s.type === 'PPE');
-	$: hkpRows = filtered.filter((s) => s.type === 'HKP');
-
-	async function loadSubmissions() {
-		const [tbmRecords, ppeRecords, hkpRecords] = await Promise.all([
-			supabase
-				.from('tbm_submissions')
-				.select(
-					'id, project_name, project_no, region, location, meeting_date, weather, meeting_topics, other_topic, competency, attendance, conducted_by, conducted_position, created_at, created_by_name'
-				),
-			supabase
-				.from('ppe_submissions')
-				.select(
-					'id, project_name, project_no, region, location, activity_date, weather, conducted_by, conducted_position, attendance, created_at, created_by_name'
-				),
-			supabase
-				.from('hkp_submissions')
-				.select(
-					'id, project_name, project_no, region, location, activity_date, weather, report_day, created_at, created_by_name'
-				)
-		]);
-
-		if (tbmRecords.error || ppeRecords.error || hkpRecords.error) {
-			errorMsg = (tbmRecords.error || ppeRecords.error || hkpRecords.error).message;
-			return;
-		}
-
-		submissions = [
-			...(tbmRecords.data ?? []).map((r) => ({
-				type: 'TBM',
-				...r
-			})),
-			...(ppeRecords.data ?? []).map((r) => ({
-				type: 'PPE',
-				...r
-			})),
-			...(hkpRecords.data ?? []).map((r) => ({
-				type: 'HKP',
-				...r
-			}))
-		].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 	}
 
-	onMount(loadSubmissions);
-</script>
+	async function loadHistory() {
+		loading = true;
+		errorMsg = '';
+		submissions = [];
 
-{#if errorMsg}
-	<p class="error">{errorMsg}</p>
-{/if}
+		try {
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+
+			if (!user) {
+				goto('/auth/signin');
+				return;
+			}
+
+			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
+				supabase
+					.from('tbm_submissions')
+					.select(
+						'id, created_at, created_by_name, project_no, project_name, meeting_time, tbm_form_path, tbm_photo_path, ptw_form_path, other_doc_path'
+					)
+					.eq('created_by', user.id)
+					.order('created_at', { ascending: false }),
+
+				supabase
+					.from('ppe_submissions')
+					.select(
+						'id, created_at, created_by_name, project_no, project_name, ppe_photo_path, other_doc_path'
+					)
+					.eq('created_by', user.id)
+					.order('created_at', { ascending: false }),
+
+				supabase
+					.from('hkp_submissions')
+					.select(
+						'id, created_at, created_by_name, project_no, project_name, hkp_photo_path, other_doc_path'
+					)
+					.eq('created_by', user.id)
+					.order('created_at', { ascending: false })
+			]);
+
+			if (tbmRes.error) throw tbmRes.error;
+			if (ppeRes.error) throw ppeRes.error;
+			if (hkpRes.error) throw hkpRes.error;
+
+			const merged = [
+				...(tbmRes.data ?? []).map((r) => ({ type: 'TBM', ...r })),
+				...(ppeRes.data ?? []).map((r) => ({ type: 'PPE', ...r })),
+				...(hkpRes.data ?? []).map((r) => ({ type: 'HKP', ...r }))
+			].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+			// date filter (From/To)
+			submissions = merged.filter((r) => withinRange(r.created_at));
+		} catch (e) {
+			errorMsg = e?.message ?? String(e);
+		} finally {
+			loading = false;
+		}
+	}
+
+	const tbmRows = $derived(() => submissions.filter((s) => s.type === 'TBM'));
+	const ppeRows = $derived(() => submissions.filter((s) => s.type === 'PPE'));
+	const hkpRows = $derived(() => submissions.filter((s) => s.type === 'HKP'));
+
+	onMount(loadHistory);
+</script>
 
 <h1 class="title">Submission History</h1>
 
@@ -92,23 +109,29 @@
 			<input
 				type="date"
 				class="submit-date"
-				on:focus={(e) => e.target.showPicker?.()}
 				bind:value={fromDate}
+				onchange={loadHistory}
+				onfocus={(e) => e.target.showPicker?.()}
 			/>
 			<label for="">To</label>
 			<input
 				type="date"
 				class="submit-date"
-				on:focus={(e) => e.target.showPicker?.()}
 				bind:value={toDate}
+				onchange={toDate}
+				onfocus={(e) => e.target.showPicker?.()}
 			/>
 		</p>
 	</div>
 
+	{#if errorMsg}
+		<p class="error">{errorMsg}</p>
+	{/if}
+
 	<div class="accordion">
 		<!-- TBM -->
 		<div class="acc-section">
-			<button type="button" class="acc-header" on:click={() => toggle('TBM')}>
+			<button type="button" class="acc-header" onclick={() => toggle('TBM')}>
 				<span>Tool Box Meeting (e-TBM) ({tbmRows.length})</span>
 				<span class="acc-icon">
 					{#if open.TBM}
@@ -127,15 +150,27 @@
 						<div class="card-grid">
 							{#each tbmRows as r (r.id)}
 								<div class="history-card">
-									<p class="card-title">{r.project_no}</p>
-									<p><b>Project Name:</b> {r.project_name}</p>
+									<p class="card-title">{r.project_no ?? '-'}</p>
+									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
 									<p><b>Meeting Time:</b> {r.meeting_time ?? '-'}</p>
 
-									<p class="doc-line"><b>Filled TBM Image:</b> (image)</p>
-									<p class="doc-line"><b>Filled PTW Image:</b> (image)</p>
-									<p class="doc-line"><b>TBM Visit Image:</b> (image)</p>
-									<p class="doc-line"><b>Another Document:</b> (document)</p>
+									<p class="doc-line">
+										<b>Photo of Filled TBM Form:</b>
+										{r.tbm_form_path ? image : '-'}
+									</p>
+									<p class="doc-line">
+										<b>Photo(s) of TBM in Session:</b>
+										{r.tbm_photo_path ? image : '-'}
+									</p>
+									<p class="doc-line">
+										<b>Photo of Filled PTW Form</b>
+										{r.ptw_form_path ? image : '-'}
+									</p>
+									<p class="doc-line">
+										<b>Another Document:</b>
+										{r.other_doc_path ? document : '-'}
+									</p>
 								</div>
 							{/each}
 						</div>
@@ -146,7 +181,7 @@
 
 		<!-- PPE -->
 		<div class="acc-section">
-			<button type="button" class="acc-header" on:click={() => toggle('PPE')}>
+			<button type="button" class="acc-header" onclick={() => toggle('PPE')}>
 				<span>PPE Visual Inspections (e-PPE) ({ppeRows.length})</span>
 				<span class="acc-icon">
 					{#if open.PPE}
@@ -165,12 +200,18 @@
 						<div class="card-grid">
 							{#each ppeRows as r (r.id)}
 								<div class="history-card">
-									<p class="card-title">{r.project_no}</p>
-									<p><b>Project Name:</b> {r.project_name}</p>
+									<p class="card-title">{r.project_no ?? '-'}</p>
+									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
 
-									<p class="doc-line"><b>Filled PPE Image:</b> (image)</p>
-									<p class="doc-line"><b>Another Document:</b> (document)</p>
+									<p class="doc-line">
+										<b>Photos of Wearing PPE on Site:</b>
+										{r.ppe_photo_path ? image : '-'}
+									</p>
+									<p class="doc-line">
+										<b>Another Document:</b>
+										{r.other_doc_path ? document : '-'}
+									</p>
 								</div>
 							{/each}
 						</div>
@@ -181,7 +222,7 @@
 
 		<!-- HKP -->
 		<div class="acc-section">
-			<button type="button" class="acc-header" on:click={() => toggle('HKP')}>
+			<button type="button" class="acc-header" onclick={() => toggle('HKP')}>
 				<span>Housekeeping Report (e-HKP) ({hkpRows.length})</span>
 				<span class="acc-icon">
 					{#if open.HKP}
@@ -200,12 +241,18 @@
 						<div class="card-grid">
 							{#each hkpRows as r (r.id)}
 								<div class="history-card">
-									<p class="card-title">{r.project_no}</p>
-									<p><b>Project Name:</b> {r.project_name}</p>
+									<p class="card-title">{r.project_no ?? '—'}</p>
+									<p><b>Project Name:</b> {r.project_name ?? '—'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
 
-									<p class="doc-line"><b>Filled HKP Image:</b> (image)</p>
-									<p class="doc-line"><b>Another Document:</b> (document)</p>
+									<p class="doc-line">
+										<b>Photo of Housekeeping:</b>
+										{r.hkp_photo_path ? '(image)' : '-'}
+									</p>
+									<p class="doc-line">
+										<b>Another Document:</b>
+										{r.other_doc_path ? '(document)' : '-'}
+									</p>
 								</div>
 							{/each}
 						</div>
@@ -214,42 +261,6 @@
 			{/if}
 		</div>
 	</div>
-
-	<!-- {#each submissionTypes as s, i}
-		<div class="submission-type" onclick={() => toggleDiv(i)}>
-			<button class="button-toggle">{s.title} ({s.count})</button>
-			{#if openIndex === i}
-				<ChevronDown color="#064c6dd7" />
-			{:else}
-				<ChevronLeft color="#064c6dd7" />
-			{/if}
-		</div>
-
-		{#if openIndex === i}
-			<div class="submission-row" id="submission-row">
-				{#if s.items && s.items.length > 0}
-					{#each s.items as item}
-						<div class="submission-data">
-							<h2>Project #{item.id}</h2>
-							<p class="project-data"><b>Project Name:&nbsp;</b>{item.project}</p>
-							<p class="project-data"><b>Submit Date:&nbsp;</b>{item.date}</p>
-							<p class="project-data"><b>Meeting Time:&nbsp;</b>{item.time}</p>
-							<p class="project-data"><b>Filled TBM Image:&nbsp;</b></p>
-							<p>(image)</p>
-							<p class="project-data"><b>Filled PTW Image:&nbsp;</b></p>
-							<p>(image)</p>
-							<p class="project-data"><b>TBM Visit Image:&nbsp;</b></p>
-							<p>(image)</p>
-							<p class="project-data"><b>Another Document:&nbsp;</b></p>
-							<p>(document)</p>
-						</div>
-					{/each}
-				{:else}
-					<div style="padding:12px;">No submissions.</div>
-				{/if}
-			</div>
-		{/if}
-	{/each} -->
 </div>
 
 <style>

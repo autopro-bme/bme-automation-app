@@ -178,8 +178,8 @@
 				<p><b>Region:</b> {u.region ?? '-'}</p>
 			</div>
 			<div class="button-modify">
-				<button on:click={() => openEditModal(u)}>Edit</button>
-				<button class="button-inverted" on:click={() => openDeleteModal(u)}>Delete</button>
+				<button onclick={() => openEditModal(u)}>Edit</button>
+				<button class="button-inverted" onclick={() => openDeleteModal(u)}>Delete</button>
 			</div>
 		</div>
 	{/each}
@@ -227,12 +227,12 @@
 				<button
 					class="button-inverted"
 					id="button-cancel"
-					on:click={closeEditModal}
+					onclick={closeEditModal}
 					disabled={isSaving}
 				>
 					Cancel
 				</button>
-				<button on:click={saveUser} disabled={isSaving}>
+				<button onclick={saveUser} disabled={isSaving}>
 					{isSaving ? 'Saving...' : 'Confirm'}
 				</button>
 			</div>
@@ -246,10 +246,10 @@
 			<h2>Delete User</h2>
 			<p>Are you sure you want to delete this user?</p>
 			<div class="modal-actions">
-				<button class="button-inverted" on:click={closeDeleteModal} disabled={isSaving}>
+				<button class="button-inverted" onclick={closeDeleteModal} disabled={isSaving}>
 					Cancel
 				</button>
-				<button on:click={deleteUser} disabled={isSaving}>
+				<button onclick={deleteUser} disabled={isSaving}>
 					{isSaving ? 'Deleting...' : 'Confirm'}
 				</button>
 			</div>

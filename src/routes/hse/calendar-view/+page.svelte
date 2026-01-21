@@ -85,9 +85,9 @@
 
 	<div class="calendar">
 		<div class="calendar-header">
-			<button class="nav" on:click={prev} disabled={index === 0}><ChevronsLeft /></button>
+			<button class="nav" onclick={prev} disabled={index === 0}><ChevronsLeft /></button>
 			<div class="month-label">{monthNames[months[index].month]} {months[index].year}</div>
-			<button class="nav" on:click={next} disabled={index === months.length - 1}
+			<button class="nav" onclick={next} disabled={index === months.length - 1}
 				><ChevronsRight /></button
 			>
 		</div>

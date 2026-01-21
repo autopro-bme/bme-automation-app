@@ -160,7 +160,7 @@
 							type="checkbox"
 							name="access-status"
 							checked={selectedDepartments.includes(card.value)}
-							on:change={() => toggleDepartment(card.value)}
+							onchange={() => toggleDepartment(card.value)}
 							disabled={!selectedUser || isSaving}
 						/>
 						<span class="checkmark" aria-hidden="true"></span>
@@ -171,10 +171,10 @@
 	{/each}
 </div>
 <div class="button-modify">
-	<button class="button-inverted" on:click={removeAllAccess} disabled={!selectedUser || isSaving}>
+	<button class="button-inverted" onclick={removeAllAccess} disabled={!selectedUser || isSaving}>
 		Remove All Access From This User
 	</button>
-	<button class="button-assign" on:click={saveDepartments} disabled={!selectedUser || isSaving}>
+	<button class="button-assign" onclick={saveDepartments} disabled={!selectedUser || isSaving}>
 		{isSaving ? 'Saving...' : 'Assign Access To This User'}
 	</button>
 </div>

@@ -62,7 +62,7 @@
 				<h3>{item.title}</h3>
 				<p>{item.description}</p>
 			</div>
-			<button on:click={() => goto(item.route)}> Go To </button>
+			<button onclick={() => goto(item.route)}> Go To </button>
 		</div>
 	{/each}
 {/each}

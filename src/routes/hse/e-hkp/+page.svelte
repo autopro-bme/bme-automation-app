@@ -173,9 +173,9 @@
 <h1 class="title">Housekeeping Report (e-HKP) Submission</h1>
 
 <div class="project-box">
-	<form class="forms" on:submit={handleSubmit}>
+	<form class="forms" onsubmit={handleSubmit}>
 		<h2 class="heading">General Information</h2>
-		<button type="button" class="button-primary" on:click={openProjectModal}
+		<button type="button" class="button-primary" onclick={openProjectModal}
 			><Search />Search Project</button
 		>
 		<div class="forms-p">
@@ -212,9 +212,9 @@
 							placeholder="Project Name/Project ID"
 							class="project-search-input"
 							bind:value={projectSearch}
-							on:input={filterProjects}
+							oninput={filterProjects}
 						/>
-						<button type="button" class="project-search-button" on:click={filterProjects}>
+						<button type="button" class="project-search-button" onclick={filterProjects}>
 							<Search />
 						</button>
 					</div>
@@ -231,7 +231,7 @@
 							<p class="project-status">No projects found.</p>
 						{:else}
 							{#each filteredProjects as project}
-								<button type="button" class="project-row" on:click={() => selectProject(project)}>
+								<button type="button" class="project-row" onclick={() => selectProject(project)}>
 									<span>{project.project_name ?? '-'}</span>
 									<span class="project-row-id">{project.project_id ?? '-'}</span>
 								</button>
@@ -239,7 +239,7 @@
 						{/if}
 					</div>
 					<div class="modal-actions">
-						<button type="button" class="button-secondary" on:click={closeProjectModal}>
+						<button type="button" class="button-secondary" onclick={closeProjectModal}>
 							Cancel
 						</button>
 					</div>
@@ -257,7 +257,7 @@
 					name="hkp_photo"
 					accept="image/png, image/jpeg"
 					multiple
-					on:change={(e) => onFile(e, (f) => (hkp_photo_file = f))}
+					onchange={(e) => onFile(e, (f) => (hkp_photo_file = f))}
 				/>
 			</p>
 		</div>
