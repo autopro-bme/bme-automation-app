@@ -1,49 +1,221 @@
 <script>
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
+	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
 
-	let submissionTypes = [
-		{ title: 'Corrective Action Report (e-CAR)', count: 0, items: [] },
-		{ title: 'Housekeeping Report (e-HKP)', count: 0, items: [] },
-		{ title: 'Overtime Requisition and Approval Form (e-ORA)', count: 0, items: [] },
-		{ title: 'PPE Visual Inspections (e-PPE)', count: 0, items: [] },
-		{ title: 'Staff Claim Form (e-SCF)', count: 0, items: [] },
-		{ title: 'Safety Officer Audit (e-SOA)', count: 0, items: [] },
-		{
-			title: 'Tool Box Meeting (e-TBM)',
-			count: 3,
-			items: [
-				{ id: '0001', project: 'ABC Plantation Sdn Bhd', date: '02 Jan 2026', time: '7:05 AM' },
-				{ id: '0002', project: 'JT OIL Palm Development', date: '02 Jan 2026', time: '7:20 AM' },
-				{ id: '0003', project: 'SD Tanah Merah', date: '02 Jan 2026', time: '7:40 AM' }
-			]
-		},
-		{ title: 'Travel Requisition Form (e-TRF)', count: 0, items: [] },
-		{ title: 'Zero Compromise Audit (e-ZCA)', count: 0, items: [] }
-	];
+	let submissions = [];
+	let errorMsg = '';
+	let fromDate = '';
+	let toDate = '';
 
-	let openIndex = null; // which submission-type is open (null = none)
+	let open = {
+		TBM: false,
+		PPE: false,
+		HKP: false
+	};
 
-	function toggleDiv(i) {
-		openIndex = openIndex === i ? null : i;
+	function toggle(type) {
+		open = { ...open, [type]: !open[type] };
 	}
+
+	function fmtDate(iso) {
+		const d = new Date(iso);
+		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	}
+
+	$: filtered = submissions.filter((s) => {
+		const d = new Date(s.created_at);
+		const fromOk = !fromDate || d >= new Date(fromDate);
+		const toOk = !toDate || d <= new Date(toDate + 'T23:59:59');
+		return fromOk && toOk;
+	});
+
+	$: tbmRows = filtered.filter((s) => s.type === 'TBM');
+	$: ppeRows = filtered.filter((s) => s.type === 'PPE');
+	$: hkpRows = filtered.filter((s) => s.type === 'HKP');
+
+	async function loadSubmissions() {
+		const [tbmRecords, ppeRecords, hkpRecords] = await Promise.all([
+			supabase
+				.from('tbm_submissions')
+				.select(
+					'id, project_name, project_no, region, location, meeting_date, weather, meeting_topics, other_topic, competency, attendance, conducted_by, conducted_position, created_at, created_by_name'
+				),
+			supabase
+				.from('ppe_submissions')
+				.select(
+					'id, project_name, project_no, region, location, activity_date, weather, conducted_by, conducted_position, attendance, created_at, created_by_name'
+				),
+			supabase
+				.from('hkp_submissions')
+				.select(
+					'id, project_name, project_no, region, location, activity_date, weather, report_day, created_at, created_by_name'
+				)
+		]);
+
+		if (tbmRecords.error || ppeRecords.error || hkpRecords.error) {
+			errorMsg = (tbmRecords.error || ppeRecords.error || hkpRecords.error).message;
+			return;
+		}
+
+		submissions = [
+			...(tbmRecords.data ?? []).map((r) => ({
+				type: 'TBM',
+				...r
+			})),
+			...(ppeRecords.data ?? []).map((r) => ({
+				type: 'PPE',
+				...r
+			})),
+			...(hkpRecords.data ?? []).map((r) => ({
+				type: 'HKP',
+				...r
+			}))
+		].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+	}
+
+	onMount(loadSubmissions);
 </script>
+
+{#if errorMsg}
+	<p class="error">{errorMsg}</p>
+{/if}
 
 <h1 class="title">Submission History</h1>
 
 <div class="project-box">
 	<div class="date-container">
-		<p><b>Submit Date</b></p>
+		<h2 class="heading">Submit Date</h2>
 		<p class="submit-dates">
-			From&nbsp;<input type="date" class="submit-date" />&nbsp;To&nbsp;<input
+			<label for="">From</label>
+			<input
 				type="date"
 				class="submit-date"
+				on:focus={(e) => e.target.showPicker?.()}
+				bind:value={fromDate}
+			/>
+			<label for="">To</label>
+			<input
+				type="date"
+				class="submit-date"
+				on:focus={(e) => e.target.showPicker?.()}
+				bind:value={toDate}
 			/>
 		</p>
 	</div>
-	{#each submissionTypes as s, i}
-		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<!-- svelte-ignore a11y_no_static_element_interactions -->
+
+	<div class="accordion">
+		<!-- TBM -->
+		<div class="acc-section">
+			<button type="button" class="acc-header" on:click={() => toggle('TBM')}>
+				<span>Tool Box Meeting (e-TBM) ({tbmRows.length})</span>
+				<span class="acc-icon">
+					{#if open.TBM}
+						<ChevronDown />
+					{:else}
+						<ChevronLeft />
+					{/if}
+				</span>
+			</button>
+
+			{#if open.TBM}
+				<div class="acc-body">
+					{#if tbmRows.length === 0}
+						<p class="empty">No submissions</p>
+					{:else}
+						<div class="card-grid">
+							{#each tbmRows as r (r.id)}
+								<div class="history-card">
+									<p class="card-title">{r.project_no}</p>
+									<p><b>Project Name:</b> {r.project_name}</p>
+									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
+									<p><b>Meeting Time:</b> {r.meeting_time ?? '-'}</p>
+
+									<p class="doc-line"><b>Filled TBM Image:</b> (image)</p>
+									<p class="doc-line"><b>Filled PTW Image:</b> (image)</p>
+									<p class="doc-line"><b>TBM Visit Image:</b> (image)</p>
+									<p class="doc-line"><b>Another Document:</b> (document)</p>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/if}
+		</div>
+
+		<!-- PPE -->
+		<div class="acc-section">
+			<button type="button" class="acc-header" on:click={() => toggle('PPE')}>
+				<span>PPE Visual Inspections (e-PPE) ({ppeRows.length})</span>
+				<span class="acc-icon">
+					{#if open.PPE}
+						<ChevronDown />
+					{:else}
+						<ChevronLeft />
+					{/if}
+				</span>
+			</button>
+
+			{#if open.PPE}
+				<div class="acc-body">
+					{#if ppeRows.length === 0}
+						<p class="empty">No submissions</p>
+					{:else}
+						<div class="card-grid">
+							{#each ppeRows as r (r.id)}
+								<div class="history-card">
+									<p class="card-title">{r.project_no}</p>
+									<p><b>Project Name:</b> {r.project_name}</p>
+									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
+
+									<p class="doc-line"><b>Filled PPE Image:</b> (image)</p>
+									<p class="doc-line"><b>Another Document:</b> (document)</p>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/if}
+		</div>
+
+		<!-- HKP -->
+		<div class="acc-section">
+			<button type="button" class="acc-header" on:click={() => toggle('HKP')}>
+				<span>Housekeeping Report (e-HKP) ({hkpRows.length})</span>
+				<span class="acc-icon">
+					{#if open.HKP}
+						<ChevronDown />
+					{:else}
+						<ChevronLeft />
+					{/if}
+				</span>
+			</button>
+
+			{#if open.HKP}
+				<div class="acc-body">
+					{#if hkpRows.length === 0}
+						<p class="empty">No submissions</p>
+					{:else}
+						<div class="card-grid">
+							{#each hkpRows as r (r.id)}
+								<div class="history-card">
+									<p class="card-title">{r.project_no}</p>
+									<p><b>Project Name:</b> {r.project_name}</p>
+									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
+
+									<p class="doc-line"><b>Filled HKP Image:</b> (image)</p>
+									<p class="doc-line"><b>Another Document:</b> (document)</p>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{/if}
+		</div>
+	</div>
+
+	<!-- {#each submissionTypes as s, i}
 		<div class="submission-type" onclick={() => toggleDiv(i)}>
 			<button class="button-toggle">{s.title} ({s.count})</button>
 			{#if openIndex === i}
@@ -77,7 +249,7 @@
 				{/if}
 			</div>
 		{/if}
-	{/each}
+	{/each} -->
 </div>
 
 <style>
@@ -96,20 +268,13 @@
 		cursor: pointer;
 	}
 
-	.button-toggle {
-		width: 98%;
-		background-color: #ffffff;
-		color: #091747;
-		text-align: left;
-		font-weight: bold;
-	}
-
 	.date-container {
 		margin-bottom: 20px;
 	}
 
-	h2 {
-		font-size: 16px;
+	.heading {
+		margin: 10px 0;
+		font-size: 20px;
 		font-weight: bold;
 	}
 
@@ -119,35 +284,6 @@
 		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
-	}
-
-	.project-data {
-		margin-top: 5px;
-	}
-
-	.submission-data {
-		display: block;
-		width: 33%;
-		padding: 10px;
-		margin: 5px;
-		border: 1px solid #09174762;
-		border-radius: 2px;
-	}
-
-	.submission-row {
-		display: flex;
-	}
-
-	.submission-type {
-		display: flex;
-		align-items: center;
-		cursor: pointer;
-		width: 100%;
-		margin-bottom: 5px;
-		background-color: #ffffff;
-		color: #091747;
-		border: 1px solid #091747;
-		border-radius: 2px;
 	}
 
 	.submit-date {
@@ -164,5 +300,79 @@
 		font-weight: bold;
 		margin-bottom: 20px;
 		padding: 0 10px;
+	}
+
+	.accordion {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	.acc-section {
+		width: 100%;
+	}
+
+	.acc-header {
+		width: 100%;
+		border: 1px solid #091747;
+		border-radius: 2px;
+		padding: 10px 14px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: #fff;
+		color: #091747;
+		font-weight: 700;
+		cursor: pointer;
+	}
+
+	.acc-icon :global(svg) {
+		width: 18px;
+		height: 18px;
+	}
+
+	.acc-body {
+		padding: 14px 0 0;
+	}
+
+	.empty {
+		color: #555;
+		padding: 10px 2px;
+	}
+
+	.card-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 16px;
+	}
+
+	.history-card {
+		border: 1px solid #8a8fa3;
+		background: #fff;
+		padding: 14px;
+		min-height: 240px;
+	}
+
+	.card-title {
+		font-size: 18px;
+		font-weight: 800;
+		color: #091747;
+		margin: 0 0 10px;
+	}
+
+	.doc-line {
+		margin: 8px 0;
+	}
+
+	@media (max-width: 1100px) {
+		.card-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (max-width: 700px) {
+		.card-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 </style>

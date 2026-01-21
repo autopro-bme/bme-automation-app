@@ -15,10 +15,6 @@
 	<label for="eHKP-data" class="label">eHKP Data</label>
 	<input type="radio" name="eForm-type" id="eZCA-data" />
 	<label for="eZCA-data" class="label">eZCA Data</label>
-	<input type="radio" name="eForm-type" id="eTBM-record" />
-	<label for="eTBM-record" class="label">eTBM Record</label>
-	<input type="radio" name="eForm-type" id="eForm-record" />
-	<label for="eForm-record" class="label">eForm Record</label>
 </div>
 
 <div class="filter-bar">
@@ -34,7 +30,7 @@
 </div>
 
 <div class="filter-bar">
-	<h2 class="project-id">Project ID</h2>
+	<h2 class="project-id">Project Name/Project ID</h2>
 	<input type="text" placeholder="MP1234" class="filter-input" />
 	<button class="button-primary" id="button-search"><Search /></button>
 </div>
@@ -119,10 +115,12 @@
 		margin: 10px 0;
 	}
 
+	.date-select,
 	.date-from,
 	.date-to {
 		height: 30px;
 		margin: 0 15px;
+		font-size: 14px;
 	}
 
 	.filter-bar {

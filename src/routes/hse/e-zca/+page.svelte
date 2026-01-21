@@ -7,85 +7,263 @@
 	import Search from '@lucide/svelte/icons/search';
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Info from '@lucide/svelte/icons/info';
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
 
+	let showProjectModal = false;
+	let projects = [];
+	let filteredProjects = [];
+	let projectSearch = '';
+	let projectLoading = false;
+	let projectError = '';
+
+	let project_name = '';
+	let project_no = '';
+	let region = '';
+	let location = '';
+	let audit_date = '';
 	let showInfo = false;
+	let remarks = '';
+	let acknowledged = false;
+	let created_at = '';
+	let created_by = '';
 
 	const MAX_SCORE_PER_ITEM = 5;
 
 	let subsections = [
 		{
+			key: 'docs',
 			title: 'Documentation & Approvals',
 			items: [
 				{
 					label: 'Approved Safety Plan & Risk Assessment (HIRARC) on site',
 					score: null,
+					remarks: '',
 					showInfo: false
 				},
-				{ label: 'Approved SOPs', score: null, showInfo: false },
-				{ label: 'Daily Toolbox Briefing Records', score: null, showInfo: false },
+				{ label: 'Approved SOPs', score: null, remarks: '', showInfo: false },
+				{ label: 'Daily Toolbox Briefing Records', score: null, remarks: '', showInfo: false },
 				{
 					label: 'Work Permit Process (Hot works, Confined Space, etc.)',
 					score: null,
+					remarks: '',
 					showInfo: false
 				}
 			]
 		},
 		{
+			key: 'manpower',
 			title: 'Safety Manpower Coverage',
 			items: [
-				{ label: 'Presence of Competent Safety Supervisor on Site', score: null, showInfo: false },
+				{
+					label: 'Presence of Competent Safety Supervisor on Site',
+					score: null,
+					remarks: '',
+					showInfo: false
+				},
 				{
 					label: 'Project Supervisor/Engineer Responsible in Absence of Safety Supervisor',
 					score: null,
+					remarks: '',
 					showInfo: false
 				},
-				{ label: 'Safety Officer Attendance at High-Risk Activities', score: null, showInfo: false }
+				{
+					label: 'Safety Officer Attendance at High-Risk Activities',
+					score: null,
+					remarks: '',
+					showInfo: false
+				}
 			]
 		},
 		{
+			key: 'workforce',
 			title: 'Workforce Safety Compliance',
 			items: [
 				{
 					label: 'Full PPE Compliance (Helmet, Harness, Vest, Boots, Gloves)',
 					score: null,
+					remarks: '',
 					showInfo: false
 				},
-				{ label: 'Workers briefed & aware of Safety SOPs', score: null, showInfo: false },
+				{
+					label: 'Workers briefed & aware of Safety SOPs',
+					score: null,
+					remarks: '',
+					showInfo: false
+				},
 				{
 					label: 'Workers possess valid CIDB/OSH/Safety Cards/NIOSH passport',
 					score: null,
+					remarks: '',
 					showInfo: false
 				},
-				{ label: 'No unauthorized personal on site', score: null, showInfo: false }
+				{ label: 'No unauthorized personal on site', score: null, remarks: '', showInfo: false }
 			]
 		},
 		{
+			key: 'vetting',
 			title: 'Subcontractor Vetting',
 			items: [
-				{ label: "Subcontractors's HSE Qualifications Verified", score: null, showInfo: false },
-				{ label: 'HSE Terms Embedded in Subcontract Agreement', score: null, showInfo: false }
+				{
+					label: "Subcontractors's HSE Qualifications Verified",
+					score: null,
+					remarks: '',
+					showInfo: false
+				},
+				{
+					label: 'HSE Terms Embedded in Subcontract Agreement',
+					score: null,
+					remarks: '',
+					showInfo: false
+				}
 			]
 		},
 		{
+			docs: 'c&c',
 			title: 'Site Condition & Controls',
 			items: [
-				{ label: 'Housekeeping & Waste Disposal', score: null, showInfo: false },
-				{ label: 'Edge & Fall Protection', score: null, showInfo: false },
-				{ label: 'Equipment & Machinery Safety', score: null, showInfo: false },
-				{ label: 'Signage & Emergency Access', score: null, showInfo: false },
-				{ label: 'Presence of lifting crew (competent person)', score: null, showInfo: false },
-				{ label: 'Scaffold & ladder', score: null, showInfo: false }
+				{ label: 'Housekeeping & Waste Disposal', score: null, remarks: '', showInfo: false },
+				{ label: 'Edge & Fall Protection', score: null, remarks: '', showInfo: false },
+				{ label: 'Equipment & Machinery Safety', score: null, remarks: '', showInfo: false },
+				{ label: 'Signage & Emergency Access', score: null, remarks: '', showInfo: false },
+				{
+					label: 'Presence of lifting crew (competent person)',
+					score: null,
+					remarks: '',
+					showInfo: false
+				},
+				{ label: 'Scaffold & ladder', score: null, remarks: '', showInfo: false }
 			]
 		},
 		{
+			key: 'l&r',
 			title: 'Safety Leadership & Reporting',
 			items: [
-				{ label: 'Stop Work Authority (SWA) Exercised Where Needed', score: null, showInfo: false },
-				{ label: 'Near Miss & Incident Reporting', score: null, showInfo: false },
-				{ label: 'Disciplinary Action Taken on Violations', score: null, showInfo: false }
+				{
+					label: 'Stop Work Authority (SWA) Exercised Where Needed',
+					score: null,
+					remarks: '',
+					showInfo: false
+				},
+				{ label: 'Near Miss & Incident Reporting', score: null, remarks: '', showInfo: false },
+				{
+					label: 'Disciplinary Action Taken on Violations',
+					score: null,
+					remarks: '',
+					showInfo: false
+				}
 			]
 		}
 	];
+
+	let errorMsg = '';
+	let saving = false;
+
+	async function handleSubmit(e) {
+		e.preventDefault();
+		errorMsg = '';
+		saving = true;
+
+		try {
+			const { data: auth } = await supabase.auth.getUser();
+			const user = auth?.user;
+			if (!user) {
+				goto('/auth/signin');
+				return;
+			}
+
+			const { data: profile, error: profileError } = await supabase
+				.from('profiles')
+				.select('first_name, last_name')
+				.eq('id', user.id)
+				.single();
+
+			if (profileError) throw profileError;
+
+			const submitterName =
+				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
+
+			const payload = {
+				project_name,
+				project_no,
+				region,
+				location,
+				audit_date,
+				subsections,
+				remarks,
+				acknowledged,
+				created_by: user.id,
+				created_by_name: submitterName,
+				overall_total: calculateOverallTotal,
+				overall_max: calculateOverallMax,
+				overall_percent: calculateOverallPercentage
+			};
+
+			const { error } = await supabase.from('zca_submissions').insert(payload);
+			if (error) throw error;
+
+			// optional: redirect
+			// goto('/hse/history');
+		} catch (error) {
+			errorMsg = error?.message ?? String(error);
+		} finally {
+			saving = false;
+		}
+	}
+
+	async function loadProjects() {
+		projectLoading = true;
+		projectError = '';
+
+		const { data, error } = await supabase
+			.from('projects')
+			.select('project_name, project_id, region, location')
+			.order('project_name', { ascending: true });
+
+		if (error) {
+			projectError = error.message;
+			projects = [];
+			filteredProjects = [];
+		} else {
+			projects = data ?? [];
+			filterProjects();
+		}
+
+		projectLoading = false;
+	}
+
+	function filterProjects() {
+		const query = projectSearch.trim().toLowerCase();
+		if (!query) {
+			filteredProjects = projects;
+			return;
+		}
+
+		filteredProjects = projects.filter((project) => {
+			const name = project.project_name ?? '';
+			const id = project.project_id ?? '';
+			return `${name} ${id}`.toLowerCase().includes(query);
+		});
+	}
+
+	async function openProjectModal() {
+		showProjectModal = true;
+		if (projects.length === 0 && !projectLoading) {
+			await loadProjects();
+		}
+	}
+
+	function closeProjectModal() {
+		showProjectModal = false;
+	}
+
+	function selectProject(project) {
+		project_name = project.project_name ?? '';
+		project_no = project.project_id ?? '';
+		region = project.region ?? '';
+		location = project.location ?? '';
+		closeProjectModal();
+	}
 
 	/**
 	 * @param {{ items: { score: number | null }[] }} subsection
@@ -146,29 +324,75 @@
 <h1 class="title">Zero Compromise Audit Report (e-ZCA) Submission</h1>
 
 <div class="project-box">
-	<form action="" class="forms">
+	<form class="forms" on:submit={handleSubmit}>
 		<h2 class="heading">General Information</h2>
-		<button type="submit" class="button-primary"><Search />Search Project</button>
+		<button type="button" class="button-primary" on:click={openProjectModal}
+			><Search />Search Project</button
+		>
 		<div class="forms-p">
 			<label for="project-name" class="forms-label">Project Name:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={project_name} disabled />
 		</div>
 		<div class="forms-p">
 			<label for="project-no" class="forms-label">Project No.:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={project_no} disabled />
 		</div>
 		<div class="forms-p">
 			<label for="project-region" class="forms-label">Region:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={region} disabled />
 		</div>
 		<div class="forms-p">
 			<label for="project-location" class="forms-label">Location:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={location} disabled />
 		</div>
 		<div class="forms-p">
 			<label for="project-date" class="forms-label">Audit Date:</label>
-			<input type="date" class="forms-input" />
+			<input type="date" class="forms-input" bind:value={audit_date} />
 		</div>
+		{#if showProjectModal}
+			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
+				<div class="modal">
+					<h3>Select a Project</h3>
+					<div class="project-search">
+						<input
+							type="text"
+							placeholder="Project Name/Project ID"
+							class="project-search-input"
+							bind:value={projectSearch}
+							on:input={filterProjects}
+						/>
+						<button type="button" class="project-search-button" on:click={filterProjects}>
+							<Search />
+						</button>
+					</div>
+					<div class="project-list">
+						<div class="project-list-header">
+							<span>Project Name</span>
+							<span>Project ID</span>
+						</div>
+						{#if projectLoading}
+							<p class="project-status">Loading projects...</p>
+						{:else if projectError}
+							<p class="project-status error">{projectError}</p>
+						{:else if filteredProjects.length === 0}
+							<p class="project-status">No projects found.</p>
+						{:else}
+							{#each filteredProjects as project}
+								<button type="button" class="project-row" on:click={() => selectProject(project)}>
+									<span>{project.project_name ?? '-'}</span>
+									<span class="project-row-id">{project.project_id ?? '-'}</span>
+								</button>
+							{/each}
+						{/if}
+					</div>
+					<div class="modal-actions">
+						<button type="button" class="button-secondary" on:click={closeProjectModal}>
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 		<br />
 		{#each subsections as subsection, sIndex}
 			<h2 class="heading">{subsection.title}</h2>
@@ -186,33 +410,30 @@
 					<div class="audit-select info-wrapper">
 						<button
 							type="button"
-							class="info-button"
-							on:click={() => (item.showInfo = !item.showInfo)}><Info /></button
+							class="info-button"><Info /></button
 						>
-						{#if item.showInfo}
-							<div class="info-popup">
-								<p class="info-details">
-									<span class="one">1</span> Document exists but is lacking critical sections or less
-									relevant to current site work.
-								</p>
-								<p class="info-details">
-									<span class="two">2</span> Incomplete or draft version is available; approval status
-									unclear or still pending.
-								</p>
-								<p class="info-details">
-									<span class="three">3</span> Document is available but either: Outdated, Unsigned, or
-									Partially approved.
-								</p>
-								<p class="info-details">
-									<span class="four">4</span> Latest and signed document is available, but accessibility
-									is limited (e.g. only in digital format or stored but not communicated to workers).
-								</p>
-								<p class="info-details">
-									<span class="five">5</span> Latest version, signed and dated, clearly approved, physically
-									available at the site office, and known to site personnel.
-								</p>
-							</div>
-						{/if}
+						<div class="info-popup">
+							<p class="info-details">
+								<span class="one">1</span> Document exists but is lacking critical sections or less
+								relevant to current site work.
+							</p>
+							<p class="info-details">
+								<span class="two">2</span> Incomplete or draft version is available; approval status
+								unclear or still pending.
+							</p>
+							<p class="info-details">
+								<span class="three">3</span> Document is available but either: Outdated, Unsigned, or
+								Partially approved.
+							</p>
+							<p class="info-details">
+								<span class="four">4</span> Latest and signed document is available, but accessibility
+								is limited (e.g. only in digital format or stored but not communicated to workers).
+							</p>
+							<p class="info-details">
+								<span class="five">5</span> Latest version, signed and dated, clearly approved, physically
+								available at the site office, and known to site personnel.
+							</p>
+						</div>
 					</div>
 					<p class="audit-select">
 						<select bind:value={subsections[sIndex].items[iIndex].score} class="audit-count">
@@ -224,7 +445,12 @@
 							<option value={5}>5</option>
 						</select>
 					</p>
-					<input type="text" class="audit-remarks" placeholder="Remarks" />
+					<input
+						type="text"
+						class="audit-remarks"
+						placeholder="Remarks"
+						bind:value={subsections[sIndex].items[iIndex].remarks}
+					/>
 				{/each}
 			</div>
 			<div class="subsection-type">
@@ -364,6 +590,20 @@
 		background-color: #091747b9;
 	}
 
+	.button-secondary {
+		background-color: #ffffff;
+		color: #091747;
+		border: 1px solid #091747;
+		padding: 8px 18px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-weight: bold;
+	}
+
+	.button-secondary:hover {
+		background-color: #dedede;
+	}
+
 	.categories {
 		margin: 10px 0;
 		display: grid;
@@ -445,6 +685,10 @@
 		font-size: 13px;
 		width: 900px;
 		z-index: 100;
+		opacity: 0;
+		visibility: hidden;
+		pointer-events: none;
+		transition: opacity 0.15s ease-in-out;
 	}
 
 	.info-wrapper {
@@ -452,8 +696,123 @@
 		display: inline-flex;
 	}
 
+	.info-wrapper:hover .info-popup {
+		opacity: 1;
+		visibility: visible;
+		pointer-events: auto;
+	}
+
 	.note {
 		margin-bottom: 10px;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		z-index: 50;
+	}
+
+	.modal {
+		background: #ffffff;
+		border-radius: 10px;
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+		padding: 20px;
+		width: min(600px, 95vw);
+	}
+
+	.modal h3 {
+		margin: 0 0 16px 0;
+		font-size: 20px;
+	}
+
+	.project-search {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+
+	.project-search-input {
+		flex: 1;
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid #cfd6e4;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+
+	.project-search-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 36px;
+		padding: 0;
+		background-color: #091747;
+		border-radius: 6px;
+	}
+
+	.project-search-button:hover {
+		background-color: #091747b9;
+	}
+
+	.project-list {
+		border: 1px solid #cfd6e4;
+		border-radius: 8px;
+		overflow: hidden;
+		max-height: 320px;
+		overflow-y: auto;
+	}
+
+	.project-list-header,
+	.project-row {
+		display: grid;
+		grid-template-columns: 1.5fr 1fr;
+		gap: 10px;
+		padding: 10px 12px;
+	}
+
+	.project-list-header {
+		background-color: #f2f4f9;
+		font-weight: bold;
+		border-bottom: 1px solid #cfd6e4;
+		text-align: center;
+	}
+
+	.project-row {
+		width: 100%;
+		text-align: left;
+		background: #ffffff;
+		border: none;
+		border-bottom: 1px solid #e3e8f0;
+		cursor: pointer;
+	}
+
+	.project-row:last-child {
+		border-bottom: none;
+	}
+
+	.project-row:hover {
+		background-color: #dedede;
+	}
+
+	.project-row-id {
+		text-align: center;
+	}
+
+	.project-status {
+		padding: 12px;
+		margin: 0;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: 16px;
 	}
 
 	.project-box {
@@ -469,7 +828,12 @@
 		height: 200px;
 	}
 
-	span {
+	/* span scores */
+	.one,
+	.two,
+	.three,
+	.four,
+	.five {
 		display: inline-block;
 		text-align: center;
 		align-items: center;
@@ -477,7 +841,6 @@
 		width: 50px;
 	}
 
-	/* span scores */
 	.one {
 		background-color: #d60000d2;
 	}

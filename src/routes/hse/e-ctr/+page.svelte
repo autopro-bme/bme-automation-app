@@ -8,7 +8,7 @@
 <div class="project-box">
 	<form action="" class="forms">
 		<h2 class="heading">General Information</h2>
-		<button type="submit" class="button-primary"><Search />Search Project</button>
+		<button type="button" class="button-primary"><Search />Search Project</button>
 		<div class="forms-p">
 			<label for="project-name" class="forms-label">Project Name:</label>
 			<input type="text" class="forms-input" />

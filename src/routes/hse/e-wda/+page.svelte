@@ -1,193 +1,48 @@
 <script>
-	export let data;
+	/** @type {Array<{ items: Array<any>}>} */
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+
 	let filterDate = '';
+	let date = '';
+	let name = '';
+	let etbm = false;
+	let eppe = false;
+	let ehkp = false;
+	let status = '';
+	let created_at = '';
 	let currentPage = 1;
 	const itemsPerPage = 10;
-	const { title, records } = data;
-
-	// const records = [
-	// 	{
-	// 		date: 'Dec 22, 2025',
-	// 		name: 'Leong Yi Jien',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 22, 2025',
-	// 		name: 'Pravin A/L Vijayakumar',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 22, 2025',
-	// 		name: 'Abhar bin Razmi',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'Yes',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 22, 2025',
-	// 		name: 'Eu Yu Han',
-	// 		etbm: 'No',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 22, 2025',
-	// 		name: 'Adil bin Sharif',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 19, 2025',
-	// 		name: 'Syukri bin Malek',
-	// 		etbm: 'No',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 19, 2025',
-	// 		name: 'Yogesh A/L Rajagopal',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 19, 2025',
-	// 		name: 'Ng Wei Bin',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'Yes',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 19, 2025',
-	// 		name: 'Leon How Wen',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 19, 2025',
-	// 		name: 'Mohd Nizar bin Yusni',
-	// 		etbm: 'No',
-	// 		eppe: 'No',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 18, 2025',
-	// 		name: 'Alice Tan',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 18, 2025',
-	// 		name: 'Bob Lee',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'Yes',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 18, 2025',
-	// 		name: 'Carol Ong',
-	// 		etbm: 'No',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 17, 2025',
-	// 		name: 'Daniel Lim',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'No',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 17, 2025',
-	// 		name: 'Ethan Goh',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 16, 2025',
-	// 		name: 'Farah Musa',
-	// 		etbm: 'No',
-	// 		eppe: 'No',
-	// 		ehkp: 'Yes',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 15, 2025',
-	// 		name: 'Gavin Koh',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 14, 2025',
-	// 		name: 'Hannah Low',
-	// 		etbm: 'No',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 13, 2025',
-	// 		name: 'Ian Chew',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'No',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 12, 2025',
-	// 		name: 'Jin Park',
-	// 		etbm: 'No',
-	// 		eppe: 'No',
-	// 		ehkp: 'No',
-	// 		status: 'Absent'
-	// 	},
-	// 	{
-	// 		date: 'Dec 11, 2025',
-	// 		name: 'Kumar Singh',
-	// 		etbm: 'Yes',
-	// 		eppe: 'Yes',
-	// 		ehkp: 'Yes',
-	// 		status: 'Present'
-	// 	},
-	// 	{
-	// 		date: 'Dec 10, 2025',
-	// 		name: 'Lina Noor',
-	// 		etbm: 'Yes',
-	// 		eppe: 'No',
-	// 		ehkp: 'Yes',
-	// 		status: 'Absent'
-	// 	}
-	// ];
 
 	$: totalPages = Math.max(1, Math.ceil(records.length / itemsPerPage));
 	$: pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 	$: start = (currentPage - 1) * itemsPerPage;
 	$: paginated = records.slice(start, start + itemsPerPage);
+
+	onMount(async () => {
+		const {
+			data: { user }
+		} = await supabase.getUser();
+
+		if (!user) {
+			goto('/auth/signin');
+			return;
+		}
+
+		const { data, error } = await supabase
+			.from('attendance_records')
+			.select('id, date, name, etbm, eppe, ehkp, status, created_at')
+			.order('created_at', { ascending: false });
+
+		if (error) {
+			errorMsg = error.message;
+			users = [];
+			return;
+		}
+
+		users = data ?? [];
+	});
 
 	// @ts-ignore
 	function gotoPage(n) {
@@ -206,6 +61,10 @@
 </script>
 
 <h1 class="title">Working Day Attendance (e-WDA) Record</h1>
+
+{#if errorMsg}
+	<p class="error">{errorMsg}</p>
+{/if}
 
 <div class="project-box">
 	<div class="date-records">

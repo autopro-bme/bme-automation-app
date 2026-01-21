@@ -86,7 +86,7 @@
 		const { data, error } = await supabase
 			.from('projects')
 			.select(
-				'id, project_name, project_id, status, region, location, start_date, end_date, pic_name, pic_position, pic_start_date, pic_end_date, created_at'
+				'id, project_name, project_id, status, region, location, start_date, end_date, pic_name, pic_position, pic_start_date, pic_end_date, created_at, created_by'
 			)
 			.order('created_at', { ascending: false });
 
@@ -264,7 +264,7 @@
 				<p><b>Status:</b> {p.status ?? '-'}</p>
 				<p><b>Region:</b> {p.region ?? '-'}</p>
 				<p><b>Location:</b> {p.location ?? '-'}</p>
-				<p><b>Site Safety Supervisor:</b> Arunggani A/P Sunder</p>
+				<p><b>Created By:</b> {p.created_by ?? '-'}</p>
 				<p><b>Start Date:</b> {p.start_date ?? '-'}</p>
 				<p><b>End Date:</b> {p.end_date ?? '-'}</p>
 				<br />
