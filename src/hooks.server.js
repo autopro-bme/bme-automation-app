@@ -1,20 +1,32 @@
 import { createClient } from '@supabase/supabase-js';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
 export async function handle({ event, resolve }) {
-	if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+	if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY) {
 		throw new Error('Supabase environment variables are missing');
 	}
 
-	const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		auth: { persistSession: false }
 	});
 
 	event.locals.supabase = supabase;
 
 	event.locals.getUser = async () => {
-		const access_token = event.cookies.get('sb-access-token');
-		const refresh_token = event.cookies.get('sb-refresh-token');
+		const allCookies = event.cookies.getAll();
+		const authCookie = allCookies.find((c) => c.name.endsWith('-auth-token'));
+
+		if (!authCookie?.value) return null;
+
+		let sessionObj;
+		try {
+			sessionObj = JSON.parse(authCookie.value);
+		} catch {
+			return null;
+		}
+
+		const access_token = sessionObj?.access_token;
+		const refresh_token = sessionObj?.refresh_token;
 
 		if (!access_token || !refresh_token) return null;
 
@@ -24,7 +36,7 @@ export async function handle({ event, resolve }) {
 		});
 
 		if (error) return null;
-		return data.user;
+		return data.user ?? null;
 	};
 
 	return resolve(event);
