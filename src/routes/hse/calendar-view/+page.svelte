@@ -2,6 +2,8 @@
 	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
 	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
+	import X from '@lucide/svelte/icons/x';
+	import { supabase } from '$lib/supabase';
 
 	const startYear = 2026;
 	const endYear = 2028;
@@ -21,7 +23,15 @@
 		'December'
 	];
 
-	// build months list from Jan 2026 to Dec 2028
+	let showSubmissionsModal = $state(false);
+	let selectedDay = $state(null);
+	let selectedDateKey = $state('');
+	let submissionStatus = $state({ tbm: false, ppe: false, hkp: false });
+	let submissionsLoading = $state(false);
+	let submissionsError = $state('');
+	let dayStatusByDate = $state({});
+	let monthStatusError = $state('');
+
 	// @ts-ignore
 	const months = [];
 	for (let y = startYear; y <= endYear; y++) {
@@ -30,8 +40,7 @@
 		}
 	}
 
-	// start at January 2026
-	let index = 0;
+	let index = $state(0);
 
 	function prev() {
 		if (index > 0) index -= 1;
@@ -41,6 +50,38 @@
 		if (index < months.length - 1) index += 1;
 	}
 
+	function isToday(day, year, month) {
+		if (!day) return false;
+		const today = new Date();
+		return today.getFullYear() === year && today.getMonth() === month && today.getDate() === day;
+	}
+
+	function getDateKey(year, month, day) {
+		const mm = String(month + 1).padStart(2, '0');
+		const dd = String(day).padStart(2, '0');
+		return `${year}-${mm}-${dd}`;
+	}
+
+	function formatSelectedDate(day, year, month) {
+		if (!day) return '';
+		const date = new Date(year, month, day);
+		const weekday = date.toLocaleDateString('en-GB', { weekday: 'long' });
+		const dateStr = date.toLocaleDateString('en-GB');
+		return `${weekday}, ${dateStr}`;
+	}
+
+	function localDayRangeISO(year, month, day) {
+		const start = new Date(year, month, day, 0, 0, 0, 0);
+		const end = new Date(year, month, day, 23, 59, 59, 999);
+		return { startISO: start.toISOString(), endISO: end.toISOString() };
+	}
+
+	function monthRangeISO(year, month) {
+		const start = new Date(year, month, 1, 0, 0, 0, 0);
+		const end = new Date(year, month + 1, 0, 23, 59, 59, 999);
+		return { startISO: start.toISOString(), endISO: end.toISOString() };
+	}
+
 	// @ts-ignore
 	function getWeeks(year, month) {
 		const first = new Date(year, month, 1);
@@ -48,11 +89,9 @@
 		const weeks = [];
 		let week = new Array(7).fill(null);
 
-		// convert to Monday-first: monday = 0 .. sunday = 6
 		let dayOfWeek = (first.getDay() + 6) % 7;
 		let dayCounter = 1;
 
-		// fill initial nulls until first day
 		for (let i = dayOfWeek; i < 7 && dayCounter <= daysInMonth; i++) {
 			week[i] = dayCounter++;
 		}
@@ -66,13 +105,159 @@
 			weeks.push(week.slice());
 		}
 
-		// ensure 6 rows for visual consistency
 		while (weeks.length < 6) {
 			weeks.push(new Array(7).fill(null));
 		}
 
 		return weeks;
 	}
+
+	const openSubmissionsModal = (day) => {
+		if (!day) return;
+		const year = months[index].year;
+		const month = months[index].month;
+		selectedDay = day;
+		selectedDateKey = getDateKey(year, month, day);
+		loadSubmissionStatus(day, year, month);
+		showSubmissionsModal = true;
+	};
+
+	const handleCellKeydown = (event, day) => {
+		if (!day) return;
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			openSubmissionsModal(day);
+		}
+	};
+
+	const closeSubmissionsModal = () => {
+		showSubmissionsModal = false;
+	};
+
+	const loadSubmissionStatus = async (day, year, month) => {
+		submissionsLoading = true;
+		submissionsError = '';
+		submissionStatus = { tbm: false, ppe: false, hkp: false };
+
+		try {
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+
+			if (!user) {
+				submissionsError = 'Please sign in to view submissions.';
+				return;
+			}
+
+			const { startISO, endISO } = localDayRangeISO(year, month, day);
+
+			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
+				supabase
+					.from('tbm_submissions')
+					.select('id')
+					.eq('created_by', user.id)
+					.gte('created_at', startISO)
+					.lte('created_at', endISO)
+					.limit(1),
+				supabase
+					.from('ppe_submissions')
+					.select('id')
+					.eq('created_by', user.id)
+					.gte('created_at', startISO)
+					.lte('created_at', endISO)
+					.limit(1),
+				supabase
+					.from('hkp_submissions')
+					.select('id')
+					.eq('created_by', user.id)
+					.gte('created_at', startISO)
+					.lte('created_at', endISO)
+					.limit(1)
+			]);
+
+			if (tbmRes.error) throw tbmRes.error;
+			if (ppeRes.error) throw ppeRes.error;
+			if (hkpRes.error) throw hkpRes.error;
+
+			const status = {
+				tbm: (tbmRes.data ?? []).length > 0,
+				ppe: (ppeRes.data ?? []).length > 0,
+				hkp: (hkpRes.data ?? []).length > 0
+			};
+			submissionStatus = status;
+			dayStatusByDate = { ...dayStatusByDate, [getDateKey(year, month, day)]: status };
+		} catch (error) {
+			submissionsError = error?.message ?? String(error);
+		} finally {
+			submissionsLoading = false;
+		}
+	};
+
+	const loadMonthStatuses = async (year, month) => {
+		monthStatusError = '';
+		dayStatusByDate = {};
+
+		try {
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+
+			if (!user) {
+				monthStatusError = 'Please sign in to view submissions.';
+				return;
+			}
+
+			const { startISO, endISO } = monthRangeISO(year, month);
+
+			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
+				supabase
+					.from('tbm_submissions')
+					.select('created_at')
+					.eq('created_by', user.id)
+					.gte('created_at', startISO)
+					.lte('created_at', endISO),
+				supabase
+					.from('ppe_submissions')
+					.select('created_at')
+					.eq('created_by', user.id)
+					.gte('created_at', startISO)
+					.lte('created_at', endISO),
+				supabase
+					.from('hkp_submissions')
+					.select('created_at')
+					.eq('created_by', user.id)
+					.gte('created_at', startISO)
+					.lte('created_at', endISO)
+			]);
+
+			if (tbmRes.error) throw tbmRes.error;
+			if (ppeRes.error) throw ppeRes.error;
+			if (hkpRes.error) throw hkpRes.error;
+
+			const statusMap = {};
+
+			const mark = (row, key) => {
+				const date = new Date(row.created_at);
+				const dateKey = getDateKey(date.getFullYear(), date.getMonth(), date.getDate());
+				statusMap[dateKey] = statusMap[dateKey] || { tbm: false, ppe: false, hkp: false };
+				statusMap[dateKey][key] = true;
+			};
+
+			(tbmRes.data ?? []).forEach((row) => mark(row, 'tbm'));
+			(ppeRes.data ?? []).forEach((row) => mark(row, 'ppe'));
+			(hkpRes.data ?? []).forEach((row) => mark(row, 'hkp'));
+
+			dayStatusByDate = statusMap;
+		} catch (error) {
+			monthStatusError = error?.message ?? String(error);
+		}
+	};
+
+	$effect(() => {
+		const year = months[index].year;
+		const month = months[index].month;
+		loadMonthStatuses(year, month);
+	});
 </script>
 
 <h1 class="title">Calendar View</h1>
@@ -105,9 +290,38 @@
 		{#each getWeeks(months[index].year, months[index].month) as week}
 			<div class="week">
 				{#each week as day}
-					<div class="cell">
+					{@const dateKey = day ? getDateKey(months[index].year, months[index].month, day) : ''}
+					<div
+						class="cell"
+						class:today={isToday(day, months[index].year, months[index].month)}
+						class:clickable={day}
+						role="button"
+						tabindex={day ? 0 : -1}
+						onclick={() => openSubmissionsModal(day)}
+						onkeydown={(event) => handleCellKeydown(event, day)}
+					>
 						{#if day}
-							<div class="no-working">No Working</div>
+							{#if dateKey && dayStatusByDate[dateKey]}
+								<div
+									class="cell-status"
+									class:status-ok={dayStatusByDate[dateKey].tbm &&
+										dayStatusByDate[dateKey].ppe &&
+										dayStatusByDate[dateKey].hkp}
+									class:status-bad={!(
+										dayStatusByDate[dateKey].tbm &&
+										dayStatusByDate[dateKey].ppe &&
+										dayStatusByDate[dateKey].hkp
+									)}
+								>
+									{dayStatusByDate[dateKey].tbm &&
+									dayStatusByDate[dateKey].ppe &&
+									dayStatusByDate[dateKey].hkp
+										? 'Working'
+										: 'No Working'}
+								</div>
+							{:else}
+								<div class="no-working cell-status">No Working</div>
+							{/if}
 							<div class="day-num">{String(day).padStart(2, '0')}</div>
 						{/if}
 					</div>
@@ -118,6 +332,43 @@
 	<div class="download">
 		<button class="button-download"><CloudDownload /><span>Excel</span></button>
 	</div>
+
+	{#if showSubmissionsModal}
+		<div class="modal-backdrop" role="presentation">
+			<div class="modal" role="dialog" aria-modal="true" aria-label="Submissions Summary">
+				<div class="modal-actions">
+					<h3>{formatSelectedDate(selectedDay, months[index].year, months[index].month)}</h3>
+					<button class="button-close" onclick={closeSubmissionsModal}><X size={16} /></button>
+				</div>
+				<div class="modal-body">
+					{#if submissionsError}
+						<p class="status-error">{submissionsError}</p>
+					{:else if submissionsLoading}
+						<p>Loading...</p>
+					{:else}
+						<div class="submissions-info">
+							<p>Tool Box Meeting (e-TBM):</p>
+							<p class:status-ok={submissionStatus.tbm} class:status-bad={!submissionStatus.tbm}>
+								{submissionStatus.tbm ? 'Submitted' : 'Not submitted'}
+							</p>
+						</div>
+						<div class="submissions-info">
+							<p>PPE Visual Inspections (e-PPE):</p>
+							<p class:status-ok={submissionStatus.ppe} class:status-bad={!submissionStatus.ppe}>
+								{submissionStatus.ppe ? 'Submitted' : 'Not submitted'}
+							</p>
+						</div>
+						<div class="submissions-info">
+							<p>Housekeeping (e-HKP):</p>
+							<p class:status-ok={submissionStatus.hkp} class:status-bad={!submissionStatus.hkp}>
+								{submissionStatus.hkp ? 'Submitted' : 'Not submitted'}
+							</p>
+						</div>
+					{/if}
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -134,6 +385,20 @@
 		padding: 6px 14px;
 		border-radius: 4px;
 		cursor: pointer;
+	}
+
+	.button-close {
+		width: 24px;
+		height: 24px;
+		padding: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		line-height: 1;
+	}
+
+	.button-close:hover {
+		background-color: #064c6da4;
 	}
 
 	.button-download {
@@ -184,6 +449,14 @@
 		background: #fff;
 	}
 
+	.cell.clickable {
+		cursor: pointer;
+	}
+
+	.cell.today {
+		box-shadow: inset 0 0 0 2px #091747;
+	}
+
 	.cell:last-child {
 		border-right: none;
 	}
@@ -196,9 +469,50 @@
 		color: #064c6dd7;
 	}
 
+	.cell-status {
+		text-align: center;
+	}
+
 	.download {
 		display: flex;
 		align-items: flex-end;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.modal-backdrop {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.45);
+		display: flex;
+		align-items: flex-start;
+		justify-content: center;
+		padding: 32px 20px;
+		z-index: 10;
+	}
+
+	.modal-body {
+		margin-top: 15px;
+	}
+
+	.modal {
+		width: min(400px, 100%);
+		height: 200px;
+		overflow: auto;
+		background: #ffffff;
+		border-radius: 8px;
+		margin: auto;
+		padding: 20px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal h3 {
+		margin: 0 0 16px;
+		font-size: 16px;
+		font-weight: bold;
 	}
 
 	.nav {
@@ -228,6 +542,28 @@
 		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
+	}
+
+	.submissions-info {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	.status-ok {
+		color: #0f8f2f;
+		font-weight: bold;
+		margin-top: 6px;
+	}
+
+	.status-bad {
+		color: #c62828;
+		font-weight: bold;
+		margin-top: 6px;
+	}
+
+	.status-error {
+		color: #c62828;
+		font-weight: bold;
 	}
 
 	.title {
