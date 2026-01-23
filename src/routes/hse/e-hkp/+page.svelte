@@ -86,7 +86,7 @@
 			const submitterName =
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
-			const hkp_photo_path = await uploadToBucket(hkp_photo_path, 'hkp_site');
+			const hkp_photo_path = await uploadToBucket(hkp_photo_file, 'hkp_site');
 
 			const payload = {
 				project_name,
@@ -105,6 +105,20 @@
 
 			const { error } = await supabase.from('hkp_submissions').insert(payload);
 			if (error) throw error;
+
+			// Update daily attendance record (used by e-WDA)
+			if (activity_date) {
+				const { error: attErr } = await supabase.from('attendance_records').upsert(
+					{
+						date: activity_date,
+						created_by: user.id,
+						created_by_name: submitterName,
+						ehkp: true
+					},
+					{ onConflict: 'date,created_by' }
+				);
+				if (attErr) throw attErr;
+			}
 
 			// optional: redirect
 			// goto('/hse/history');

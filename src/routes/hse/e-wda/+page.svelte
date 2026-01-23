@@ -134,6 +134,42 @@
 	function next() {
 		gotoPage(currentPage + 1);
 	}
+
+	// --- alternate working solution ---
+	// import { goto } from '$app/navigation';
+
+	// export let data;
+
+	// let selectedDate = data.date;
+	// const pageSize = 10;
+	// let currentPage = 1;
+
+	// const rows = $derived.by(() => data.rows ?? []);
+	// const totalPages = $derived.by(() => Math.max(1, Math.ceil(rows.length / pageSize)));
+	// const paginated = $derived.by(() => {
+	// 	const start = (currentPage - 1) * pageSize;
+	// 	return rows.slice(start, start + pageSize);
+	// });
+
+	// function onDateChange(e) {
+	// 	selectedDate = e.target.value;
+	// 	currentPage = 1;
+	// 	goto(`/hse/e-wda?date=${encodeURIComponent(selectedDate)}`);
+	// }
+
+	// function gotoPage(n) {
+	// 	if (n < 1) n = 1;
+	// 	if (n > totalPages) n = totalPages;
+	// 	currentPage = n;
+	// }
+
+	// function prev() {
+	// 	gotoPage(currentPage - 1);
+	// }
+
+	// function next() {
+	// 	gotoPage(currentPage + 1);
+	// }
 </script>
 
 <h1 class="title">Working Day Attendance (e-WDA) Record</h1>
@@ -198,6 +234,57 @@
 		</div>
 	</div>
 </div>
+
+<!-- alternate working solution -->
+<!-- <h1 class="title">Working Day Attendance (e-WDA) Record</h1>
+
+<div class="filter-box">
+	<h3 class="subtitle">Date</h3>
+	<input type="date" value={selectedDate} onchange={onDateChange} class="date-input" />
+	{#if data.error}
+		<p class="error">{data.error}</p>
+	{/if}
+</div>
+
+<div class="date-records">
+	<div class="records">Showing <b>{paginated.length}</b> of <b>{rows.length}</b> records</div>
+</div>
+
+<div class="table-wrapper">
+	<table class="attendance-table">
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Site Safety Supervisor Name</th>
+				<th>eTBM</th>
+				<th>ePPE</th>
+				<th>eHKP</th>
+				<th>Status</th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each paginated as r (r.name)}
+				<tr>
+					<td class="center">{r.date}</td>
+					<td>{r.name}</td>
+					<td class="center">{r.etbm}</td>
+					<td class="center">{r.eppe}</td>
+					<td class="center">{r.ehkp}</td>
+					<td class="center">{r.status}</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+</div>
+
+<div class="pagination">
+	<button onclick={prev} disabled={currentPage === 1} aria-label="Previous">«</button>
+	{#each Array(totalPages) as _, i}
+		{@const p = i + 1}
+		<button class:active={p === currentPage} onclick={() => gotoPage(p)}>{p}</button>
+	{/each}
+	<button onclick={next} disabled={currentPage === totalPages} aria-label="Next">»</button>
+</div> -->
 
 <style>
 	* {

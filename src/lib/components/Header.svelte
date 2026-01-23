@@ -2,18 +2,26 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 
-	$: isAuthPage =
-		$page.url.pathname === '/signin' ||
-		$page.url.pathname === '/signup' ||
-		$page.url.pathname === '/confirmation';
+	const isAuthPage = $derived(() => {
+		const path = $page.url.pathname;
+		return (
+			path === '/signin' ||
+			path === '/signup' ||
+			path === '/confirmation' ||
+			path === '/auth/signin' ||
+			path === '/auth/signup'
+		);
+	});
 
-	let userName = 'User';
+	let userName = $state('User');
 
 	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
@@ -46,7 +54,8 @@
 	});
 
 	async function signOut() {
-		await supabase.auth.signOut();
+		const supabase = getSupabase();
+		if (supabase) await supabase.auth.signOut();
 		goto('/auth/signin');
 	}
 </script>
@@ -61,7 +70,7 @@
 			<div class="calendar-history">
 				<a href="/hse/submission-history" class="navigation"><History />History</a>
 				<a href="/hse/calendar-view" class="navigation"><Calendar />Calendar</a>
-				<button type="submit" on:click={signOut} class="button-primary">Sign Out</button>
+				<button type="submit" onclick={signOut} class="button-primary">Sign Out</button>
 			</div>
 		</div>
 	{/if}

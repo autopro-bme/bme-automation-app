@@ -176,6 +176,21 @@
 			const { error } = await supabase.from('tbm_submissions').insert(payload);
 			if (error) throw error;
 
+			// Update daily attendance record (used by e-WDA)
+			// Requires a UNIQUE constraint on (date, created_by)
+			if (meeting_date) {
+				const { error: attErr } = await supabase.from('attendance_records').upsert(
+					{
+						date: meeting_date,
+						created_by: user.id,
+						created_by_name: submitterName,
+						etbm: true
+					},
+					{ onConflict: 'date,created_by' }
+				);
+				if (attErr) throw attErr;
+			}
+
 			// optional: redirect
 			// goto('/hse/history');
 		} catch (error) {

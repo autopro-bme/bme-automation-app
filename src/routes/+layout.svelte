@@ -7,14 +7,11 @@
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { spinner } from '$lib/stores/spinner.js';
 	import { onMount, onDestroy } from 'svelte';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
-	supabase.auth.onAuthStateChange((event, session) => {
-		if (!session && $page.url.pathname.startsWith('/main')) {
-			goto('/auth/signin');
-		}
-	});
+	/** @type {null | (() => void)} */
+	let authUnsub = null;
 
 	/** @type {{ children: any }} */
 	const { children } = $props();
@@ -31,6 +28,21 @@
 	let afterUnsub = null;
 
 	onMount(() => {
+		// Auth listener must be registered in the browser only (SSR-safe).
+		const supabase = getSupabase();
+		if (supabase) {
+			const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+				if (
+					!session &&
+					$page.url.pathname !== '/auth/signin' &&
+					$page.url.pathname !== '/auth/signup'
+				) {
+					goto('/auth/signin');
+				}
+			});
+			authUnsub = () => data.subscription.unsubscribe();
+		}
+
 		beforeUnsub = beforeNavigate(() => {
 			if (hideTimer) {
 				clearTimeout(hideTimer);
@@ -52,6 +64,7 @@
 	});
 
 	onDestroy(() => {
+		if (authUnsub) authUnsub();
 		// @ts-ignore
 		if (beforeUnsub) beforeUnsub();
 		// @ts-ignore
