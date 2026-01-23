@@ -3,25 +3,35 @@
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
+	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
 
-	let selectedDate = $state(new Date().toISOString().slice(0, 10)); // YYYY-MM-DD
+	let selectedDate = $state(new Date().toISOString().slice(0, 10));
 	let rows = $state([]);
 	let errorMsg = $state('');
 	let loading = $state(false);
+	let currentPage = $state(1);
+	const pageSize = 10;
+
+	let records = $derived(rows);
+	let totalPages = $derived(Math.max(1, Math.ceil(records.length / pageSize)));
+	let pages = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
+	let paginated = $derived(records.slice((currentPage - 1) * pageSize, currentPage * pageSize));
 
 	function localDayRangeISO(dateStr) {
-		// interpret dateStr as local date; convert to UTC range for created_at query
 		const start = new Date(dateStr + 'T00:00:00');
 		const end = new Date(dateStr + 'T23:59:59.999');
 		return { startISO: start.toISOString(), endISO: end.toISOString() };
 	}
 
 	function displayName(profile) {
-		return (
-			profile.nickname ||
-			`${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() ||
-			profile.email
-		);
+		return `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() || profile.email;
+	}
+
+	function formatDateDMY(dateStr) {
+		const [y, m, d] = (dateStr ?? '').split('-');
+		if (!y || !m || !d) return dateStr;
+		return `${d}/${m}/${y}`;
 	}
 
 	async function loadAttendance() {
@@ -39,7 +49,6 @@
 				return;
 			}
 
-			// 1) load all users (attendance view is for everyone)
 			const { data: users, error: usersErr } = await supabase
 				.from('profiles')
 				.select('id, nickname, first_name, last_name, email')
@@ -47,7 +56,6 @@
 
 			if (usersErr) throw usersErr;
 
-			// 2) load submissions for that day (all users)
 			const { startISO, endISO } = localDayRangeISO(selectedDate);
 
 			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
@@ -74,12 +82,10 @@
 			if (ppeRes.error) throw ppeRes.error;
 			if (hkpRes.error) throw hkpRes.error;
 
-			// 3) build sets of submitters
 			const tbmSet = new Set((tbmRes.data ?? []).map((r) => r.created_by));
 			const ppeSet = new Set((ppeRes.data ?? []).map((r) => r.created_by));
 			const hkpSet = new Set((hkpRes.data ?? []).map((r) => r.created_by));
 
-			// 4) build table rows for ALL users
 			rows = (users ?? []).map((u) => {
 				const etbm = tbmSet.has(u.id);
 				const eppe = ppeSet.has(u.id);
@@ -102,6 +108,17 @@
 	}
 
 	onMount(loadAttendance);
+
+	$effect(() => {
+		rows;
+		selectedDate;
+		currentPage = 1;
+	});
+
+	$effect(() => {
+		if (currentPage > totalPages) currentPage = totalPages;
+		if (currentPage < 1) currentPage = 1;
+	});
 
 	// @ts-ignore
 	function gotoPage(n) {
@@ -155,9 +172,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each rows as r (r.name)}
+				{#each paginated as r (r.name)}
 					<tr>
-						<td style="text-align:center">{r.date}</td>
+						<td style="text-align:center">{formatDateDMY(r.date)}</td>
 						<td>{r.name}</td>
 						<td style="text-align:center">{r.etbm}</td>
 						<td style="text-align:center">{r.eppe}</td>
@@ -169,11 +186,15 @@
 		</table>
 
 		<div class="pagination">
-			<button onclick={prev} disabled={currentPage === 1} aria-label="Previous">«</button>
+			<button onclick={prev} disabled={currentPage === 1} aria-label="Previous"
+				><ChevronsLeft /></button
+			>
 			{#each pages as p}
 				<button class:active={p === currentPage} onclick={() => gotoPage(p)}>{p}</button>
 			{/each}
-			<button onclick={next} disabled={currentPage === totalPages} aria-label="Next">»</button>
+			<button onclick={next} disabled={currentPage === totalPages} aria-label="Next"
+				><ChevronsRight /></button
+			>
 		</div>
 	</div>
 </div>
@@ -187,7 +208,7 @@
 	.date-records {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: end;
 		gap: 12px;
 	}
 
@@ -230,13 +251,12 @@
 	}
 
 	.pagination button:hover:not([disabled]) {
-		background: #eef2f8;
+		background: #091747b9;
+		color: white;
 	}
 
 	.project-box {
 		margin: 10px;
-		border: 1px solid #091747;
-		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
 	}

@@ -207,7 +207,6 @@
 			{#if error}
 				<p class="error">{error}</p>
 			{/if}
-			<p><a href="/auth/forgotpw" class="forgotpw">Forgot password?</a></p>
 			<div class="button-link">
 				<button type="submit" class="button-primary">Sign Up</button>
 				<p class="no-account">
@@ -270,16 +269,6 @@
 
 	.departments {
 		margin-bottom: 5px;
-	}
-
-	.forgotpw {
-		font-size: 14px;
-	}
-
-	.forgotpw:hover,
-	.signup:hover {
-		cursor: pointer;
-		text-decoration: underline;
 	}
 
 	.form {

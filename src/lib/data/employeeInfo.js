@@ -1,4 +1,4 @@
-const employeeInfo = {
+export const employeeInfo = {
 	Account: [
 		{
 			name: 'Catherine Ang Seaw Yee',

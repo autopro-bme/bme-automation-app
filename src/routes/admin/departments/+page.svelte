@@ -1,0 +1,326 @@
+<script>
+	import Search from '@lucide/svelte/icons/search';
+	import { employeeInfo } from '$lib/data/employeeInfo';
+	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
+	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
+
+	let selectedDepartment = $state('All');
+	let searchText = $state('');
+	let currentPage = $state(1);
+	const pageSize = 20;
+
+	const departments = ['All', ...Object.keys(employeeInfo)];
+
+	const normalizeSearch = (value) => value.trim().toLowerCase();
+
+	const sortByDepartment = (list) =>
+		list
+			.slice()
+			.sort(
+				(a, b) =>
+					resolveDepartment(a).localeCompare(resolveDepartment(b)) || a.name.localeCompare(b.name)
+			);
+
+	const resolveDepartment = (employee) => {
+		if (employee.department) return employee.department;
+		const match = Object.entries(employeeInfo).find(([, employees]) =>
+			employees.some((item) => item.email === employee.email)
+		);
+		return match ? match[0] : '';
+	};
+
+	let filteredEmployees = $derived.by(() => {
+		const keyword = normalizeSearch(searchText);
+		const baseList =
+			selectedDepartment === 'All'
+				? Object.entries(employeeInfo).flatMap(([department, employees]) =>
+						employees.map((employee) => ({ ...employee, department }))
+					)
+				: (employeeInfo[selectedDepartment] ?? []).map((employee) => ({
+						...employee,
+						department: selectedDepartment
+					}));
+
+		const filtered = keyword
+			? baseList.filter((emp) => {
+					const haystack = `${emp.name} ${emp.title} ${emp.email}`.toLowerCase();
+					return haystack.includes(keyword);
+				})
+			: baseList;
+
+		return sortByDepartment(filtered);
+	});
+
+	let totalPages = $derived(Math.max(1, Math.ceil(filteredEmployees.length / pageSize)));
+	let pages = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
+	let visiblePages = $derived.by(() => {
+		const maxVisible = 3;
+		let start = Math.max(1, currentPage - 1);
+		let end = Math.min(totalPages, start + maxVisible - 1);
+
+		start = Math.max(1, end - maxVisible + 1);
+		return pages.slice(start - 1, end);
+	});
+	let paginatedEmployees = $derived(
+		filteredEmployees.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
+	let records = $derived(filteredEmployees);
+
+	$effect(() => {
+		selectedDepartment;
+		searchText;
+		currentPage = 1;
+	});
+
+	$effect(() => {
+		if (currentPage > totalPages) currentPage = totalPages;
+		if (currentPage < 1) currentPage = 1;
+	});
+
+	// @ts-ignore
+	function gotoPage(n) {
+		if (n < 1) n = 1;
+		if (n > totalPages) n = totalPages;
+		currentPage = n;
+	}
+
+	function prev() {
+		gotoPage(currentPage - 1);
+	}
+
+	function next() {
+		gotoPage(currentPage + 1);
+	}
+</script>
+
+<svelte:head>
+	<title>Departments and Employees Management | BME Automation App</title>
+</svelte:head>
+
+<h1 class="title">Departments and Employees Management</h1>
+
+<div class="project-box">
+	<div class="filter-bar">
+		<h2 class="department">Department</h2>
+		<select class="department-select" bind:value={selectedDepartment}>
+			{#each departments as department}
+				<option value={department}>{department === 'All' ? 'All Departments' : department}</option>
+			{/each}
+		</select>
+	</div>
+
+	<div class="employee-records">
+		<div class="filter-bar">
+			<h2 class="user">Employees</h2>
+			<input
+				type="text"
+				placeholder="Search here..."
+				class="filter-input"
+				bind:value={searchText}
+			/>
+			<button class="button-primary" id="button-search"><Search /></button>
+		</div>
+		<div class="records">
+			Showing <b>{paginatedEmployees.length}</b> of <b>{records.length}</b> records
+		</div>
+	</div>
+
+	<div class="table-container">
+		<table class="dept-table">
+			<thead>
+				<tr>
+					<th class="col-department">Department</th>
+					<th class="col-name">Name</th>
+					<th class="col-position">Title</th>
+					<th class="col-email">E-mail Address</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#if filteredEmployees.length === 0}
+					<tr>
+						<td colspan="4">No employees found.</td>
+					</tr>
+				{:else}
+					{#each paginatedEmployees as employee, index (index)}
+						<tr>
+							<td class="col-department">{resolveDepartment(employee)}</td>
+							<td class="col-name">{employee.name}</td>
+							<td class="col-position">{employee.title}</td>
+							<td class="col-email">{employee.email}</td>
+						</tr>
+					{/each}
+				{/if}
+			</tbody>
+		</table>
+
+		<div class="pagination">
+			<button onclick={prev} disabled={currentPage === 1} aria-label="Previous"
+				><ChevronsLeft /></button
+			>
+			{#each visiblePages as p}
+				<button class:active={p === currentPage} onclick={() => gotoPage(p)}>{p}</button>
+			{/each}
+			<button onclick={next} disabled={currentPage === totalPages} aria-label="Next"
+				><ChevronsRight /></button
+			>
+		</div>
+	</div>
+</div>
+
+<style>
+	* {
+		font-family: Arial, Helvetica, sans-serif;
+		color: #091747;
+	}
+
+	button {
+		background-color: #064c6dd7;
+		color: #ffffff;
+		border: none;
+		font-size: small;
+		padding: 6px 14px;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	button:hover {
+		background-color: #064c6da4;
+	}
+
+	.button-primary {
+		background-color: #091747;
+		font-weight: bold;
+		padding: 10px 20px;
+	}
+
+	.button-primary:hover {
+		background-color: #091747b9;
+	}
+
+	#button-search {
+		vertical-align: middle;
+	}
+
+	.col-email {
+		width: 25%;
+	}
+
+	.col-department {
+		width: 20%;
+		text-align: center;
+	}
+
+	.col-name {
+		width: 30%;
+	}
+
+	.col-position {
+		width: 25%;
+		text-align: center;
+	}
+
+	.department-select {
+		font-size: 14px;
+		cursor: pointer;
+	}
+
+	.employee-records {
+		display: flex;
+		justify-content: space-between;
+		align-items: end;
+		gap: 12px;
+	}
+
+	.filter-bar {
+		padding: 10px 0;
+		width: 50%;
+	}
+
+	.filter-input {
+		width: 30%;
+		font-size: 14px;
+	}
+
+	h2 {
+		font-weight: bold;
+	}
+
+	.project-box {
+		margin: 10px;
+		padding: 10px;
+		font-size: 14px;
+	}
+
+	.table-container {
+		margin-top: 12px;
+	}
+
+	.records {
+		font-size: 12px;
+	}
+
+	.dept-table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	.dept-table th,
+	.dept-table td {
+		border: 1px solid #091747b9;
+		padding: 12px 16px;
+		font-size: 14px;
+	}
+
+	.dept-table thead th {
+		background-color: #091747;
+		color: #ffffff;
+		font-weight: 700;
+		text-align: center;
+	}
+
+	.dept-table tbody tr:nth-child(even) {
+		background-color: #ececec;
+	}
+
+	.title {
+		font-size: 35px;
+		font-weight: bold;
+		margin-bottom: 20px;
+		padding: 0 10px;
+	}
+
+	.pagination {
+		display: flex;
+		gap: 6px;
+		justify-content: flex-end;
+		margin-top: 12px;
+	}
+
+	.pagination button {
+		min-width: 34px;
+		height: 34px;
+		border-radius: 4px;
+		border: 1px solid #283a5a33;
+		background: white;
+		color: #091747;
+		cursor: pointer;
+		padding: 0 8px;
+	}
+
+	.pagination button[disabled] {
+		opacity: 0.5;
+		cursor: default;
+	}
+
+	.pagination button.active,
+	.pagination button.active:focus {
+		background: #091747;
+		color: white;
+		border-color: #091747;
+	}
+
+	.pagination button:hover:not([disabled]) {
+		background: #091747b9;
+		color: white;
+	}
+</style>

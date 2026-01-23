@@ -51,7 +51,7 @@
 				supabase
 					.from('tbm_submissions')
 					.select(
-						'id, created_at, created_by_name, project_no, project_name, meeting_time, tbm_form_path, tbm_photo_path, ptw_form_path, other_doc_path'
+						'id, created_at, created_by_name, project_no, project_name, meeting_date, tbm_form_path, tbm_photo_path, ptw_form_path, other_doc_path'
 					)
 					.eq('created_by', user.id)
 					.order('created_at', { ascending: false }),
@@ -59,7 +59,7 @@
 				supabase
 					.from('ppe_submissions')
 					.select(
-						'id, created_at, created_by_name, project_no, project_name, ppe_photo_path, other_doc_path'
+						'id, created_at, created_by_name, project_no, project_name, activity_date, ppe_photo_path'
 					)
 					.eq('created_by', user.id)
 					.order('created_at', { ascending: false }),
@@ -67,11 +67,16 @@
 				supabase
 					.from('hkp_submissions')
 					.select(
-						'id, created_at, created_by_name, project_no, project_name, hkp_photo_path, other_doc_path'
+						'id, created_at, created_by_name, project_no, project_name, activity_date, hkp_photo_path'
 					)
 					.eq('created_by', user.id)
 					.order('created_at', { ascending: false })
 			]);
+
+			console.log('Current user id:', user.id);
+			console.log('TBM rows returned:', tbmRes.data?.length, tbmRes.error);
+			console.log('PPE rows returned:', ppeRes.data?.length, ppeRes.error);
+			console.log('HKP rows returned:', hkpRes.data?.length, hkpRes.error);
 
 			if (tbmRes.error) throw tbmRes.error;
 			if (ppeRes.error) throw ppeRes.error;
@@ -83,8 +88,14 @@
 				...(hkpRes.data ?? []).map((r) => ({ type: 'HKP', ...r }))
 			].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-			// date filter (From/To)
-			submissions = merged.filter((r) => withinRange(r.created_at));
+			if (fromDate || toDate) {
+				submissions = merged.filter((r) => withinRange(r.created_at));
+			} else {
+				submissions = merged;
+			}
+
+			console.log('fromDate/toDate:', fromDate, toDate);
+			console.log('merged:', merged.length, 'final submissions:', submissions.length);
 		} catch (e) {
 			errorMsg = e?.message ?? String(e);
 		} finally {
@@ -92,9 +103,9 @@
 		}
 	}
 
-	const tbmRows = $derived(() => submissions.filter((s) => s.type === 'TBM'));
-	const ppeRows = $derived(() => submissions.filter((s) => s.type === 'PPE'));
-	const hkpRows = $derived(() => submissions.filter((s) => s.type === 'HKP'));
+	const tbmRows = $derived.by(() => submissions.filter((s) => s.type === 'TBM'));
+	const ppeRows = $derived.by(() => submissions.filter((s) => s.type === 'PPE'));
+	const hkpRows = $derived.by(() => submissions.filter((s) => s.type === 'HKP'));
 
 	onMount(loadHistory);
 </script>
@@ -118,7 +129,7 @@
 				type="date"
 				class="submit-date"
 				bind:value={toDate}
-				onchange={toDate}
+				onchange={loadHistory}
 				onfocus={(e) => e.target.showPicker?.()}
 			/>
 		</p>
@@ -153,23 +164,47 @@
 									<p class="card-title">{r.project_no ?? '-'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
-									<p><b>Meeting Time:</b> {r.meeting_time ?? '-'}</p>
+									<p><b>Meeting Date:</b> {r.meeting_date ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photo of Filled TBM Form:</b>
-										{r.tbm_form_path ? image : '-'}
+										{#if r.tbm_form_path}
+											<a href={r.tbm_form_path} target="_blank" rel="noreferrer" class="photo-link"
+												>View Photo</a
+											>
+										{:else}
+											-
+										{/if}
 									</p>
 									<p class="doc-line">
 										<b>Photo(s) of TBM in Session:</b>
-										{r.tbm_photo_path ? image : '-'}
+										{#if r.tbm_photo_path}
+											<a href={r.tbm_photo_path} target="_blank" rel="noreferrer" class="photo-link"
+												>View Photo</a
+											>
+										{:else}
+											-
+										{/if}
 									</p>
 									<p class="doc-line">
 										<b>Photo of Filled PTW Form</b>
-										{r.ptw_form_path ? image : '-'}
+										{#if r.ptw_form_path}
+											<a href={r.ptw_form_path} target="_blank" rel="noreferrer" class="photo-link"
+												>View Photo</a
+											>
+										{:else}
+											-
+										{/if}
 									</p>
 									<p class="doc-line">
 										<b>Another Document:</b>
-										{r.other_doc_path ? document : '-'}
+										{#if r.other_doc_path}
+											<a href={r.other_doc_path} target="_blank" rel="noreferrer" class="photo-link"
+												>View Photo</a
+											>
+										{:else}
+											-
+										{/if}
 									</p>
 								</div>
 							{/each}
@@ -203,14 +238,17 @@
 									<p class="card-title">{r.project_no ?? '-'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
+									<p><b>Activity Date:</b> {r.activity_date ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photos of Wearing PPE on Site:</b>
-										{r.ppe_photo_path ? image : '-'}
-									</p>
-									<p class="doc-line">
-										<b>Another Document:</b>
-										{r.other_doc_path ? document : '-'}
+										{#if r.ppe_photo_path}
+											<a href={r.ppe_photo_path} target="_blank" rel="noreferrer" class="photo-link"
+												>View Photo</a
+											>
+										{:else}
+											-
+										{/if}
 									</p>
 								</div>
 							{/each}
@@ -244,14 +282,17 @@
 									<p class="card-title">{r.project_no ?? '—'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '—'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
+									<p><b>Activity Date:</b> {r.activity_date ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photo of Housekeeping:</b>
-										{r.hkp_photo_path ? '(image)' : '-'}
-									</p>
-									<p class="doc-line">
-										<b>Another Document:</b>
-										{r.other_doc_path ? '(document)' : '-'}
+										{#if r.hkp_photo_path}
+											<a href={r.hkp_photo_path} target="_blank" rel="noreferrer" class="photo-link"
+												>View Photo</a
+											>
+										{:else}
+											-
+										{/if}
 									</p>
 								</div>
 							{/each}
@@ -287,6 +328,10 @@
 		margin: 10px 0;
 		font-size: 20px;
 		font-weight: bold;
+	}
+
+	.photo-link {
+		text-decoration: underline;
 	}
 
 	.project-box {
@@ -366,7 +411,7 @@
 
 	.card-title {
 		font-size: 18px;
-		font-weight: 800;
+		font-weight: bold;
 		color: #091747;
 		margin: 0 0 10px;
 	}
