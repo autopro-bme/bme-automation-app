@@ -18,9 +18,6 @@
 			return;
 		}
 
-		// IMPORTANT: Do NOT overwrite profile fields on sign-in.
-		// Previously, empty variables here were wiping your profiles table.
-		// Instead, we only *fill missing* profile fields from Auth metadata (if any).
 		const user = data?.user;
 		if (user) {
 			const meta = user.user_metadata ?? {};
@@ -31,7 +28,6 @@
 				.eq('id', user.id)
 				.single();
 
-			// If the row doesn't exist yet, try to create it (now that the user is authenticated).
 			if (profileError && !profile) {
 				await supabase.from('profiles').insert({
 					id: user.id,
@@ -45,7 +41,6 @@
 					region: meta.region ?? null
 				});
 			} else if (profile) {
-				// Row exists: only patch fields that are currently empty.
 				const patch = {};
 				const keys = [
 					'first_name',
@@ -199,5 +194,11 @@
 		font-size: 35px;
 		font-weight: bold;
 		margin-bottom: 20px;
+	}
+
+	@media (max-width: 600px) {
+		.form {
+			margin: 0 15px;
+		}
 	}
 </style>

@@ -347,4 +347,10 @@
 		font-weight: bold;
 		margin-bottom: 20px;
 	}
+
+	@media (max-width: 600px) {
+		.form {
+			margin: 0 15px;
+		}
+	}
 </style>
