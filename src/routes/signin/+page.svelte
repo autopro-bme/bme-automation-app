@@ -201,5 +201,9 @@
 			margin-left: 15px;
 			margin-right: 15px;
 		}
+
+		.input-box {
+			width: 90%;
+		}
 	}
 </style>
