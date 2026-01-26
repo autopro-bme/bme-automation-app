@@ -138,10 +138,15 @@
 
 	@media (max-width: 600px) {
 		.container {
+			margin-top: 10px;
 			display: flex;
 			align-items: flex-start;
 			justify-content: space-between;
 			gap: 10px;
+		}
+
+		.logo {
+			width: 40%;
 		}
 
 		.welcome {
@@ -149,7 +154,7 @@
 			position: static;
 			display: flex;
 			justify-content: flex-end;
-			gap: 10px;
+			gap: 5px;
 			flex-wrap: wrap;
 		}
 
