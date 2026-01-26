@@ -144,20 +144,13 @@
 			gap: 10px;
 		}
 
-		.logo img,
-		.logo {
-			max-width: 70px;
-			height: auto;
-		}
-
 		.welcome {
 			margin-left: auto;
+			position: static;
 			display: flex;
-			align-items: center;
 			justify-content: flex-end;
 			gap: 10px;
 			flex-wrap: wrap;
-			text-align: right;
 		}
 
 		.welcome a {
@@ -178,6 +171,10 @@
 			padding: 0 12px;
 			font-size: 13px;
 			border-radius: 4px;
+		}
+
+		.calendar-history {
+			gap: 15px;
 		}
 	}
 </style>
