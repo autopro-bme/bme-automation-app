@@ -547,7 +547,7 @@
 			signature
 		</p>
 		<p><b><i>Sample:</i></b></p>
-		<img src="/sample-attendees.png" alt="Sample Attendees Form" width="40%" />
+		<img src="/images/sample-attendees.png" alt="Sample Attendees Form" width="40%" />
 		<h2 class="heading">Photo of Filled TBM Form</h2>
 		<div class="upload">
 			<p class="upload-text">

@@ -62,7 +62,7 @@
 
 <div class="container">
 	<div class="logo">
-		<a href="/"><img src="/src/images/bme_logo.jpg" alt="BME Logo" class="logo" /></a>
+		<a href="/"><img src="/images/bme_logo.jpg" alt="BME Logo" class="logo" /></a>
 	</div>
 	{#if !isAuthPage}
 		<div class="welcome">
