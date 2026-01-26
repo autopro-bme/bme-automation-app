@@ -207,12 +207,10 @@
 			{#if error}
 				<p class="error">{error}</p>
 			{/if}
-			<div class="button-link">
-				<button type="submit" class="button-primary">Sign Up</button>
-				<p class="no-account">
-					Already have an account? Sign in <a href="/signin" class="signup">here</a>.
-				</p>
-			</div>
+			<button type="submit" class="button-primary">Sign Up</button>
+			<p class="have-account">
+				Already have an account? Sign in <a href="/signin" class="signup">here</a>.
+			</p>
 		</form>
 	</div>
 </div>
@@ -246,14 +244,8 @@
 		background-color: #064c6da4;
 	}
 
-	.button-link {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 10px;
-	}
-
 	.button-primary {
+		width: 100%;
 		background-color: #091747;
 		font-weight: bold;
 		padding: 10px 20px;
@@ -296,8 +288,9 @@
 		font-weight: bold;
 	}
 
-	.no-account {
+	.have-account {
 		font-size: 14px;
+		margin-top: 5px;
 	}
 
 	.password-wrapper {

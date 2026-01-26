@@ -99,12 +99,10 @@
 			{#if error}
 				<p class="error">{error}</p>
 			{/if}
-			<div class="button-link">
-				<button type="submit" class="button-primary">Sign In</button>
-				<p class="no-account">
-					Don't have an account? Sign up <a href="/signup" class="signup">here</a>.
-				</p>
-			</div>
+			<button type="submit" class="button-primary">Sign In</button>
+			<p class="no-account">
+				Don't have an account? Sign up <a href="/signup" class="signup">here</a>.
+			</p>
 		</form>
 	</div>
 </div>
@@ -137,16 +135,11 @@
 		background-color: #064c6da4;
 	}
 
-	.button-link {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-top: 10px;
-	}
-
 	.button-primary {
+		width: 100%;
 		background-color: #091747;
 		font-weight: bold;
+		margin-top: 10px;
 		padding: 10px 20px;
 	}
 
@@ -156,6 +149,7 @@
 
 	.forgotpw {
 		font-size: 14px;
+		text-align: right;
 	}
 
 	.forgotpw:hover,
@@ -184,6 +178,7 @@
 
 	.no-account {
 		font-size: 14px;
+		margin-top: 5px;
 	}
 
 	.signup {
