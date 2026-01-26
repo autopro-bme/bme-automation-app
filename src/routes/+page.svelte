@@ -141,7 +141,7 @@
 		color: #091747;
 	}
 
-	@media (max-width: 600) {
+	@media (max-width: 600px) {
 		.menu-card button {
 			height: 32px;
 			padding: 0 12px;

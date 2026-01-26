@@ -146,7 +146,11 @@
 		}
 
 		.logo {
-			width: 40%;
+			width: 45%;
+		}
+
+		p {
+			font-size: 14px;
 		}
 
 		.welcome {
