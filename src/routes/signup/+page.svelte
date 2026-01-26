@@ -269,6 +269,8 @@
 		border-radius: 4px;
 		padding: 30px;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+		width: 100%;
+		max-width: 420px;
 	}
 
 	.input-box {
@@ -357,6 +359,12 @@
 
 		.input-box {
 			width: 100%;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.form {
+			max-width: 520px;
 		}
 	}
 </style>
