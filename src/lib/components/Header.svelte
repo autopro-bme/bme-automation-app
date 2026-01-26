@@ -135,4 +135,49 @@
 		right: 10px;
 		gap: 10px;
 	}
+
+	@media (max-width: 600px) {
+		.container {
+			display: flex;
+			align-items: flex-start;
+			justify-content: space-between;
+			gap: 10px;
+		}
+
+		.logo img,
+		.logo {
+			max-width: 70px;
+			height: auto;
+		}
+
+		.welcome {
+			margin-left: auto;
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 10px;
+			flex-wrap: wrap;
+			text-align: right;
+		}
+
+		.welcome a {
+			display: inline-flex;
+			align-items: center;
+			gap: 0;
+			font-size: 0;
+			line-height: 0;
+		}
+
+		.welcome a {
+			width: 18px;
+			height: 18px;
+		}
+
+		.welcome .button-primary {
+			height: 32px;
+			padding: 0 12px;
+			font-size: 13px;
+			border-radius: 4px;
+		}
+	}
 </style>

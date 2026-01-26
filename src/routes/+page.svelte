@@ -140,4 +140,36 @@
 		font-size: 14px;
 		color: #091747;
 	}
+
+	@media (max-width: 600) {
+		.menu-card button {
+			height: 32px;
+			padding: 0 12px;
+			font-size: 13px;
+		}
+
+		.menu-card {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.menu-icon {
+			width: 38px;
+			height: 38px;
+			flex: 0 0 auto;
+		}
+
+		.menu-info {
+			flex: 1 1 auto;
+			min-width: 0;
+			padding-right: 8px;
+		}
+
+		.menu-card button {
+			flex: 0 0 auto;
+			white-space: nowrap;
+			min-width: 72px;
+		}
+	}
 </style>
