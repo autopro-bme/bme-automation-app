@@ -6,18 +6,12 @@
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 
-	const isAuthPage = $derived(() => {
-		const path = $page.url.pathname;
-		return (
-			path === '/signin' ||
-			path === '/signup' ||
-			path === '/confirmation' ||
-			path === '/auth/signin' ||
-			path === '/auth/signup'
-		);
-	});
-
+	let sessionUser = $state(null);
 	let userName = $state('User');
+
+	const isAuthPage = $derived.by(() =>
+		['/auth/signin', '/auth/signup'].includes($page.url.pathname)
+	);
 
 	onMount(async () => {
 		const supabase = getSupabase();
@@ -25,8 +19,7 @@
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
-
-		if (!user) return;
+		sessionUser = user ?? null;
 
 		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
@@ -55,7 +48,9 @@
 
 	async function signOut() {
 		const supabase = getSupabase();
-		if (supabase) await supabase.auth.signOut();
+		if (!supabase) return;
+
+		await supabase.auth.signOut();
 		goto('/auth/signin');
 	}
 </script>
@@ -64,7 +59,7 @@
 	<div class="logo">
 		<a href="/"><img src="/images/bme_logo.jpg" alt="BME Logo" class="logo" /></a>
 	</div>
-	{#if !isAuthPage}
+	{#if !isAuthPage && sessionUser}
 		<div class="welcome">
 			<p>Welcome, <b>{userName}</b>!</p>
 			<div class="calendar-history">
