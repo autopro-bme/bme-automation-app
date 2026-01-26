@@ -173,7 +173,8 @@
 	}
 
 	.input-box {
-		width: 350px;
+		width: 100%;
+		max-width: 350px;
 		margin-bottom: 10px;
 	}
 
@@ -197,13 +198,20 @@
 	}
 
 	@media (max-width: 600px) {
+		.box {
+			padding-left: 15px;
+			padding-right: 15px;
+		}
+
 		.form {
-			margin-left: 15px;
-			margin-right: 15px;
+			width: 100%;
+			max-width: 100%;
+			margin: 0;
+			padding: 20px;
 		}
 
 		.input-box {
-			width: 95%;
+			width: 100%;
 		}
 	}
 </style>
