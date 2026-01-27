@@ -1,56 +1,79 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { getSupabase } from '$lib/supabase';
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 
-	let sessionUser = $state(null);
+	const isAuthPage = $derived.by(() => {
+		const path = $page.url.pathname;
+		return (
+			path === '/auth/signin' ||
+			path === '/auth/signup' ||
+			path === '/auth/forgotpw' ||
+			path === '/confirmation'
+		);
+	});
+
+	let hasUser = $state(false);
 	let userName = $state('User');
+	let sub;
 
-	const isAuthPage = $derived.by(() =>
-		['/auth/signin', '/auth/signup'].includes($page.url.pathname)
-	);
+	async function syncUser(sessionUser) {
+		if (!sessionUser) {
+			hasUser = false;
+			userName = 'User';
+			return;
+		}
 
-	onMount(async () => {
+		hasUser = true;
+
 		const supabase = getSupabase();
 		if (!supabase) return;
-		const {
-			data: { user }
-		} = await supabase.auth.getUser();
-		sessionUser = user ?? null;
 
 		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('nickname, first_name')
-			.eq('id', user.id)
+			.eq('id', sessionUser.id)
 			.single();
 
-		const meta = user.user_metadata ?? {};
-		if (!profile && (meta.nickname || meta.first_name)) {
-			await supabase.from('profiles').upsert(
-				{
-					id: user.id,
-					email: user.email,
-					first_name: meta.first_name ?? null,
-					nickname: meta.nickname ?? null
-				},
-				{ onConflict: 'id' }
-			);
-		} else if (profile && !profile.nickname && meta.nickname) {
-			await supabase.from('profiles').update({ nickname: meta.nickname }).eq('id', user.id);
+		// If profiles read is blocked, fall back to email
+		if (profileError) {
+			userName = sessionUser.email ?? 'User';
+			return;
 		}
 
-		userName =
-			profile?.nickname || profile?.first_name || meta.nickname || meta.first_name || user.email;
+		userName = profile?.nickname || profile?.first_name || sessionUser.email;
+	}
+
+	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
+		// initial session
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		await syncUser(session?.user ?? null);
+
+		// update immediately on sign-in/sign-out
+		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
+			await syncUser(session2?.user ?? null);
+		});
+		sub = data?.subscription;
+	});
+
+	onDestroy(() => {
+		sub?.unsubscribe?.();
 	});
 
 	async function signOut() {
 		const supabase = getSupabase();
-		if (!supabase) return;
-
-		await supabase.auth.signOut();
+		if (supabase) await supabase.auth.signOut();
+		// syncUser will be called by onAuthStateChange, but set immediately too
+		hasUser = false;
+		userName = 'User';
 		goto('/auth/signin');
 	}
 </script>
@@ -59,7 +82,7 @@
 	<div class="logo">
 		<a href="/"><img src="/images/bme_logo.jpg" alt="BME Logo" class="logo" /></a>
 	</div>
-	{#if !isAuthPage && sessionUser}
+	{#if !isAuthPage && hasUser}
 		<div class="welcome">
 			<p>Welcome, <b>{userName}</b>!</p>
 			<div class="calendar-history">

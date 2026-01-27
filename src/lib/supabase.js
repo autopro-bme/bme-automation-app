@@ -2,17 +2,21 @@ import { createClient } from '@supabase/supabase-js';
 import { browser } from '$app/environment';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
-/**
- * Browser-only Supabase client.
- *
- * In SvelteKit, component scripts can run during SSR. If you access Supabase
- * at module top-level on the server, it will crash. Use `getSupabase()`
- * inside `onMount()` or inside event handlers.
- */
+let _client = null;
+
 export function getSupabase() {
 	if (!browser) return null;
-	return createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+	if (_client) return _client;
+
+	_client = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		auth: {
+			persistSession: true,
+			autoRefreshToken: true,
+			detectSessionInUrl: true
+		}
+	});
+
+	return _client;
 }
 
-// Convenience export (still browser-only). Always null on the server.
 export const supabase = getSupabase();
