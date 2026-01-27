@@ -34,6 +34,38 @@
 		return `${d}/${m}/${y}`;
 	}
 
+	async function requireSessionUser() {
+		// 1) quick check
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		if (session?.user) return session.user;
+
+		// 2) wait briefly for auth restore (SPA navigation race)
+		return await new Promise((resolve) => {
+			let done = false;
+
+			const timer = setTimeout(() => {
+				if (done) return;
+				done = true;
+				sub?.unsubscribe?.();
+				resolve(null);
+			}, 800);
+
+			const { data } = supabase.auth.onAuthStateChange((_evt, sess) => {
+				if (done) return;
+				if (sess?.user) {
+					done = true;
+					clearTimeout(timer);
+					sub?.unsubscribe?.();
+					resolve(sess.user);
+				}
+			});
+
+			const sub = data?.subscription;
+		});
+	}
+
 	async function loadAttendance() {
 		loading = true;
 		errorMsg = '';
@@ -43,10 +75,7 @@
 			const supabase = getSupabase();
 			if (!supabase) throw new Error('Supabase client not available');
 
-			const {
-				data: { session }
-			} = await supabase.auth.getSession();
-			const user = session?.user;
+			const user = await requireSessionUser();
 
 			if (!user) {
 				goto('/auth/signin');
@@ -109,6 +138,38 @@
 		} finally {
 			loading = false;
 		}
+	}
+
+	async function requireUser() {
+		// 1) quick check
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+		if (session?.user) return session.user;
+
+		// 2) wait briefly for auth restore (SPA navigation race)
+		return await new Promise((resolve) => {
+			let done = false;
+
+			const timer = setTimeout(() => {
+				if (done) return;
+				done = true;
+				sub?.unsubscribe?.();
+				resolve(null);
+			}, 800); // adjust 500–1200ms if needed
+
+			const { data } = supabase.auth.onAuthStateChange((_evt, sess) => {
+				if (done) return;
+				if (sess?.user) {
+					done = true;
+					clearTimeout(timer);
+					sub?.unsubscribe?.();
+					resolve(sess.user);
+				}
+			});
+
+			const sub = data?.subscription;
+		});
 	}
 
 	onMount(loadAttendance);
