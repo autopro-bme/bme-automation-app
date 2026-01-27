@@ -1,8 +1,8 @@
 <script>
-	/** @type {Array<{ items: Array<any>}>} */
-	import { supabase } from '$lib/supabase';
-	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { supabase } from '$lib/supabase';
+
 	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
 	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
 
@@ -10,60 +10,41 @@
 	let rows = $state([]);
 	let errorMsg = $state('');
 	let loading = $state(false);
+
 	let currentPage = $state(1);
 	const pageSize = 10;
 
-	let records = $derived(rows);
-	let totalPages = $derived(Math.max(1, Math.ceil(records.length / pageSize)));
-	let pages = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
-	let paginated = $derived(records.slice((currentPage - 1) * pageSize, currentPage * pageSize));
-
-	function localDayRangeISO(dateStr) {
-		const start = new Date(dateStr + 'T00:00:00');
-		const end = new Date(dateStr + 'T23:59:59.999');
-		return { startISO: start.toISOString(), endISO: end.toISOString() };
-	}
-
-	function displayName(profile) {
-		return `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() || profile.email;
-	}
+	const records = $derived.by(() => rows);
+	const totalPages = $derived.by(() => Math.max(1, Math.ceil(records.length / pageSize)));
+	const pages = $derived.by(() => Array.from({ length: totalPages }, (_, i) => i + 1));
+	const paginated = $derived.by(() =>
+		records.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+	);
 
 	function formatDateDMY(dateStr) {
 		const [y, m, d] = (dateStr ?? '').split('-');
-		if (!y || !m || !d) return dateStr;
-		return `${d}/${m}/${y}`;
+		return y ? `${d}/${m}/${y}` : dateStr;
 	}
 
-	async function requireSessionUser() {
-		// 1) quick check
+	function displayName(u, rec) {
+		return (
+			u.nickname ||
+			`${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() ||
+			u.email ||
+			rec?.created_by_name ||
+			'—'
+		);
+	}
+
+	async function ensureSignedIn() {
 		const {
 			data: { session }
 		} = await supabase.auth.getSession();
-		if (session?.user) return session.user;
-
-		// 2) wait briefly for auth restore (SPA navigation race)
-		return await new Promise((resolve) => {
-			let done = false;
-
-			const timer = setTimeout(() => {
-				if (done) return;
-				done = true;
-				sub?.unsubscribe?.();
-				resolve(null);
-			}, 800);
-
-			const { data } = supabase.auth.onAuthStateChange((_evt, sess) => {
-				if (done) return;
-				if (sess?.user) {
-					done = true;
-					clearTimeout(timer);
-					sub?.unsubscribe?.();
-					resolve(sess.user);
-				}
-			});
-
-			const sub = data?.subscription;
-		});
+		if (!session?.user) {
+			goto('/auth/signin');
+			return null;
+		}
+		return session.user;
 	}
 
 	async function loadAttendance() {
@@ -72,61 +53,36 @@
 		rows = [];
 
 		try {
-			const supabase = getSupabase();
-			if (!supabase) throw new Error('Supabase client not available');
+			const user = await ensureSignedIn();
+			if (!user) return;
 
-			const user = await requireSessionUser();
-
-			if (!user) {
-				goto('/auth/signin');
-				return;
-			}
-
-			const { data: users, error: usersErr } = await supabase
+			const { data: supervisors, error: supErr } = await supabase
 				.from('profiles')
-				.select('id, nickname, first_name, last_name, email')
-				.order('first_name');
+				.select('id, nickname, first_name, last_name, email, position')
+				.eq('position', 'Site Safety Supervisor')
+				.order('first_name', { ascending: true });
 
-			if (usersErr) throw usersErr;
+			if (supErr) throw supErr;
 
-			const { startISO, endISO } = localDayRangeISO(selectedDate);
+			const { data: records, error: recErr } = await supabase
+				.from('attendance_records')
+				.select('created_by, created_by_name, etbm, eppe, ehkp, date')
+				.eq('date', selectedDate);
 
-			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
-				supabase
-					.from('tbm_submissions')
-					.select('created_by')
-					.gte('created_at', startISO)
-					.lte('created_at', endISO),
+			if (recErr) throw recErr;
 
-				supabase
-					.from('ppe_submissions')
-					.select('created_by')
-					.gte('created_at', startISO)
-					.lte('created_at', endISO),
+			const recordByUser = new Map((records ?? []).map((r) => [r.created_by, r]));
 
-				supabase
-					.from('hkp_submissions')
-					.select('created_by')
-					.gte('created_at', startISO)
-					.lte('created_at', endISO)
-			]);
+			rows = (supervisors ?? []).map((u) => {
+				const r = recordByUser.get(u.id);
 
-			if (tbmRes.error) throw tbmRes.error;
-			if (ppeRes.error) throw ppeRes.error;
-			if (hkpRes.error) throw hkpRes.error;
-
-			const tbmSet = new Set((tbmRes.data ?? []).map((r) => r.created_by));
-			const ppeSet = new Set((ppeRes.data ?? []).map((r) => r.created_by));
-			const hkpSet = new Set((hkpRes.data ?? []).map((r) => r.created_by));
-
-			rows = (users ?? []).map((u) => {
-				const etbm = tbmSet.has(u.id);
-				const eppe = ppeSet.has(u.id);
-				const ehkp = hkpSet.has(u.id);
+				const etbm = !!r?.etbm;
+				const eppe = !!r?.eppe;
+				const ehkp = !!r?.ehkp;
 
 				return {
 					date: selectedDate,
-					name: displayName(u),
+					name: displayName(u, r),
 					etbm: etbm ? 'Yes' : 'No',
 					eppe: eppe ? 'Yes' : 'No',
 					ehkp: ehkp ? 'Yes' : 'No',
@@ -140,62 +96,20 @@
 		}
 	}
 
-	async function requireUser() {
-		// 1) quick check
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
-		if (session?.user) return session.user;
-
-		// 2) wait briefly for auth restore (SPA navigation race)
-		return await new Promise((resolve) => {
-			let done = false;
-
-			const timer = setTimeout(() => {
-				if (done) return;
-				done = true;
-				sub?.unsubscribe?.();
-				resolve(null);
-			}, 800); // adjust 500–1200ms if needed
-
-			const { data } = supabase.auth.onAuthStateChange((_evt, sess) => {
-				if (done) return;
-				if (sess?.user) {
-					done = true;
-					clearTimeout(timer);
-					sub?.unsubscribe?.();
-					resolve(sess.user);
-				}
-			});
-
-			const sub = data?.subscription;
-		});
-	}
-
 	onMount(loadAttendance);
 
 	$effect(() => {
-		rows;
 		selectedDate;
 		currentPage = 1;
+		if (selectedDate) loadAttendance();
 	});
 
-	$effect(() => {
-		if (currentPage > totalPages) currentPage = totalPages;
-		if (currentPage < 1) currentPage = 1;
-	});
-
-	// @ts-ignore
 	function gotoPage(n) {
-		if (n < 1) n = 1;
-		if (n > totalPages) n = totalPages;
-		currentPage = n;
+		currentPage = Math.min(Math.max(1, n), totalPages);
 	}
-
 	function prev() {
 		gotoPage(currentPage - 1);
 	}
-
 	function next() {
 		gotoPage(currentPage + 1);
 	}
