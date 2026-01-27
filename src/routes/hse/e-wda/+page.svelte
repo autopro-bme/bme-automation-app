@@ -21,19 +21,24 @@
 		records.slice((currentPage - 1) * pageSize, currentPage * pageSize)
 	);
 
+	function localDayRangeISO(dateStr) {
+		const start = new Date(dateStr + 'T00:00:00');
+		const end = new Date(dateStr + 'T23:59:59.999');
+		return { startISO: start.toISOString(), endISO: end.toISOString() };
+	}
+
+	function displayName(profile) {
+		return (
+			profile.nickname ||
+			`${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() ||
+			profile.email ||
+			'—'
+		);
+	}
+
 	function formatDateDMY(dateStr) {
 		const [y, m, d] = (dateStr ?? '').split('-');
 		return y ? `${d}/${m}/${y}` : dateStr;
-	}
-
-	function displayName(u, rec) {
-		return (
-			u.nickname ||
-			`${u.first_name ?? ''} ${u.last_name ?? ''}`.trim() ||
-			u.email ||
-			rec?.created_by_name ||
-			'—'
-		);
 	}
 
 	async function ensureSignedIn() {
@@ -56,33 +61,52 @@
 			const user = await ensureSignedIn();
 			if (!user) return;
 
-			const { data: supervisors, error: supErr } = await supabase
+			const { data: users, error: usersErr } = await supabase
 				.from('profiles')
 				.select('id, nickname, first_name, last_name, email, position')
 				.eq('position', 'Site Safety Supervisor')
 				.order('first_name', { ascending: true });
 
-			if (supErr) throw supErr;
+			if (usersErr) throw usersErr;
 
-			const { data: records, error: recErr } = await supabase
-				.from('attendance_records')
-				.select('created_by, created_by_name, etbm, eppe, ehkp, date')
-				.eq('date', selectedDate);
+			const { startISO, endISO } = localDayRangeISO(selectedDate);
 
-			if (recErr) throw recErr;
+			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
+				supabase
+					.from('tbm_submissions')
+					.select('created_by')
+					.gte('created_at', startISO)
+					.lte('created_at', endISO),
 
-			const recordByUser = new Map((records ?? []).map((r) => [r.created_by, r]));
+				supabase
+					.from('ppe_submissions')
+					.select('created_by')
+					.gte('created_at', startISO)
+					.lte('created_at', endISO),
 
-			rows = (supervisors ?? []).map((u) => {
-				const r = recordByUser.get(u.id);
+				supabase
+					.from('hkp_submissions')
+					.select('created_by')
+					.gte('created_at', startISO)
+					.lte('created_at', endISO)
+			]);
 
-				const etbm = !!r?.etbm;
-				const eppe = !!r?.eppe;
-				const ehkp = !!r?.ehkp;
+			if (tbmRes.error) throw tbmRes.error;
+			if (ppeRes.error) throw ppeRes.error;
+			if (hkpRes.error) throw hkpRes.error;
+
+			const tbmSet = new Set((tbmRes.data ?? []).map((r) => r.created_by));
+			const ppeSet = new Set((ppeRes.data ?? []).map((r) => r.created_by));
+			const hkpSet = new Set((hkpRes.data ?? []).map((r) => r.created_by));
+
+			rows = (users ?? []).map((u) => {
+				const etbm = tbmSet.has(u.id);
+				const eppe = ppeSet.has(u.id);
+				const ehkp = hkpSet.has(u.id);
 
 				return {
 					date: selectedDate,
-					name: displayName(u, r),
+					name: displayName(u),
 					etbm: etbm ? 'Yes' : 'No',
 					eppe: eppe ? 'Yes' : 'No',
 					ehkp: ehkp ? 'Yes' : 'No',
