@@ -164,9 +164,13 @@
 			console.log('Uploaded tbm_form:', tbm_form_path);
 			console.log('Uploading tbm_photo...');
 			const tbm_photo_path = await uploadToBucket(tbm_photo_file, 'tbm_session');
-			console.log('Iploaded tbm_photo', tbm_photo_path);
+			console.log('Uploaded tbm_photo', tbm_photo_path);
+			console.log('Uploading ptw_photo...');
 			const ptw_form_path = await uploadToBucket(ptw_form_file, 'ptw_form');
+			console.log('Uploaded ptw_photo', ptw_photo_path);
+			console.log('Uploading other_doc...');
 			const other_doc_path = await uploadToBucket(other_doc_file, 'other_doc');
+			console.log('Uploaded other_doc', other_doc_path);
 
 			const payload = {
 				project_name,
@@ -294,7 +298,7 @@
 		</div>
 		<div class="forms-p">
 			<label for="project-date" class="forms-label">Meeting Date:</label>
-			<input type="date" class="forms-input" bind:value={meeting_date} />
+			<input type="date" class="forms-input forms-date" bind:value={meeting_date} />
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
@@ -795,6 +799,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {
