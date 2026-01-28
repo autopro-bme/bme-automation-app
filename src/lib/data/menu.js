@@ -3,7 +3,7 @@ export const menuSections = [
 		department: 'Admin',
 		items: [
 			{
-				icon: '/icoms/database.png',
+				icon: '/icons/building.png',
 				title: 'Departments and Employees Management',
 				description: 'For admins to view employee list',
 				route: '/admin/departments'
