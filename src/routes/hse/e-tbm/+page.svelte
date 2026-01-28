@@ -211,21 +211,21 @@
 			);
 			if (insErr) throw insErr;
 
-			if (meeting_date) {
-				const { error: attErr } = await withTimeout(
-					supabase.from('attendance_records').upsert(
-						{
-							date: meeting_date,
-							created_by: user.id,
-							created_by_name: submitterName,
-							etbm: true
-						},
-						{ onConflict: 'date,created_by' }
-					),
-					15000
-				);
-				if (attErr) throw attErr;
-			}
+			// if (meeting_date) {
+			// 	const { error: attErr } = await withTimeout(
+			// 		supabase.from('attendance_records').upsert(
+			// 			{
+			// 				date: meeting_date,
+			// 				created_by: user.id,
+			// 				created_by_name: submitterName,
+			// 				etbm: true
+			// 			},
+			// 			{ onConflict: 'date,created_by' }
+			// 		),
+			// 		15000
+			// 	);
+			// 	if (attErr) throw attErr;
+			// }
 			console.log('[TBM] done');
 		} catch (error) {
 			console.error('[TBM] submit error:', error);
