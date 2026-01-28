@@ -20,9 +20,9 @@
 	let conducted_by = '';
 	let conducted_position = '';
 	let attendance = {
-		bme_attendees: '',
-		subcon_attendees: '',
-		other_attendees: ''
+		bme_attendees: 0,
+		subcon_attendees: 0,
+		other_attendees: 0
 	};
 	let ppe_photo_path = '';
 	let remarks = '';
@@ -30,31 +30,54 @@
 	let created_at = '';
 	let created_by = '';
 
+	const attendanceItem = [
+		{ key: 'bme', label: 'No. of BME Attendee(s):' },
+		{ key: 'subcon', label: 'No. of Subcon Attendee(s):' },
+		{ key: 'visitor', label: 'No. of Visitor Attendee(s):' }
+	];
+
 	let ppe_photo_file;
 
 	function onFile(e, setter) {
 		setter(e.currentTarget.files?.[0] ?? null);
 	}
 
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
+
 	let errorMsg = '';
 	let saving = false;
+
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
+		]);
+	}
 
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
 
-		const { data: auth } = await supabase.auth.getUser();
-		const user = auth?.user;
-		if (!user) throw new Error('Not signed in');
+		if (file instanceof FileList) file = file[0];
+		if (Array.isArray(file)) file = file[0];
 
-		const ext = file.name.split('.').pop();
-		const path = `${folder}/${user.id}/${crypto.randomUUID()}.${ext}`;
+		if (!(file instanceof File)) throw new Error(`Invalid file for ${folder}`);
 
-		const { error } = await supabase.storage.from('ppe-uploads').upload(path, file, {
-			upsert: false
-		});
+		const ext = file.name.split('.').pop() || 'bin';
+		const fileName = `${crypto.randomUUID()}.${ext}`;
+		const path = `${folder}/${fileName}`;
 
+		const uploadPromise = supabase.storage
+			.from('ppe_uploads')
+			.upload(path, file, { upsert: false });
+
+		const { data, error } = await withTimeout(uploadPromise, 20000);
 		if (error) throw error;
-		return path;
+
+		return data.path; // e.g. "ppe_form/xxxx.jpg"
 	}
 
 	async function handleSubmit(e) {
@@ -65,10 +88,7 @@
 		try {
 			const { data: auth } = await supabase.auth.getUser();
 			const user = auth?.user;
-			if (!user) {
-				goto('/auth/signin');
-				return;
-			}
+			if (!user) throw new Error('Not signed in.');
 
 			const { data: profile, error: profileError } = await supabase
 				.from('profiles')
@@ -103,7 +123,6 @@
 			const { error } = await supabase.from('ppe_submissions').insert(payload);
 			if (error) throw error;
 
-			// Update daily attendance record (used by e-WDA)
 			if (activity_date) {
 				const { error: attErr } = await supabase.from('attendance_records').upsert(
 					{
@@ -116,9 +135,6 @@
 				);
 				if (attErr) throw attErr;
 			}
-
-			// optional: redirect
-			// goto('/hse/history');
 		} catch (error) {
 			errorMsg = error?.message ?? String(error);
 		} finally {
@@ -269,18 +285,12 @@
 			<input type="text" class="forms-input" bind:value={conducted_position} />
 		</div>
 		<br />
-		<div class="attendance-type">
-			<label for="bme-count" class="attendance-label">No. of BME Attendee(s):</label>
-			<input type="text" class="attendance-count" bind:group={attendance} />
-		</div>
-		<div class="attendance-type">
-			<label for="subcon-count" class="attendance-label">No. of Subcon Attendee(s):</label>
-			<input type="text" class="attendance-count" bind:group={attendance} />
-		</div>
-		<div class="attendance-type">
-			<label for="visitor-count" class="attendance-label">No. of Visitor Attendee(s):</label>
-			<input type="text" class="attendance-count" bind:group={attendance} />
-		</div>
+		{#each attendanceItem as item (item.key)}
+			<div class="attendance-type">
+				<label for={item.key} class="attendance-label">{item.label}</label>
+				<input type="text" class="attendance-count" bind:group={attendance[item.key]} />
+			</div>
+		{/each}
 		<br />
 		<hr />
 		<h2 class="heading">Photos of Wearing PPE on Site</h2>
@@ -330,12 +340,17 @@
 			</div>
 		</div>
 		<p>Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
-			<input type="password" class="forms-input" />
-		</div>
+			<input type="password" class="forms-input" bind:value={confirmPassword} />
+		</div> -->
+		{#if errorMsg}
+			<p class="error">{errorMsg}</p>
+		{/if}
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit" disabled={saving}
+				><FileText />{saving ? 'Submitting' : 'Submit'}</button
+			>
 		</div>
 	</form>
 </div>

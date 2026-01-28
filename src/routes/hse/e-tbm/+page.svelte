@@ -109,22 +109,33 @@
 	let errorMsg = '';
 	let saving = false;
 
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
+		]);
+	}
+
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
 
-		const { data: auth } = await supabase.auth.getUser();
-		const user = auth?.user;
-		if (!user) throw new Error('Not signed in');
+		if (file instanceof FileList) file = file[0];
+		if (Array.isArray(file)) file = file[0];
 
-		const ext = file.name.split('.').pop();
-		const path = `${folder}/${user.id}/${crypto.randomUUID()}.${ext}`;
+		if (!(file instanceof File)) throw new Error(`Invalid file for ${folder}`);
 
-		const { error } = await supabase.storage.from('tbm-uploads').upload(path, file, {
-			upsert: false
-		});
+		const ext = file.name.split('.').pop() || 'bin';
+		const fileName = `${crypto.randomUUID()}.${ext}`;
+		const path = `${folder}/${fileName}`;
 
+		const uploadPromise = supabase.storage
+			.from('tbm_uploads')
+			.upload(path, file, { upsert: false });
+
+		const { data, error } = await withTimeout(uploadPromise, 20000);
 		if (error) throw error;
-		return path;
+
+		return data.path; // e.g. "tbm_form/xxxx.jpg"
 	}
 
 	async function handleSubmit(e) {
@@ -135,10 +146,7 @@
 		try {
 			const { data: auth } = await supabase.auth.getUser();
 			const user = auth?.user;
-			if (!user) {
-				goto('/auth/signin');
-				return;
-			}
+			if (!user) throw new Error('Not signed in.');
 
 			const { data: profile, error: profileError } = await supabase
 				.from('profiles')
@@ -151,8 +159,12 @@
 			const submitterName =
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
+			console.log('Uploading tbm_form...');
 			const tbm_form_path = await uploadToBucket(tbm_form_file, 'tbm_form');
+			console.log('Uploaded tbm_form:', tbm_form_path);
+			console.log('Uploading tbm_photo...');
 			const tbm_photo_path = await uploadToBucket(tbm_photo_file, 'tbm_session');
+			console.log('Iploaded tbm_photo', tbm_photo_path);
 			const ptw_form_path = await uploadToBucket(ptw_form_file, 'ptw_form');
 			const other_doc_path = await uploadToBucket(other_doc_file, 'other_doc');
 

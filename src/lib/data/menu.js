@@ -4,8 +4,8 @@ export const menuSections = [
 		items: [
 			{
 				icon: '/icons/building.png',
-				title: 'Departments and Employees Management',
-				description: 'For admins to view employee list',
+				title: 'Departments and Employees List',
+				description: 'For admins to view employee information',
 				route: '/admin/departments'
 			},
 			{

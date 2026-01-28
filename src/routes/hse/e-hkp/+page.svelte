@@ -19,21 +19,34 @@
 	let weather = '';
 	let hkp_photo_path = '';
 	let report_day = {
-		site_walk: '',
-		high_risk: '',
-		uauc: '',
-		stop_work: '',
-		lt_injuries: '',
-		nlt_injuries: '',
-		opd: '',
-		near_miss: '',
-		non_compliance: '',
-		sd_occurrence: ''
+		site_walk: 0,
+		high_risk: 0,
+		uauc: 0,
+		stop_work: 0,
+		lt_injuries: 0,
+		nlt_injuries: 0,
+		opd: 0,
+		near_miss: 0,
+		non_compliance: 0,
+		sd_occurrence: 0
 	};
 	let remarks = '';
 	let acknowledged = false;
 	let created_at = '';
 	let created_by = '';
+
+	const reportItem = [
+		{ key: 'site_walk', label: 'No. of Site Walk:' },
+		{ key: 'high_risk', label: 'No. of High-risk Activities Observed:' },
+		{ key: 'uauc', label: 'No. of Unsafe Act Unsafe Condition (UAUC):' },
+		{ key: 'stop_work', label: 'No. of Stop Work:' },
+		{ key: 'lt_injuries', label: 'No. of Accidents (Lost Time Injuries):' },
+		{ key: 'nlt_injuries', label: 'No. of Accidents (No Lost Time Injuries):' },
+		{ key: 'opd', label: 'No. of Established Occupational Poisoning or Disease (OPD):' },
+		{ key: 'near_miss', label: 'No. of Near Miss Incident:' },
+		{ key: 'non_compliance', label: 'No. of Non Compliance:' },
+		{ key: 'sd_occurrence', label: 'No. of Significant Safety Occurrence / Dangerous Occurrence:' }
+	];
 
 	let hkp_photo_file;
 
@@ -41,25 +54,42 @@
 		setter(e.currentTarget.files?.[0] ?? null);
 	}
 
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
+
 	let errorMsg = '';
 	let saving = false;
+
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
+		]);
+	}
 
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
 
-		const { data: auth } = await supabase.auth.getUser();
-		const user = auth?.user;
-		if (!user) throw new Error('Not signed in');
+		if (file instanceof FileList) file = file[0];
+		if (Array.isArray(file)) file = file[0];
 
-		const ext = file.name.split('.').pop();
-		const path = `${folder}/${user.id}/${crypto.randomUUID()}.${ext}`;
+		if (!(file instanceof File)) throw new Error(`Invalid file for ${folder}`);
 
-		const { error } = await supabase.storage.from('hkp-uploads').upload(path, file, {
-			upsert: false
-		});
+		const ext = file.name.split('.').pop() || 'bin';
+		const fileName = `${crypto.randomUUID()}.${ext}`;
+		const path = `${folder}/${fileName}`;
 
+		const uploadPromise = supabase.storage
+			.from('hkp_uploads')
+			.upload(path, file, { upsert: false });
+
+		const { data, error } = await withTimeout(uploadPromise, 20000);
 		if (error) throw error;
-		return path;
+
+		return data.path; // e.g. "hkp_form/xxxx.jpg"
 	}
 
 	async function handleSubmit(e) {
@@ -70,10 +100,7 @@
 		try {
 			const { data: auth } = await supabase.auth.getUser();
 			const user = auth?.user;
-			if (!user) {
-				goto('/auth/signin');
-				return;
-			}
+			if (!user) throw new Error('Not signed in.');
 
 			const { data: profile, error: profileError } = await supabase
 				.from('profiles')
@@ -106,7 +133,6 @@
 			const { error } = await supabase.from('hkp_submissions').insert(payload);
 			if (error) throw error;
 
-			// Update daily attendance record (used by e-WDA)
 			if (activity_date) {
 				const { error: attErr } = await supabase.from('attendance_records').upsert(
 					{
@@ -119,9 +145,6 @@
 				);
 				if (attErr) throw attErr;
 			}
-
-			// optional: redirect
-			// goto('/hse/history');
 		} catch (error) {
 			errorMsg = error?.message ?? String(error);
 		} finally {
@@ -278,56 +301,18 @@
 		<br />
 		<hr />
 		<h2 class="heading">Report for the Day</h2>
-		<div class="report-type">
-			<label for="sitewalk-count" class="report-label"><b>No. of Site Walk:</b></label>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="hra-count" class="report-label"><b>No. High-risk Activities Observed:</b></label>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="uauc-count" class="report-label"
-				><b>No. Unsafe Act Unsafe Condition (UAUC):</b></label
-			>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="stopwork-count" class="report-label"><b>No. Stop Work:</b></label>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<p><b>(A) Injuries</b></p>
-		<div class="report-type">
-			<label for="lti-count" class="report-label">(i) No. of Accidents (Lost Time Injuries):</label>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="nlti-count" class="report-label"
-				>(ii) No. of Accidents (No Lost Time Injuries):</label
-			>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<p><b>(B) Non-Injuries</b></p>
-		<div class="report-type">
-			<label for="opd-count" class="report-label"
-				>(i) No. of Established Occupational Poisoning or Disease (OPD):</label
-			>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="nmi-count" class="report-label">(ii) No. of Near Miss Incident:</label>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="nc-count" class="report-label">(iii) No. of Non-Compliance:</label>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
-		<div class="report-type">
-			<label for="sodo-count" class="report-label"
-				><b>(C) No. of Significant Safety Occurrence / Dangerous Occurrence:</b></label
-			>
-			<input type="text" class="report-count" bind:group={report_day} />
-		</div>
+		{#each reportItem as item (item.key)}
+			<div class="report-type">
+				<label for={item.key} class="report-label"><b>{item.label}</b></label>
+				<input
+					type="text"
+					inputmode="numeric"
+					pattern="[0-9]*"
+					class="report-count"
+					bind:group={report_day[item.key]}
+				/>
+			</div>
+		{/each}
 		<hr />
 		<h2 class="heading">Remarks</h2>
 		<p>
@@ -367,12 +352,14 @@
 			</div>
 		</div>
 		<p>Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
-			<input type="password" class="forms-input" />
-		</div>
+			<input type="password" class="forms-input" bind:value={confirmPassword} />
+		</div> -->
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit" disabled={saving}
+				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
+			>
 		</div>
 	</form>
 </div>
