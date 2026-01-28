@@ -73,11 +73,6 @@
 					.order('created_at', { ascending: false })
 			]);
 
-			console.log('Current user id:', user.id);
-			console.log('TBM rows returned:', tbmRes.data?.length, tbmRes.error);
-			console.log('PPE rows returned:', ppeRes.data?.length, ppeRes.error);
-			console.log('HKP rows returned:', hkpRes.data?.length, hkpRes.error);
-
 			if (tbmRes.error) throw tbmRes.error;
 			if (ppeRes.error) throw ppeRes.error;
 			if (hkpRes.error) throw hkpRes.error;
