@@ -165,9 +165,9 @@
 			console.log('Uploading tbm_photo...');
 			const tbm_photo_path = await uploadToBucket(tbm_photo_file, 'tbm_session');
 			console.log('Uploaded tbm_photo', tbm_photo_path);
-			console.log('Uploading ptw_photo...');
+			console.log('Uploading ptw_form...');
 			const ptw_form_path = await uploadToBucket(ptw_form_file, 'ptw_form');
-			console.log('Uploaded ptw_photo', ptw_photo_path);
+			console.log('Uploaded ptw_form', ptw_form_path);
 			console.log('Uploading other_doc...');
 			const other_doc_path = await uploadToBucket(other_doc_file, 'other_doc');
 			console.log('Uploaded other_doc', other_doc_path);
