@@ -37,16 +37,16 @@
 	let conducted_by = '';
 	let conducted_position = '';
 	let attendance = {
-		project_engineer: '',
-		project_supervisor: '',
-		sho: '',
-		sss: '',
-		oshc_supervisor: '',
-		oshc_worker: '',
-		non_oshc_supervisor: '',
-		non_oshc_worker: '',
-		bme_worker: '',
-		other: ''
+		project_engineer: 0,
+		project_supervisor: 0,
+		sho: 0,
+		sss: 0,
+		oshc_supervisor: 0,
+		oshc_worker: 0,
+		non_oshc_supervisor: 0,
+		non_oshc_worker: 0,
+		bme_worker: 0,
+		other: 0
 	};
 	let tbm_form_path = '';
 	let tbm_photo_path = '';
@@ -78,17 +78,17 @@
 		'Warning / Barricade / Signboard',
 		'Working at Height'
 	];
-	const attendances = [
-		'No. of Project Engineer:',
-		'No. of Project Supervisor:',
-		'No. of Safety & Health Officer:',
-		'No. of Site Safety Supervisor:',
-		'No. of Contractor Supervisor (OSH-C):',
-		'No. of Contractor Worker (OSH-C):',
-		'No. of Contractor Supervisor (non OSH-C):',
-		'No. of Contractor Worker (non OSH-C):',
-		'No. of BME Worker:',
-		'No. of Other:'
+	const attendanceItem = [
+		{ key: 'project_engineer', label: 'No. of Project Engineer:' },
+		{ key: 'project_supervisor', label: 'No. of Project Supervisor:' },
+		{ key: 'sho', label: 'No. of Safety & Health Officer:' },
+		{ key: 'sss', label: 'No. of Site Safety Supervisor:' },
+		{ key: 'oshc_supervisor', label: 'No. of Contractor Supervisor (OSH-C):' },
+		{ key: 'oshc_worker', label: 'No. of Contractor Worker (OSH-C):' },
+		{ key: 'non_oshc_supervisor', label: 'No. of Contractor Supervisor (non OSH-C):' },
+		{ key: 'non_oshc_worker', label: 'No. of Contractor Worker (non OSH-C):' },
+		{ key: 'bme_worker', label: 'No. of BME Worker:' },
+		{ key: 'other', label: 'No. of Other:' }
 	];
 
 	let tbm_form_file;
@@ -99,6 +99,12 @@
 	function onFile(e, setter) {
 		setter(e.currentTarget.files?.[0] ?? null);
 	}
+
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
 
 	let errorMsg = '';
 	let saving = false;
@@ -176,8 +182,6 @@
 			const { error } = await supabase.from('tbm_submissions').insert(payload);
 			if (error) throw error;
 
-			// Update daily attendance record (used by e-WDA)
-			// Requires a UNIQUE constraint on (date, created_by)
 			if (meeting_date) {
 				const { error: attErr } = await supabase.from('attendance_records').upsert(
 					{
@@ -190,9 +194,6 @@
 				);
 				if (attErr) throw attErr;
 			}
-
-			// optional: redirect
-			// goto('/hse/history');
 		} catch (error) {
 			errorMsg = error?.message ?? String(error);
 		} finally {
@@ -526,15 +527,15 @@
 			<input type="text" class="forms-input" bind:value={conducted_position} />
 		</div>
 		<div class="attendance-grid">
-			{#each attendances as attendance}
+			{#each attendanceItem as item (item.key)}
 				<div class="attendance-type">
-					<label for="attendance-type" class="attendance-label">{attendance}</label>
+					<label for={item.key} class="attendance-label">{item.label}</label>
 					<input
 						type="text"
 						inputmode="numeric"
 						pattern="[0-9]*"
 						class="attendance-count"
-						bind:group={attendance}
+						bind:group={attendance[item.key]}
 					/>
 				</div>
 			{/each}
@@ -634,15 +635,17 @@
 			</div>
 		</div>
 		<p>Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
-			<input type="password" class="forms-input" />
-		</div>
+			<input type="password" class="forms-input" bind:value={confirmPassword} />
+		</div> -->
 		{#if errorMsg}
 			<p class="error">{errorMsg}</p>
 		{/if}
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit" disabled={saving}
+				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
+			>
 		</div>
 	</form>
 </div>
