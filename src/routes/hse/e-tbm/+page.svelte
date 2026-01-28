@@ -139,20 +139,27 @@
 	}
 
 	async function handleSubmit(e) {
+		console.log('[TBM] submit fired');
 		e.preventDefault();
 		errorMsg = '';
 		saving = true;
 
 		try {
-			const { data: auth } = await supabase.auth.getUser();
+			console.log('[TBM] getUser...');
+			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			if (authErr) throw authErr;
 			const user = auth?.user;
 			if (!user) throw new Error('Not signed in.');
 
-			const { data: profile, error: profileError } = await supabase
-				.from('profiles')
-				.select('first_name, last_name')
-				.eq('id', user.id)
-				.single();
+			console.log('[TBM] fetch profile...');
+			const { data: profile, error: profileError } = await withTimeout(
+				supabase
+					.from('profiles')
+					.select('first_name, last_name, nickname')
+					.eq('id', user.id)
+					.single(),
+				15000
+			);
 
 			if (profileError) throw profileError;
 
@@ -160,18 +167,21 @@
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
 			console.log('Uploading tbm_form...');
-			const tbm_form_path = await uploadToBucket(tbm_form_file, 'tbm_form');
-			console.log('Uploaded tbm_form:', tbm_form_path);
-			console.log('Uploading tbm_photo...');
-			const tbm_photo_path = await uploadToBucket(tbm_photo_file, 'tbm_session');
-			console.log('Uploaded tbm_photo', tbm_photo_path);
-			console.log('Uploading ptw_form...');
-			const ptw_form_path = await uploadToBucket(ptw_form_file, 'ptw_form');
-			console.log('Uploaded ptw_form', ptw_form_path);
-			console.log('Uploading other_doc...');
-			const other_doc_path = await uploadToBucket(other_doc_file, 'other_doc');
-			console.log('Uploaded other_doc', other_doc_path);
+			const tbm_form_path = await withTimeout(uploadToBucket(tbm_form_file, 'tbm_form'), 60000);
 
+			console.log('Uploading tbm_photo...');
+			const tbm_photo_path = await withTimeout(
+				uploadToBucket(tbm_photo_file, 'tbm_session'),
+				60000
+			);
+
+			console.log('Uploading ptw_form...');
+			const ptw_form_path = await withTimeout(uploadToBucket(ptw_form_file, 'ptw_form'), 60000);
+
+			console.log('Uploading other_doc...');
+			const other_doc_path = await withTimeout(uploadToBucket(other_doc_file, 'other_doc'), 60000);
+
+			console.log('[TBM] insert tbm_submissions...');
 			const payload = {
 				project_name,
 				project_no,
@@ -195,22 +205,30 @@
 				created_by_name: submitterName
 			};
 
-			const { error } = await supabase.from('tbm_submissions').insert(payload);
-			if (error) throw error;
+			const { error: insErr } = await withTimeout(
+				supabase.from('tbm_submissions').insert(payload),
+				15000
+			);
+			if (insErr) throw insErr;
 
 			if (meeting_date) {
-				const { error: attErr } = await supabase.from('attendance_records').upsert(
-					{
-						date: meeting_date,
-						created_by: user.id,
-						created_by_name: submitterName,
-						etbm: true
-					},
-					{ onConflict: 'date,created_by' }
+				const { error: attErr } = await withTimeout(
+					supabase.from('attendance_records').upsert(
+						{
+							date: meeting_date,
+							created_by: user.id,
+							created_by_name: submitterName,
+							etbm: true
+						},
+						{ onConflict: 'date,created_by' }
+					),
+					15000
 				);
 				if (attErr) throw attErr;
 			}
+			console.log('[TBM] done');
 		} catch (error) {
+			console.error('[TBM] submit error:', error);
 			errorMsg = error?.message ?? String(error);
 		} finally {
 			saving = false;
