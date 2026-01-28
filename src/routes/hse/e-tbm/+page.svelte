@@ -119,23 +119,23 @@
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
 
-		if (file instanceof FileList) file = file[0];
-		if (Array.isArray(file)) file = file[0];
-
-		if (!(file instanceof File)) throw new Error(`Invalid file for ${folder}`);
+		console.log(`[upload] start ${folder}`, file?.name);
 
 		const ext = file.name.split('.').pop() || 'bin';
 		const fileName = `${crypto.randomUUID()}.${ext}`;
 		const path = `${folder}/${fileName}`;
 
-		const uploadPromise = supabase.storage
+		const { data, error } = await supabase.storage
 			.from('tbm_uploads')
 			.upload(path, file, { upsert: false });
 
-		const { data, error } = await withTimeout(uploadPromise, 20000);
-		if (error) throw error;
+		if (error) {
+			console.error('[upload] error', error);
+			throw error;
+		}
 
-		return data.path; // e.g. "tbm_form/xxxx.jpg"
+		console.log('[upload] ok', data.path);
+		return data.path;
 	}
 
 	async function handleSubmit(e) {
