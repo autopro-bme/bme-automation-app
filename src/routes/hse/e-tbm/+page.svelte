@@ -116,6 +116,8 @@
 		]);
 	}
 
+	console.log(tbm_form_file instanceof File); // must be true
+
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
 
@@ -316,7 +318,12 @@
 		</div>
 		<div class="forms-p">
 			<label for="project-date" class="forms-label">Meeting Date:</label>
-			<input type="date" class="forms-input forms-date" bind:value={meeting_date} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={meeting_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
@@ -592,7 +599,7 @@
 					name="tbm_form"
 					accept="image/png, image/jpeg"
 					multiple
-					onchange={(e) => onFile(e, (f) => (tbm_form_file = f))}
+					onchange={(e) => (tbm_form_file = e.target.files[0])}
 				/>
 			</p>
 		</div>
@@ -606,7 +613,7 @@
 					name="tbm_photo"
 					accept="image/png, image/jpeg"
 					multiple
-					onchange={(e) => onFile(e, (f) => (tbm_photo_file = f))}
+					onchange={(e) => (tbm_photo_file = e.target.files[0])}
 				/>
 			</p>
 		</div>
@@ -619,7 +626,7 @@
 					name="ptw_form"
 					accept="image/png, image/jpeg"
 					multiple
-					onchange={(e) => onFile(e, (f) => (ptw_form_file = f))}
+					onchange={(e) => (ptw_form_file = e.target.files[0])}
 				/>
 			</p>
 		</div>
@@ -632,7 +639,7 @@
 					name="other_doc"
 					accept="image/png, image/jpeg"
 					multiple
-					onchange={(e) => onFile(e, (f) => (other_doc_file = f))}
+					onchange={(e) => (other_doc_file = e.target.files[0])}
 				/>
 			</p>
 		</div>
