@@ -116,12 +116,8 @@
 		]);
 	}
 
-	console.log(tbm_form_file instanceof File); // must be true
-
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
-
-		console.log(`[upload] start ${folder}`, file?.name);
 
 		const ext = file.name.split('.').pop() || 'bin';
 		const fileName = `${crypto.randomUUID()}.${ext}`;
@@ -136,24 +132,20 @@
 			throw error;
 		}
 
-		console.log('[upload] ok', data.path);
 		return data.path;
 	}
 
 	async function handleSubmit(e) {
-		console.log('[TBM] submit fired');
 		e.preventDefault();
 		errorMsg = '';
 		saving = true;
 
 		try {
-			console.log('[TBM] getUser...');
 			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
 			if (authErr) throw authErr;
 			const user = auth?.user;
 			if (!user) throw new Error('Not signed in.');
 
-			console.log('[TBM] fetch profile...');
 			const { data: profile, error: profileError } = await withTimeout(
 				supabase
 					.from('profiles')
@@ -168,22 +160,17 @@
 			const submitterName =
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
-			console.log('Uploading tbm_form...');
 			const tbm_form_path = await withTimeout(uploadToBucket(tbm_form_file, 'tbm_form'), 60000);
 
-			console.log('Uploading tbm_photo...');
 			const tbm_photo_path = await withTimeout(
 				uploadToBucket(tbm_photo_file, 'tbm_session'),
 				60000
 			);
 
-			console.log('Uploading ptw_form...');
 			const ptw_form_path = await withTimeout(uploadToBucket(ptw_form_file, 'ptw_form'), 60000);
 
-			console.log('Uploading other_doc...');
 			const other_doc_path = await withTimeout(uploadToBucket(other_doc_file, 'other_doc'), 60000);
 
-			console.log('[TBM] insert tbm_submissions...');
 			const payload = {
 				project_name,
 				project_no,
@@ -212,25 +199,7 @@
 				15000
 			);
 			if (insErr) throw insErr;
-
-			// if (meeting_date) {
-			// 	const { error: attErr } = await withTimeout(
-			// 		supabase.from('attendance_records').upsert(
-			// 			{
-			// 				date: meeting_date,
-			// 				created_by: user.id,
-			// 				created_by_name: submitterName,
-			// 				etbm: true
-			// 			},
-			// 			{ onConflict: 'date,created_by' }
-			// 		),
-			// 		15000
-			// 	);
-			// 	if (attErr) throw attErr;
-			// }
-			console.log('[TBM] done');
 		} catch (error) {
-			console.error('[TBM] submit error:', error);
 			errorMsg = error?.message ?? String(error);
 		} finally {
 			saving = false;
@@ -572,11 +541,12 @@
 				<div class="attendance-type">
 					<label for={item.key} class="attendance-label">{item.label}</label>
 					<input
-						type="text"
-						inputmode="numeric"
+						type="number"
+						id={item.key}
+						min="0"
 						pattern="[0-9]*"
 						class="attendance-count"
-						bind:group={attendance[item.key]}
+						bind:value={attendance[item.key]}
 					/>
 				</div>
 			{/each}

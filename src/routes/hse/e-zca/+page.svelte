@@ -156,8 +156,21 @@
 		}
 	];
 
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
+
 	let errorMsg = '';
 	let saving = false;
+
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
+		]);
+	}
 
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -165,18 +178,15 @@
 		saving = true;
 
 		try {
-			const { data: auth } = await supabase.auth.getUser();
+			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			if (authErr) throw authErr;
 			const user = auth?.user;
-			if (!user) {
-				goto('/auth/signin');
-				return;
-			}
+			if (!user) throw new Error('Not signed in.');
 
-			const { data: profile, error: profileError } = await supabase
-				.from('profiles')
-				.select('first_name, last_name')
-				.eq('id', user.id)
-				.single();
+			const { data: profile, error: profileError } = await withTimeout(
+				supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single(),
+				15000
+			);
 
 			if (profileError) throw profileError;
 
@@ -199,11 +209,11 @@
 				overall_percent: calculateOverallPercentage
 			};
 
-			const { error } = await supabase.from('zca_submissions').insert(payload);
-			if (error) throw error;
-
-			// optional: redirect
-			// goto('/hse/history');
+			const { error, insError } = await withTimeout(
+				supabase.from('zca_submissions').insert(payload),
+				15000
+			);
+			if (insError) throw insError;
 		} catch (error) {
 			errorMsg = error?.message ?? String(error);
 		} finally {
@@ -347,7 +357,12 @@
 		</div>
 		<div class="forms-p">
 			<label for="project-date" class="forms-label">Audit Date:</label>
-			<input type="date" class="forms-input" bind:value={audit_date} />
+			<input
+				type="date"
+				class="forms-input"
+				bind:value={audit_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		{#if showProjectModal}
 			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
@@ -504,12 +519,17 @@
 			</div>
 		</div>
 		<p class="note">Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
 			<input type="password" class="forms-input" />
-		</div>
+		</div> -->
+		{#if errorMsg}
+			<p class="error">{errorMsg}</p>
+		{/if}
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit"
+				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
+			>
 		</div>
 	</form>
 </div>

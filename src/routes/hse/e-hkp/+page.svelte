@@ -73,11 +73,6 @@
 	async function uploadToBucket(file, folder) {
 		if (!file) return null;
 
-		if (file instanceof FileList) file = file[0];
-		if (Array.isArray(file)) file = file[0];
-
-		if (!(file instanceof File)) throw new Error(`Invalid file for ${folder}`);
-
 		const ext = file.name.split('.').pop() || 'bin';
 		const fileName = `${crypto.randomUUID()}.${ext}`;
 		const path = `${folder}/${fileName}`;
@@ -86,10 +81,12 @@
 			.from('hkp_uploads')
 			.upload(path, file, { upsert: false });
 
-		const { data, error } = await withTimeout(uploadPromise, 20000);
-		if (error) throw error;
+		if (error) {
+			console.error('[upload error', error);
+			throw error;
+		}
 
-		return data.path; // e.g. "hkp_form/xxxx.jpg"
+		return data.path;
 	}
 
 	async function handleSubmit(e) {
@@ -98,22 +95,22 @@
 		saving = true;
 
 		try {
-			const { data: auth } = await supabase.auth.getUser();
+			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			if (authErr) throw authErr;
 			const user = auth?.user;
 			if (!user) throw new Error('Not signed in.');
 
-			const { data: profile, error: profileError } = await supabase
-				.from('profiles')
-				.select('first_name, last_name')
-				.eq('id', user.id)
-				.single();
+			const { data: profile, error: profileError } = await withTimeout(
+				supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single(),
+				15000
+			);
 
 			if (profileError) throw profileError;
 
 			const submitterName =
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
-			const hkp_photo_path = await uploadToBucket(hkp_photo_file, 'hkp_site');
+			const hkp_photo_path = await withTimeout(uploadToBucket(hkp_photo_file, 'hkp_site'), 60000);
 
 			const payload = {
 				project_name,
@@ -130,21 +127,11 @@
 				created_by_name: submitterName
 			};
 
-			const { error } = await supabase.from('hkp_submissions').insert(payload);
-			if (error) throw error;
-
-			if (activity_date) {
-				const { error: attErr } = await supabase.from('attendance_records').upsert(
-					{
-						date: activity_date,
-						created_by: user.id,
-						created_by_name: submitterName,
-						ehkp: true
-					},
-					{ onConflict: 'date,created_by' }
-				);
-				if (attErr) throw attErr;
-			}
+			const { error, insErr } = await withTimeout(
+				supabase.from('hkp_submissions').insert(payload),
+				15000
+			);
+			if (insErr) throw insErr;
 		} catch (error) {
 			errorMsg = error?.message ?? String(error);
 		} finally {
@@ -233,7 +220,12 @@
 		</div>
 		<div class="forms-p">
 			<label for="project-date" class="forms-label">Activity Date:</label>
-			<input type="date" class="forms-input" bind:value={activity_date} />
+			<input
+				type="date"
+				class="forms-input"
+				bind:value={activity_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
@@ -294,7 +286,7 @@
 					name="hkp_photo"
 					accept="image/png, image/jpeg"
 					multiple
-					onchange={(e) => onFile(e, (f) => (hkp_photo_file = f))}
+					onchange={(e) => (hkp_photo_file = e.target.files[0])}
 				/>
 			</p>
 		</div>
@@ -305,11 +297,12 @@
 			<div class="report-type">
 				<label for={item.key} class="report-label"><b>{item.label}</b></label>
 				<input
-					type="text"
-					inputmode="numeric"
+					type="number"
+					id={item.key}
+					min="0"
 					pattern="[0-9]*"
 					class="report-count"
-					bind:group={report_day[item.key]}
+					bind:value={report_day[item.key]}
 				/>
 			</div>
 		{/each}
@@ -356,6 +349,9 @@
 			<p><b>Confirm Login Password</b></p>
 			<input type="password" class="forms-input" bind:value={confirmPassword} />
 		</div> -->
+		{#if errorMsg}
+			<p class="error">{errorMsg}</p>
+		{/if}
 		<div class="submit">
 			<button type="submit" class="button-submit" disabled={saving}
 				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
