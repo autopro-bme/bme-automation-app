@@ -38,7 +38,6 @@
 			.eq('id', sessionUser.id)
 			.single();
 
-		// If profiles read is blocked, fall back to email
 		if (profileError) {
 			userName = sessionUser.email ?? 'User';
 			return;
@@ -51,13 +50,11 @@
 		const supabase = getSupabase();
 		if (!supabase) return;
 
-		// initial session
 		const {
 			data: { session }
 		} = await supabase.auth.getSession();
 		await syncUser(session?.user ?? null);
 
-		// update immediately on sign-in/sign-out
 		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
 			await syncUser(session2?.user ?? null);
 		});
@@ -71,7 +68,6 @@
 	async function signOut() {
 		const supabase = getSupabase();
 		if (supabase) await supabase.auth.signOut();
-		// syncUser will be called by onAuthStateChange, but set immediately too
 		hasUser = false;
 		userName = 'User';
 		goto('/auth/signin');

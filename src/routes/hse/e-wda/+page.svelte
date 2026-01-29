@@ -28,12 +28,7 @@
 	}
 
 	function displayName(profile) {
-		return (
-			profile.nickname ||
-			`${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() ||
-			profile.email ||
-			'—'
-		);
+		return `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() || profile.email || '—';
 	}
 
 	function formatDateDMY(dateStr) {

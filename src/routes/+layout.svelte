@@ -1,7 +1,7 @@
 <script>
 	import './layout.css';
 	import { page } from '$app/stores';
-	import { beforeNavigate, afterNavigate } from '$app/navigation';
+	import { navigating } from '$app/navigation';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
@@ -16,19 +16,14 @@
 	/** @type {{ children: any }} */
 	const { children } = $props();
 
-	const MIN_SPINNER_MS = 1000;
+	const MIN_SPINNER_MS = 400;
 	let spinnerActive = $state(false);
-	let navStart = $state(0);
 	/** @type {ReturnType<typeof setTimeout> | null} */
 	let hideTimer = null;
-
-	// @ts-ignore
-	let beforeUnsub = null;
-	// @ts-ignore
-	let afterUnsub = null;
+	/** @type {null | (() => void)} */
+	let navUnsub = null;
 
 	onMount(() => {
-		// Auth listener must be registered in the browser only (SSR-safe).
 		const supabase = getSupabase();
 		if (supabase) {
 			const { data } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -43,32 +38,26 @@
 			authUnsub = () => data.subscription.unsubscribe();
 		}
 
-		beforeUnsub = beforeNavigate(() => {
-			if (hideTimer) {
-				clearTimeout(hideTimer);
-				hideTimer = null;
+		navUnsub = navigating.subscribe((nav) => {
+			if (nav) {
+				if (hideTimer) {
+					clearTimeout(hideTimer);
+					hideTimer = null;
+				}
+				spinnerActive = true;
+			} else {
+				hideTimer = setTimeout(() => {
+					spinnerActive = false;
+					hideTimer = null;
+				}, MIN_SPINNER_MS);
 			}
-			navStart = Date.now();
-			spinnerActive = true;
-		});
-
-		afterUnsub = afterNavigate(() => {
-			if (!spinnerActive) return;
-			const elapsed = Date.now() - navStart;
-			const remaining = Math.max(0, MIN_SPINNER_MS - elapsed);
-			hideTimer = setTimeout(() => {
-				spinnerActive = false;
-				hideTimer = null;
-			}, remaining);
 		});
 	});
 
 	onDestroy(() => {
 		if (authUnsub) authUnsub();
 		// @ts-ignore
-		if (beforeUnsub) beforeUnsub();
-		// @ts-ignore
-		if (afterUnsub) afterUnsub();
+		if (navUnsub) navUnsub();
 		if (hideTimer) clearTimeout(hideTimer);
 	});
 </script>
