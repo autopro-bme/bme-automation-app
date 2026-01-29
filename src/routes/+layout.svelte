@@ -1,7 +1,7 @@
 <script>
 	import './layout.css';
 	import { page } from '$app/stores';
-	import { navigating } from '$app/navigation';
+	import { navigating } from '$app/stores';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
