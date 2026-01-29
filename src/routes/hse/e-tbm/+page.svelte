@@ -673,7 +673,7 @@
 	{#if showSuccess}
 		<div class="success-overlay">
 			<div class="success-popup">
-				<h3>Success! <Check /></h3>
+				<h3>Success! <Check strokeWidth={4} /></h3>
 				<p>Your form submission was successful.</p>
 			</div>
 		</div>
@@ -995,6 +995,7 @@
 	.success-popup {
 		background: #ffffff;
 		padding: 25px 35px;
+		border: 2px solid #091747;
 		border-radius: 6px;
 		text-align: center;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -1002,8 +1003,17 @@
 	}
 
 	.success-popup h3 {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
 		color: #2e7d32;
+		font-size: 20px;
+		font-weight: bold;
 		margin-bottom: 10px;
+	}
+
+	.success-popup h3 :global(svg) {
+		display: block;
 	}
 
 	@keyframes fadeIn {
