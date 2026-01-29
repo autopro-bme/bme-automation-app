@@ -81,7 +81,7 @@
 		const fileName = `${crypto.randomUUID()}.${ext}`;
 		const path = `${folder}/${fileName}`;
 
-		const uploadPromise = supabase.storage
+		const { data, error } = await supabase.storage
 			.from('hkp_uploads')
 			.upload(path, file, { upsert: false });
 
@@ -233,7 +233,7 @@
 			<label for="project-date" class="forms-label">Activity Date:</label>
 			<input
 				type="date"
-				class="forms-input"
+				class="forms-input forms-date"
 				bind:value={activity_date}
 				onfocus={(e) => e.target.showPicker?.()}
 			/>
@@ -445,6 +445,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {

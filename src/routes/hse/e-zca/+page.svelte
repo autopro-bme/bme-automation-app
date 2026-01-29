@@ -370,7 +370,7 @@
 			<label for="project-date" class="forms-label">Audit Date:</label>
 			<input
 				type="date"
-				class="forms-input"
+				class="forms-input forms-date"
 				bind:value={audit_date}
 				onfocus={(e) => e.target.showPicker?.()}
 			/>
@@ -667,6 +667,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {
