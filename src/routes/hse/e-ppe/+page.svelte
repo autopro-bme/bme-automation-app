@@ -1,6 +1,7 @@
 <script>
 	import Search from '@lucide/svelte/icons/search';
 	import FileText from '@lucide/svelte/icons/file-text';
+	import Check from '@lucide/svelte/icons/check';
 	import { supabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
@@ -50,6 +51,9 @@
 
 	let errorMsg = '';
 	let saving = false;
+
+	let showSuccess = false;
+	let successTimer;
 
 	function withTimeout(promise, ms = 20000) {
 		return Promise.race([
@@ -122,6 +126,13 @@
 				15000
 			);
 			if (insErr) throw insErr;
+
+			showSuccess = true;
+
+			setTimeout(() => {
+				showSuccess = false;
+				goto('/');
+			}, 3000);
 		} catch (error) {
 			errorMsg = error?.message ?? String(error);
 		} finally {
@@ -352,6 +363,14 @@
 			>
 		</div>
 	</form>
+	{#if showSuccess}
+		<div class="success-overlay">
+			<div class="success-popup">
+				<h3>Success! <Check /></h3>
+				<p>Your form submission was successful.</p>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -590,6 +609,41 @@
 	.submit {
 		display: flex;
 		justify-content: flex-end;
+	}
+
+	.success-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 9999;
+	}
+
+	.success-popup {
+		background: #ffffff;
+		padding: 25px 35px;
+		border-radius: 6px;
+		text-align: center;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		animation: fadeIn 0.3s ease;
+	}
+
+	.success-popup h3 {
+		color: #2e7d32;
+		margin-bottom: 10px;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
 	}
 
 	.title {
