@@ -641,10 +641,15 @@
 	}
 
 	.success-popup {
+		height: 200px;
 		background: #ffffff;
 		padding: 25px 35px;
-		border: 2px solid #091747;
+		border: 1px solid #091747;
 		border-radius: 6px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
 		text-align: center;
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 		animation: fadeIn 0.3s ease;
