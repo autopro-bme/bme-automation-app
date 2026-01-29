@@ -236,11 +236,12 @@
 				class="forms-input forms-date"
 				bind:value={activity_date}
 				onfocus={(e) => e.target.showPicker?.()}
+				required
 			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
-			<input type="text" class="forms-input" bind:value={weather} />
+			<input type="text" class="forms-input" bind:value={weather} required />
 		</div>
 		{#if showProjectModal}
 			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
@@ -298,6 +299,7 @@
 					accept="image/png, image/jpeg"
 					multiple
 					onchange={(e) => (hkp_photo_file = e.target.files[0])}
+					required
 				/>
 			</p>
 		</div>
@@ -641,7 +643,7 @@
 	}
 
 	.success-popup {
-		height: 200px;
+		height: 250px;
 		background: #ffffff;
 		padding: 25px 35px;
 		border: 1px solid #091747;
@@ -662,7 +664,7 @@
 		color: #2e7d32;
 		font-size: 20px;
 		font-weight: bold;
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 	}
 
 	.success-popup h3 :global(svg) {

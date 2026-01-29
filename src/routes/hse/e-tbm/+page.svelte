@@ -303,11 +303,12 @@
 				class="forms-input forms-date"
 				bind:value={meeting_date}
 				onfocus={(e) => e.target.showPicker?.()}
+				required
 			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
-			<input type="text" class="forms-input" bind:value={weather} />
+			<input type="text" class="forms-input" bind:value={weather} required />
 		</div>
 		{#if showProjectModal}
 			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
@@ -382,92 +383,177 @@
 		<div class="competency-grid">
 			<p>1) Mobile Crane - Operator Certificate</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.mobile_crane_operator} value="yes" />Yes
+				<input
+					type="radio"
+					name="cp-1"
+					bind:group={competency.mobile_crane_operator}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.mobile_crane_operator} value="no" />No
+				<input
+					type="radio"
+					name="cp-1"
+					bind:group={competency.mobile_crane_operator}
+					value="no"
+				/>No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.mobile_crane_operator} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-1"
+					bind:group={competency.mobile_crane_operator}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>2) Mobile Crane - Perakuan Mesin Angkat (PMA)</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.mobile_crane_pma} value="yes" />Yes
+				<input
+					type="radio"
+					name="cp-2"
+					bind:group={competency.mobile_crane_pma}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.mobile_crane_pma} value="no" />No
+				<input type="radio" name="cp-2" bind:group={competency.mobile_crane_pma} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.mobile_crane_pma} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-2"
+					bind:group={competency.mobile_crane_pma}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>3) Sky Lift Operator- Perakuan Mesin Angkat (PMA)</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.sky_lift_operator} value="yes" />Yes
+				<input
+					type="radio"
+					name="cp-3"
+					bind:group={competency.sky_lift_operator}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.sky_lift_operator} value="no" />No
+				<input type="radio" name="cp-3" bind:group={competency.sky_lift_operator} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.sky_lift_operator} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-3"
+					bind:group={competency.sky_lift_operator}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>4) Scaffold Inspector Level 2 / 3</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.scaffold_inspector_2_3} value="yes" />Yes-Level 2
+				<input
+					type="radio"
+					name="cp-4"
+					bind:group={competency.scaffold_inspector_2_3}
+					value="yes"
+					required
+				/>Yes-Level 2
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.scaffold_inspector_2_3} value="no" />Yes-Level 3
+				<input
+					type="radio"
+					name="cp-4"
+					bind:group={competency.scaffold_inspector_2_3}
+					value="no"
+				/>Yes-Level 3
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.scaffold_inspector_2_3} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-4"
+					bind:group={competency.scaffold_inspector_2_3}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>5) Scaffold Inspector Level 1</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.scaffold_inspector_1} value="yes" />Yes
+				<input
+					type="radio"
+					name="cp-5"
+					bind:group={competency.scaffold_inspector_1}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.scaffold_inspector_1} value="no" />No
+				<input type="radio" name="cp-5" bind:group={competency.scaffold_inspector_1} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.scaffold_inspector_1} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-5"
+					bind:group={competency.scaffold_inspector_1}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>6) Authorised Gas Tester</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.authorised_gas_tester} value="yes" />Yes
+				<input
+					type="radio"
+					name="cp-6"
+					bind:group={competency.authorised_gas_tester}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.authorised_gas_tester} value="no" />No
+				<input
+					type="radio"
+					name="cp-6"
+					bind:group={competency.authorised_gas_tester}
+					value="no"
+				/>No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.authorised_gas_tester} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-6"
+					bind:group={competency.authorised_gas_tester}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>7) Entry Supervisor</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.entry_supervisor} value="yes" />Yes
+				<input
+					type="radio"
+					name="cp-7"
+					bind:group={competency.entry_supervisor}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.entry_supervisor} value="no" />No
+				<input type="radio" name="cp-7" bind:group={competency.entry_supervisor} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.entry_supervisor} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="cp-7"
+					bind:group={competency.entry_supervisor}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<br />
@@ -478,62 +564,86 @@
 		<div class="competency-grid">
 			<p>1) Lifting Supervisor</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.lifting_supervisor} value="yes" />Yes
+				<input
+					type="radio"
+					name="tp-1"
+					bind:group={competency.lifting_supervisor}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.lifting_supervisor} value="no" />No
+				<input type="radio" name="tp-1" bind:group={competency.lifting_supervisor} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.lifting_supervisor} value="no_activity" />No
-				Activity
+				<input
+					type="radio"
+					name="tp-1"
+					bind:group={competency.lifting_supervisor}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>2) Signalman</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.signalman} value="yes" />Yes
+				<input type="radio" name="tp-2" bind:group={competency.signalman} value="yes" required />Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.signalman} value="no" />No
+				<input type="radio" name="tp-2" bind:group={competency.signalman} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.signalman} value="no_activity" />No Activity
+				<input type="radio" name="tp-2" bind:group={competency.signalman} value="no_activity" />No
+				Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>3) Rigger and Slinger</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.rigger_slinger} value="yes" />Yes
+				<input
+					type="radio"
+					name="tp-3"
+					bind:group={competency.rigger_slinger}
+					value="yes"
+					required
+				/>Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.rigger_slinger} value="no" />No
+				<input type="radio" name="tp-3" bind:group={competency.rigger_slinger} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.rigger_slinger} value="no_activity" />No Activity
+				<input
+					type="radio"
+					name="tp-3"
+					bind:group={competency.rigger_slinger}
+					value="no_activity"
+				/>No Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>4) Backhoe</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.backhoe} value="yes" />Yes
+				<input type="radio" name="tp-4" bind:group={competency.backhoe} value="yes" required />Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.backhoe} value="no" />No
+				<input type="radio" name="tp-4" bind:group={competency.backhoe} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.backhoe} value="no_activity" />No Activity
+				<input type="radio" name="tp-4" bind:group={competency.backhoe} value="no_activity" />No
+				Activity
 			</p>
 		</div>
 		<div class="competency-grid">
 			<p>5) Forklift</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.forklift} value="yes" />Yes
+				<input type="radio" name="tp-5" bind:group={competency.forklift} value="yes" required />Yes
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.forklift} value="no" />No
+				<input type="radio" name="tp-5" bind:group={competency.forklift} value="no" />No
 			</p>
 			<p class="competency-radio">
-				<input type="radio" bind:group={competency.forklift} value="no_activity" />No Activity
+				<input type="radio" name="tp-5" bind:group={competency.forklift} value="no_activity" />No
+				Activity
 			</p>
 		</div>
 		<br />
@@ -541,11 +651,11 @@
 		<h2 class="heading">Attendance Information</h2>
 		<div class="forms-p">
 			<label for="project-name" class="forms-label">Conducted By:</label>
-			<input type="text" class="forms-input" bind:value={conducted_by} />
+			<input type="text" class="forms-input" bind:value={conducted_by} required />
 		</div>
 		<div class="forms-p">
 			<label for="project-no" class="forms-label">Position:</label>
-			<input type="text" class="forms-input" bind:value={conducted_position} />
+			<input type="text" class="forms-input" bind:value={conducted_position} required />
 		</div>
 		<div class="attendance-grid">
 			{#each attendanceItem as item (item.key)}
@@ -558,6 +668,7 @@
 						pattern="[0-9]*"
 						class="attendance-count"
 						bind:value={attendance[item.key]}
+						required
 					/>
 				</div>
 			{/each}
@@ -581,6 +692,7 @@
 					accept="image/png, image/jpeg"
 					multiple
 					onchange={(e) => (tbm_form_file = e.target.files[0])}
+					required
 				/>
 			</p>
 		</div>
@@ -595,6 +707,7 @@
 					accept="image/png, image/jpeg"
 					multiple
 					onchange={(e) => (tbm_photo_file = e.target.files[0])}
+					required
 				/>
 			</p>
 		</div>
@@ -608,6 +721,7 @@
 					accept="image/png, image/jpeg"
 					multiple
 					onchange={(e) => (ptw_form_file = e.target.files[0])}
+					required
 				/>
 			</p>
 		</div>
@@ -993,7 +1107,7 @@
 	}
 
 	.success-popup {
-		height: 200px;
+		height: 250px;
 		background: #ffffff;
 		padding: 25px 35px;
 		border: 1px solid #091747;
@@ -1014,7 +1128,7 @@
 		color: #2e7d32;
 		font-size: 20px;
 		font-weight: bold;
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 	}
 
 	.success-popup h3 :global(svg) {

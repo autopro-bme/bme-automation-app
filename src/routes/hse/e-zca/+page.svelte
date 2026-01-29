@@ -373,6 +373,7 @@
 				class="forms-input forms-date"
 				bind:value={audit_date}
 				onfocus={(e) => e.target.showPicker?.()}
+				required
 			/>
 		</div>
 		{#if showProjectModal}
@@ -459,7 +460,11 @@
 						</div>
 					</div>
 					<p class="audit-select">
-						<select bind:value={subsections[sIndex].items[iIndex].score} class="audit-count">
+						<select
+							bind:value={subsections[sIndex].items[iIndex].score}
+							class="audit-count"
+							required
+						>
 							<option value={null}></option>
 							<option value={1}>1</option>
 							<option value={2}>2</option>
@@ -945,7 +950,7 @@
 	}
 
 	.success-popup {
-		height: 200px;
+		height: 250px;
 		background: #ffffff;
 		padding: 25px 35px;
 		border: 1px solid #091747;
@@ -966,7 +971,7 @@
 		color: #2e7d32;
 		font-size: 20px;
 		font-weight: bold;
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 	}
 
 	.success-popup h3 :global(svg) {
