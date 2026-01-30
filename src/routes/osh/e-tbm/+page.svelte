@@ -164,16 +164,12 @@
 			const submitterName =
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
-			const tbm_form_path = await withTimeout(uploadToBucket(tbm_form_file, 'tbm_form'), 60000);
-
-			const tbm_photo_path = await withTimeout(
-				uploadToBucket(tbm_photo_file, 'tbm_session'),
-				60000
-			);
-
-			const ptw_form_path = await withTimeout(uploadToBucket(ptw_form_file, 'ptw_form'), 60000);
-
-			const other_doc_path = await withTimeout(uploadToBucket(other_doc_file, 'other_doc'), 60000);
+			const [tbm_form_path, tbm_photo_path, ptw_form_path, other_doc_path] = await Promise.all([
+				withTimeout(uploadToBucket(tbm_form_file, 'tbm_form')),
+				withTimeout(uploadToBucket(tbm_photo_file, 'tbm_session')),
+				withTimeout(uploadToBucket(ptw_form_file, 'ptw_form')),
+				withTimeout(uploadToBucket(other_doc_file, 'other_doc'))
+			]);
 
 			const payload = {
 				project_name,

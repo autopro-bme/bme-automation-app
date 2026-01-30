@@ -114,7 +114,7 @@
 			const submitterName =
 				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
 
-			const hkp_photo_path = await withTimeout(uploadToBucket(hkp_photo_file, 'hkp_site'), 60000);
+			const hkp_photo_path = await withTimeout(uploadToBucket(hkp_photo_file, 'hkp_site'));
 
 			const payload = {
 				project_name,
