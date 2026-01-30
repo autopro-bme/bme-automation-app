@@ -157,7 +157,7 @@
 		<option value="All">All Departments</option>
 		<option value="Admin">Admin</option>
 		<option value="Project">Project</option>
-		<option value="HSE">HSE</option>
+		<option value="OSH">OSH</option>
 	</select>
 	<button class="button-primary" id="button-search"><Search /></button>
 </div>

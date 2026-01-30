@@ -9,8 +9,7 @@
 	let errorMsg = '';
 
 	function deptKey(label) {
-		// Menu label is long, but DB stores "HSE"
-		if (label.startsWith('Health, Safety')) return 'HSE';
+		if (label.startsWith('Occupational, Safety')) return 'OSH';
 		return label;
 	}
 

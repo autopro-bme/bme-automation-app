@@ -5,7 +5,7 @@
 
 <h1 class="title">Corrective Action Report (e-CAR) Submission</h1>
 
-<a href="/hse/e-car-history"
+<a href="/osh/e-car-history"
 	><button class="button-primary" id="button-history">View History</button></a
 >
 <div class="project-box">

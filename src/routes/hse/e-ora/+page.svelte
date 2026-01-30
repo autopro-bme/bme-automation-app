@@ -20,7 +20,7 @@
 			<select class="department-select">
 				<option value="" disabled selected></option>
 				<option value="Project">Project</option>
-				<option value="HSE">HSE</option>
+				<option value="OSH">OSH</option>
 			</select>
 		</div>
 		<br />

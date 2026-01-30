@@ -178,8 +178,8 @@
 
 				<p>
 					<label class="checkbox">
-						<input type="checkbox" value="HSE" bind:group={departments} />
-						HSE
+						<input type="checkbox" value="OSH" bind:group={departments} />
+						OSH
 					</label>
 				</p>
 			</div>

@@ -23,7 +23,7 @@
 			<select class="select">
 				<option value="" disabled selected></option>
 				<option value="Project">Project</option>
-				<option value="HSE">HSE</option>
+				<option value="OSH">OSH</option>
 			</select>
 		</div>
 		<br />
@@ -50,7 +50,7 @@
 			<select class="select">
 				<option value="" disabled selected></option>
 				<option value="Project">Project</option>
-				<option value="HSE">HSE</option>
+				<option value="OSH">OSH</option>
 			</select>
 		</div>
 		<div class="forms-p">
@@ -155,7 +155,7 @@
 				<select id="traveller-2-department" class="select">
 					<option value="" disabled selected></option>
 					<option value="Project">Project</option>
-					<option value="HSE">HSE</option>
+					<option value="OSH">OSH</option>
 				</select>
 			</div>
 			<div class="forms-p">

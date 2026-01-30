@@ -106,13 +106,13 @@
 			title: 'Subcontractor Vetting',
 			items: [
 				{
-					label: "Subcontractors's HSE Qualifications Verified",
+					label: "Subcontractors's OSH Qualifications Verified",
 					score: null,
 					remarks: '',
 					showInfo: false
 				},
 				{
-					label: 'HSE Terms Embedded in Subcontract Agreement',
+					label: 'OSH Terms Embedded in Subcontract Agreement',
 					score: null,
 					remarks: '',
 					showInfo: false

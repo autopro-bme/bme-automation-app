@@ -28,8 +28,8 @@
 			items: 'Project Information Management'
 		},
 		{
-			value: 'HSE',
-			label: 'Health, Safety & Environment (HSE)',
+			value: 'OSH',
+			label: 'Occupational Safety & Health (OSH)',
 			items:
 				'Site Safety eForm Information, Working Day Attendance (e-WDA) Record, Site Safety eForms Submission'
 		}

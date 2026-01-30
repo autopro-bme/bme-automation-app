@@ -82,8 +82,8 @@
 		<div class="welcome">
 			<p>Welcome, <b>{userName}</b>!</p>
 			<div class="calendar-history">
-				<a href="/hse/submission-history" class="navigation"><History />History</a>
-				<a href="/hse/calendar-view" class="navigation"><Calendar />Calendar</a>
+				<a href="/osh/submission-history" class="navigation"><History />History</a>
+				<a href="/osh/calendar-view" class="navigation"><Calendar />Calendar</a>
 				<button type="submit" onclick={signOut} class="button-primary">Sign Out</button>
 			</div>
 		</div>
