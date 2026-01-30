@@ -61,7 +61,9 @@
 				<h3>{item.title}</h3>
 				<p>{item.description}</p>
 			</div>
-			<button onclick={() => goto(item.route)}> Go To </button>
+			<button disabled={item.disabled} onclick={() => !item.disabled && goto(item.route)}>
+				Go To
+			</button>
 		</div>
 	{/each}
 {/each}
@@ -80,6 +82,13 @@
 		padding: 6px 14px;
 		border-radius: 4px;
 		cursor: pointer;
+	}
+
+	button[disabled] {
+		background-color: #cccccc;
+		color: #666666;
+		cursor: not-allowed;
+		opacity: 0.6;
 	}
 
 	button:hover {

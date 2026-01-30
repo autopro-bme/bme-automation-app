@@ -49,22 +49,25 @@ export const menuSections = [
 				route: '/osh/e-wda'
 			},
 			{
-				icon: '/icons/eCAR.png',
-				title: 'Corrective Action Report (e-CAR) Submission',
-				description: 'For OSH engineers to submit corrective action reports',
-				route: '/osh/e-car'
-			},
-			{
 				icon: '/icons/eCTR.jpg',
 				title: 'Competency Register (e-CTR) Submission',
-				description: 'For OSH engineers to submit competency register reports',
-				route: '/osh/e-ctr'
+				description: 'For OSH engineers to submit competency register report',
+				route: '/osh/e-ctr',
+				disabled: true
+			},
+			{
+				icon: '/icons/eCAR.png',
+				title: 'Corrective Action Report (e-CAR) Submission',
+				description: 'For OSH engineers to submit corrective action report',
+				route: '/osh/e-car',
+				disabled: true
 			},
 			{
 				icon: '/icons/eHWA.png',
 				title: 'Hot Work Activities Permit (e-HWA) Submission',
 				description: 'For OSH engineers to submit hot work activities permit report',
-				route: '/osh/e-hwa'
+				route: '/osh/e-hwa',
+				disabled: true
 			},
 			{
 				icon: '/icons/eHKP.jpg',
@@ -73,10 +76,18 @@ export const menuSections = [
 				route: '/osh/e-hkp'
 			},
 			{
+				icon: '/icons/eIPR.png',
+				title: 'Inspection Record (e-IPR) Submission',
+				description: 'For OSH engineers to submit safety inspection record',
+				route: '/osh/e-ipr',
+				disabled: true
+			},
+			{
 				icon: '/icons/eORA.png',
 				title: 'Overtime Requisition and Approval Form (e-ORA) Submission',
 				description: 'For OSH engineers to submit overtime requisition and approval report',
-				route: '/osh/e-ora'
+				route: '/osh/e-ora',
+				disabled: true
 			},
 			{
 				icon: '/icons/ePPE.png',
@@ -85,16 +96,25 @@ export const menuSections = [
 				route: '/osh/e-ppe'
 			},
 			{
-				icon: '/icons/eSCF.jpg',
-				title: 'Staff Claim Form (e-SCF) Submission',
-				description: 'For OSH engineers to submit staff claim form report',
-				route: '/osh/e-scf'
+				icon: '/icons/eSAC.png',
+				title: 'Safety Audit Checklist (e-SAC) Submission',
+				description: 'For OSH engineers to submit safety audit checklist document',
+				route: '/osh/e-sac',
+				disabled: true
 			},
 			{
 				icon: '/icons/eSOA.jpg',
 				title: 'Safety Officer Audit (e-SOA) Submission',
 				description: 'For OSH engineers to submit safety officer audit report',
-				route: '/osh/e-soa'
+				route: '/osh/e-soa',
+				disabled: true
+			},
+			{
+				icon: '/icons/eSCF.jpg',
+				title: 'Staff Claim Form (e-SCF) Submission',
+				description: 'For OSH engineers to submit staff claim form',
+				route: '/osh/e-scf',
+				disabled: true
 			},
 			{
 				icon: '/icons/eTBM.jpg',
@@ -103,10 +123,18 @@ export const menuSections = [
 				route: '/osh/e-tbm'
 			},
 			{
+				icon: '/icons/eTNR.png',
+				title: 'Training Record (e-TNR) Submission',
+				description: 'For OSH engineers to submit safety training record',
+				route: '/osh/e-tnr',
+				disabled: true
+			},
+			{
 				icon: '/icons/eTRF.png',
 				title: 'Travel Requisition Form (e-TRF) Submission',
-				description: 'For OSH engineers to submit travel requisition form report',
-				route: '/osh/e-trf'
+				description: 'For OSH engineers to submit travel requisition form',
+				route: '/osh/e-trf',
+				disabled: true
 			},
 			{
 				icon: '/icons/eZCA.jpg',
