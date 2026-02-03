@@ -1,68 +1,114 @@
 <script>
 	import Search from '@lucide/svelte/icons/search';
 	import FileText from '@lucide/svelte/icons/file-text';
+	import Check from '@lucide/svelte/icons/check';
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
+
+	let showProjectModal = false;
+	let projects = [];
+	let filteredProjects = [];
+	let projectSearch = '';
+	let projectLoading = false;
+	let projectError = '';
+
+	let project_name = '';
+	let project_no = '';
+	let date = '';
+	let weather = '';
 
 	let subsections = [
 		{
+			key: 'safety',
 			items: [
 				{
 					label:
-						'Review any of the Daily Triple Safety Activities and ensure these are conducted effectively'
+						'Review any of the Daily Triple Safety Activities and ensure these are conducted effectively',
+					checked: '',
+					remarks: ''
 				},
 				{ note: 'Toolbox Meeting, PPE Visual Inspection, Housekeeping' }
 			]
 		},
 		{
+			key: 'bulletin',
 			items: [
-				{ label: 'Inspects bulletin boards are up to date and neatly kept' },
+				{
+					label: 'Inspects bulletin boards are up to date and neatly kept',
+					checked: '',
+					remarks: ''
+				},
 				{ note: 'Safety and warning signboards are available, visible, and in good condition' }
 			]
 		},
 		{
+			key: 'storage',
 			items: [
-				{ label: 'Check availability of Documentation Storage Area' },
+				{ label: 'Check availability of Documentation Storage Area', checked: '', remarks: '' },
 				{
 					note: "Complete safety document (PTW, Check worker\\'s passport, Permit & CIDB green card validity, SDS, etc.) are stored in an accessible and organized location"
 				}
 			]
 		},
 		{
+			key: 'firstaid',
 			items: [
-				{ label: 'First Aid Kit' },
+				{ label: 'First Aid Kit', checked: '', remarks: '' },
 				{ note: 'First aid kit available, fully stocked, and checked regularly' }
 			]
 		},
 		{
+			key: 'fire',
 			items: [
-				{ label: 'Fire Extinguisher' },
+				{ label: 'Fire Extinguisher', checked: '', remarks: '' },
 				{ note: 'Fire extinguisher available, condition and expiry date' }
 			]
 		},
 		{
+			key: 'noise',
 			items: [
-				{ label: 'Excessive Noise Identification Checklist' },
+				{ label: 'Excessive Noise Identification Checklist', checked: '', remarks: '' },
 				{
 					note: 'Ensure the checklist for identification of excessive noise is filled up and current'
 				}
 			]
 		},
 		{
+			key: 'chra',
 			items: [
-				{ label: 'CHRA Suitability' },
+				{ label: 'CHRA Suitability', checked: '', remarks: '' },
 				{
 					note: 'Confirm that the generic CHRA used is suitable and applicable for the current site activities'
 				}
 			]
 		},
 		{
+			key: 'audit',
 			items: [
-				{ label: 'No Compromise Audit' },
+				{ label: 'No Compromise Audit', checked: '', remarks: '' },
 				{
 					note: 'Check and determine if the once a month "No Compromise Audit" is done and if not, to work with the 3S on site to conduct the audit and align the standard of marking'
 				}
 			]
 		}
 	];
+
+	let remarks = '';
+	let acknowledged = false;
+	let created_at = '';
+	let created_by = '';
+
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
+
+	let errorMsg = '';
+	let saving = false;
+
+	let showSuccess = false;
+	let successTimer;
 
 	const processedSubsections = subsections.map((s) => {
 		const items = [];
@@ -92,30 +138,192 @@
 		}
 		return offsets;
 	})();
+
+	async function handleSubmit(e) {
+		e.preventDefault();
+		errorMsg = '';
+		saving = true;
+
+		try {
+			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			if (authErr) throw authErr;
+			const user = auth?.user;
+			if (!user) throw new Error('Not signed in.');
+
+			const { data: profile, error: profileError } = await withTimeout(
+				supabase
+					.from('profiles')
+					.select('first_name, last_name, nickname')
+					.eq('id', user.id)
+					.single(),
+				15000
+			);
+
+			if (profileError) throw profileError;
+
+			const submitterName =
+				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
+
+			const payload = {
+				project_name,
+				project_no,
+				date,
+				weather,
+				subsections,
+				remarks,
+				acknowledged,
+				created_by: user.id,
+				created_by_name: submitterName
+			};
+
+			const { error: insErr } = await withTimeout(
+				supabase.from('soa_submissions').insert(payload),
+				15000
+			);
+			if (insErr) throw insErr;
+
+			showSuccess = true;
+
+			setTimeout(() => {
+				showSuccess = false;
+				goto('/');
+			}, 3000);
+		} catch (error) {
+			errorMsg = error?.message ?? String(error);
+		} finally {
+			saving = false;
+		}
+	}
+
+	async function loadProjects() {
+		projectLoading = true;
+		projectError = '';
+
+		const { data, error } = await supabase
+			.from('projects')
+			.select('project_name, project_id, region, location')
+			.order('project_name', { ascending: true });
+
+		if (error) {
+			projectError = error.message;
+			projects = [];
+			filteredProjects = [];
+		} else {
+			projects = data ?? [];
+			filterProjects();
+		}
+
+		projectLoading = false;
+	}
+
+	function filterProjects() {
+		const query = projectSearch.trim().toLowerCase();
+		if (!query) {
+			filteredProjects = projects;
+			return;
+		}
+
+		filteredProjects = projects.filter((project) => {
+			const name = project.project_name ?? '';
+			const id = project.project_id ?? '';
+			return `${name} ${id}`.toLowerCase().includes(query);
+		});
+	}
+
+	async function openProjectModal() {
+		showProjectModal = true;
+		if (projects.length === 0 && !projectLoading) {
+			await loadProjects();
+		}
+	}
+
+	function closeProjectModal() {
+		showProjectModal = false;
+	}
+
+	function selectProject(project) {
+		project_name = project.project_name ?? '';
+		project_no = project.project_id ?? '';
+		region = project.region ?? '';
+		location = project.location ?? '';
+		closeProjectModal();
+	}
 </script>
 
 <h1 class="title">Safety Officer Audit Report (e-SOA) Submission</h1>
 
 <div class="project-box">
-	<form action="" class="forms">
+	<form class="forms" onsubmit={handleSubmit}>
 		<h2 class="heading">General Information</h2>
-		<button type="button" class="button-primary"><Search />Search Project</button>
+		<button type="button" class="button-primary" onclick={openProjectModal}
+			><Search />Search Project</button
+		>
 		<div class="forms-p">
 			<label for="project-name" class="forms-label">Project Name:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={project_name} disabled />
 		</div>
 		<div class="forms-p">
 			<label for="project-no" class="forms-label">Project No.:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={project_no} disabled />
 		</div>
 		<div class="forms-p">
 			<label for="audit-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={date}
+				onfocus={(e) => e.target.showPicker?.()}
+				required
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="audit-weather" class="forms-label">Weather:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={weather} required />
 		</div>
+		{#if showProjectModal}
+			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
+				<div class="modal">
+					<h3>Select a Project</h3>
+					<div class="project-search">
+						<input
+							type="text"
+							placeholder="Project Name/Project ID"
+							class="project-search-input"
+							bind:value={projectSearch}
+							oninput={filterProjects}
+						/>
+						<button type="button" class="project-search-button" onclick={filterProjects}>
+							<Search />
+						</button>
+					</div>
+					<div class="project-list">
+						<div class="project-list-header">
+							<span>Project Name</span>
+							<span>Project ID</span>
+						</div>
+						{#if projectLoading}
+							<p class="project-status">Loading projects...</p>
+						{:else if projectError}
+							<p class="project-status error">{projectError}</p>
+						{:else if filteredProjects.length === 0}
+							<p class="project-status">No projects found.</p>
+						{:else}
+							{#each filteredProjects as project}
+								<button type="button" class="project-row" onclick={() => selectProject(project)}>
+									<span>{project.project_name ?? '-'}</span>
+									<span class="project-row-id">{project.project_id ?? '-'}</span>
+								</button>
+							{/each}
+						{/if}
+					</div>
+					<div class="modal-actions">
+						<button type="button" class="button-secondary" onclick={closeProjectModal}>
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 		<br />
 		<hr />
 		<h2 class="heading">Safety Officer Audit Checklist</h2>
@@ -138,23 +346,40 @@
 					</div>
 					<div class="audit-check">
 						<label class="circle-checkbox">
-							<input type="checkbox" name="item-status" />
+							<input
+								type="checkbox"
+								name="item-status"
+								bind:value={subsections[sIndex].items[iIndex].checked}
+							/>
 							<span class="checkmark" aria-hidden="true"></span>
 						</label>
 					</div>
-					<input type="text" class="audit-remarks" placeholder="Remarks" />
+					<input
+						type="text"
+						class="audit-remarks"
+						placeholder="Remarks"
+						bind:value={subsections[sIndex].items[iIndex].remarks}
+					/>
 				{/each}
 			</div>
 		{/each}
 		<hr />
 		<h2 class="heading">Remarks</h2>
 		<p>
-			<textarea name="" id="" cols="30" rows="10" class="remarks" placeholder="Remarks"></textarea>
+			<textarea
+				name="remarks"
+				id="remarks"
+				cols="30"
+				rows="10"
+				class="remarks"
+				placeholder="Remarks"
+				bind:value={remarks}
+			></textarea>
 		</p>
 		<h2 class="heading">Acknowledgement and Submission</h2>
 		<div class="container">
 			<div class="checkbox">
-				<input type="checkbox" name="" id="" />
+				<input type="checkbox" name="checkbox" id="checkbox" bind:value={acknowledged} />
 			</div>
 			<div class="declaration">
 				<p>The declaration for the Safety Officer Audit Report as below:</p>
@@ -171,14 +396,27 @@
 			</div>
 		</div>
 		<p class="note">Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
 			<input type="password" class="forms-input" />
-		</div>
+		</div> -->
+		{#if errorMsg}
+			<p class="error">{errorMsg}</p>
+		{/if}
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit"
+				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
+			>
 		</div>
 	</form>
+	{#if showSuccess}
+		<div class="success-overlay">
+			<div class="success-popup">
+				<h3>Success! <Check strokeWidth={4} /></h3>
+				<p>Your form submission was successful.</p>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -197,8 +435,8 @@
 	.circle-checkbox {
 		display: inline-block;
 		position: relative;
-		width: 38px;
-		height: 38px;
+		width: 35px;
+		height: 35px;
 		cursor: pointer;
 	}
 
@@ -213,8 +451,8 @@
 
 	.circle-checkbox .checkmark {
 		display: inline-block;
-		width: 38px;
-		height: 38px;
+		width: 35px;
+		height: 35px;
 		border-radius: 50%;
 		border: 2px solid #091747;
 		background: #ffffff;
@@ -263,7 +501,7 @@
 
 	.audit-remarks {
 		width: 100%;
-		height: 38px;
+		height: 35px;
 		padding: 6px 10px;
 		font-size: 14px;
 	}
@@ -335,6 +573,10 @@
 		position: relative;
 	}
 
+	.forms-date {
+		cursor: pointer;
+	}
+
 	.forms-input {
 		height: 30px;
 		width: 500px;
@@ -371,6 +613,115 @@
 
 	.note {
 		margin-bottom: 10px;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		z-index: 50;
+	}
+
+	.modal {
+		background: #ffffff;
+		border-radius: 10px;
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+		padding: 20px;
+		width: min(600px, 95vw);
+	}
+
+	.modal h3 {
+		margin: 0 0 16px 0;
+		font-size: 20px;
+	}
+
+	.project-search {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+
+	.project-search-input {
+		flex: 1;
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid #cfd6e4;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+
+	.project-search-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 36px;
+		padding: 0;
+		background-color: #091747;
+		border-radius: 6px;
+	}
+
+	.project-search-button:hover {
+		background-color: #091747b9;
+	}
+
+	.project-list {
+		border: 1px solid #cfd6e4;
+		border-radius: 8px;
+		overflow: hidden;
+		max-height: 320px;
+		overflow-y: auto;
+	}
+
+	.project-list-header,
+	.project-row {
+		display: grid;
+		grid-template-columns: 1.5fr 1fr;
+		gap: 10px;
+		padding: 10px 12px;
+	}
+
+	.project-list-header {
+		background-color: #f2f4f9;
+		font-weight: bold;
+		border-bottom: 1px solid #cfd6e4;
+		text-align: center;
+	}
+
+	.project-row {
+		width: 100%;
+		text-align: left;
+		background: #ffffff;
+		border: none;
+		border-bottom: 1px solid #e3e8f0;
+		cursor: pointer;
+	}
+
+	.project-row:last-child {
+		border-bottom: none;
+	}
+
+	.project-row:hover {
+		background-color: #dedede;
+	}
+
+	.project-row-id {
+		text-align: center;
+	}
+
+	.project-status {
+		padding: 12px;
+		margin: 0;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: 16px;
 	}
 
 	.project-box {

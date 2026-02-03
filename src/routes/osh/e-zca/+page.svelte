@@ -169,13 +169,6 @@
 	let showSuccess = false;
 	let successTimer;
 
-	function withTimeout(promise, ms = 20000) {
-		return Promise.race([
-			promise,
-			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
-		]);
-	}
-
 	async function handleSubmit(e) {
 		e.preventDefault();
 		errorMsg = '';
@@ -513,12 +506,20 @@
 		<hr />
 		<h2 class="heading">Remarks</h2>
 		<p>
-			<textarea name="" id="" cols="30" rows="10" class="remarks" placeholder="Remarks"></textarea>
+			<textarea
+				name="remarks"
+				id="remarks"
+				cols="30"
+				rows="10"
+				class="remarks"
+				placeholder="Remarks"
+				bind:value={remarks}
+			></textarea>
 		</p>
 		<h2 class="heading">Acknowledgement and Submission</h2>
 		<div class="container">
 			<div class="checkbox">
-				<input type="checkbox" name="" id="" />
+				<input type="checkbox" name="checkbox" id="checkbox" bind:checked={acknowledged} required />
 			</div>
 			<div class="declaration">
 				<p>The declaration for the Zero Compromise Audit Report as below:</p>

@@ -1,26 +1,195 @@
 <script>
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Search from '@lucide/svelte/icons/search';
+	import Check from '@lucide/svelte/icons/check';
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
 
+	let showProjectModal = false;
+	let projects = [];
+	let filteredProjects = [];
+	let projectSearch = '';
+	let projectLoading = false;
+	let projectError = '';
+
+	let requestor_name = '';
+	let requestor_position = '';
+	let requestor_department = '';
+	let traveller_name = '';
+	let traveller_id = '';
+	let traveller_company = '';
+	let traveller_position = '';
+	let traveller_department = '';
+	let traveller_phone_no = '';
+	let mode_of_travel = '';
+	let fare_to_be_borne_by = '';
+	let travel_origin = '';
+	let travel_destination = '';
+	let travel_date_time = '';
+	let travel_purpose = '';
+	let project_no = '';
+	let travel_airline = '';
+	let travel_flight_no = '';
+	let travel_baggage_required = '';
+	let meal_onboard_required = '';
 	let showAdditionalTraveller = false;
+	let acknowledged = false;
+	let created_at = '';
+	let created_by = '';
+
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
+
+	let errorMsg = '';
+	let saving = false;
+
+	let showSuccess = false;
+	let successTimer;
+
+	async function handleSubmit(e) {
+		e.preventDefault();
+		errorMsg = '';
+		saving = true;
+
+		try {
+			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			if (authErr) throw authErr;
+			const user = auth?.user;
+			if (!user) throw new Error('Not signed in.');
+
+			const { data: profile, error: profileError } = await withTimeout(
+				supabase
+					.from('profiles')
+					.select('first_name, last_name, nickname')
+					.eq('id', user.id)
+					.single(),
+				15000
+			);
+
+			if (profileError) throw profileError;
+
+			const submitterName =
+				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
+
+			const payload = {
+				requestor_name,
+				requestor_position,
+				requestor_department,
+				traveller_name,
+				traveller_id,
+				traveller_company,
+				traveller_position,
+				traveller_department,
+				traveller_phone_no,
+				mode_of_travel,
+				fare_to_be_borne_by,
+				travel_origin,
+				travel_destination,
+				travel_date_time,
+				travel_purpose,
+				project_no,
+				travel_airline,
+				travel_flight_no,
+				travel_baggage_required,
+				meal_onboard_required,
+				acknowledged,
+				created_by: user.id,
+				created_by_name: submitterName
+			};
+
+			const { error: insErr } = await withTimeout(
+				supabase.from('trf_submissions').insert(payload),
+				15000
+			);
+			if (insErr) throw insErr;
+
+			showSuccess = true;
+
+			setTimeout(() => {
+				showSuccess = false;
+				goto('/');
+			}, 3000);
+		} catch (error) {
+			errorMsg = error?.message ?? String(error);
+		} finally {
+			saving = false;
+		}
+	}
+
+	async function loadProjects() {
+		projectLoading = true;
+		projectError = '';
+
+		const { data, error } = await supabase
+			.from('projects')
+			.select('project_name, project_id, region, location')
+			.order('project_name', { ascending: true });
+
+		if (error) {
+			projectError = error.message;
+			projects = [];
+			filteredProjects = [];
+		} else {
+			projects = data ?? [];
+			filterProjects();
+		}
+
+		projectLoading = false;
+	}
+
+	function filterProjects() {
+		const query = projectSearch.trim().toLowerCase();
+		if (!query) {
+			filteredProjects = projects;
+			return;
+		}
+
+		filteredProjects = projects.filter((project) => {
+			const name = project.project_name ?? '';
+			const id = project.project_id ?? '';
+			return `${name} ${id}`.toLowerCase().includes(query);
+		});
+	}
+
+	async function openProjectModal() {
+		showProjectModal = true;
+		if (projects.length === 0 && !projectLoading) {
+			await loadProjects();
+		}
+	}
+
+	function closeProjectModal() {
+		showProjectModal = false;
+	}
+
+	function selectProject(project) {
+		project_name = project.project_name ?? '';
+		project_no = project.project_id ?? '';
+		region = project.region ?? '';
+		location = project.location ?? '';
+		closeProjectModal();
+	}
 </script>
 
 <h1 class="title">Travel Requisition Form Report (e-TRF) Submission</h1>
 
 <div class="project-box">
-	<form action="" class="forms">
+	<form class="forms" onsubmit={handleSubmit}>
 		<h2 class="heading">Requestor Information</h2>
 		<div class="forms-p">
 			<label for="requestor-name" class="forms-label">Requestor Name:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={requestor_name} required />
 		</div>
 		<div class="forms-p">
 			<label for="requestor-position" class="forms-label">Position:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={requestor_position} required />
 		</div>
 		<div class="forms-p">
 			<label for="department" class="forms-label">Department:</label>
-			<select class="select">
+			<select class="select" bind:value={requestor_department} required>
 				<option value="" disabled selected></option>
 				<option value="Project">Project</option>
 				<option value="OSH">OSH</option>
@@ -31,23 +200,23 @@
 		<h2 class="heading">Traveller Information</h2>
 		<div class="forms-p">
 			<label for="traveller-name" class="forms-label">Traveller Name:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={traveller_name} required />
 		</div>
 		<div class="forms-p">
 			<label for="traveller-ic-passport" class="forms-label">IC or Passport No.:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={traveller_id} required />
 		</div>
 		<div class="forms-p">
 			<label for="traveller-company" class="forms-label">Company:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={traveller_company} required />
 		</div>
 		<div class="forms-p">
 			<label for="traveller-position" class="forms-label">Position:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={traveller_position} required />
 		</div>
 		<div class="forms-p">
 			<label for="department" class="forms-label">Department:</label>
-			<select class="select">
+			<select class="select" bind:value={traveller_department} required>
 				<option value="" disabled selected></option>
 				<option value="Project">Project</option>
 				<option value="OSH">OSH</option>
@@ -55,11 +224,11 @@
 		</div>
 		<div class="forms-p">
 			<label for="traveller-phone-no" class="forms-label">Phone No.:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={traveller_phone_no} required />
 		</div>
 		<div class="forms-p">
 			<label for="mode-of-travel" class="forms-label">Mode of Travel:</label>
-			<select class="select">
+			<select class="select" bind:value={mode_of_travel} required>
 				<option value="" disabled selected></option>
 				<option value="Road">Road</option>
 				<option value="Company-Vehicle">Company Vehicle</option>
@@ -68,7 +237,7 @@
 		</div>
 		<div class="forms-p">
 			<label for="fare-to-be-borne-by" class="forms-label">Fare to be Borne by:</label>
-			<select class="select">
+			<select class="select" bind:value={fare_to_be_borne_by} required>
 				<option value="" disabled selected></option>
 				<option value="boilermech">Boilermech Sdn Bhd</option>
 				<option value="bm-greentech">BM GreenTech Bhd</option>
@@ -82,47 +251,49 @@
 		<h2 class="heading">Business Trip Details</h2>
 		<div class="forms-p">
 			<label for="travel-origin" class="forms-label">Origin:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={travel_origin} required />
 		</div>
 		<div class="forms-p">
 			<label for="travel-destination" class="forms-label">Destination:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={travel_destination} required />
 		</div>
 		<div class="forms-p">
 			<label for="travel-date-time" class="forms-label">Departure Date & Time:</label>
-			<input type="datetime-local" class="forms-input" />
+			<input type="datetime-local" class="forms-input" bind:value={travel_date_time} required />
 		</div>
 		<div class="forms-p">
 			<label for="travel-purpose" class="forms-label">Purpose of Travel:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={travel_purpose} required />
 		</div>
 		<div class="forms-p">
 			<label for="project-id" class="forms-label">Project ID:</label>
-			<input type="text" placeholder="MP1234" class="forms-input" />
-			<button class="button-primary" id="button-search"><Search size={16} /></button>
+			<input type="text" class="forms-input" bind:value={project_no} disabled />
+			<button type="button" class="button-primary" onclick={openProjectModal} id="button-search"
+				><Search size={16} /></button
+			>
 		</div>
 		<div class="forms-p">
 			<label for="travel-airline" class="forms-label">Preferred Airline:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={travel_airline} required />
 		</div>
 		<div class="forms-p">
 			<label for="travel-flight-no" class="forms-label">Flight No.:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={travel_flight_no} required />
 		</div>
 		<div class="forms-p">
 			<label for="travel-baggage-required" class="forms-label">Baggage Required (kg):</label>
-			<input type="radio" name="baggage-weight" id="15-kg" />
+			<input type="radio" name="baggage-weight" id="15-kg" bind:value={travel_baggage_required} />
 			<label for="15-kg" class="label">15</label>
-			<input type="radio" name="baggage-weight" id="20-kg" />
+			<input type="radio" name="baggage-weight" id="20-kg" bind:value={travel_baggage_required} />
 			<label for="20-kg" class="label">20</label>
-			<input type="radio" name="baggage-weight" id="30-kg" />
+			<input type="radio" name="baggage-weight" id="30-kg" bind:value={travel_baggage_required} />
 			<label for="30-kg" class="label">30</label>
 		</div>
 		<div class="forms-p">
 			<label for="meal-onboard-required" class="forms-label">Meal Onboard Required:</label>
-			<input type="radio" name="baggage-weight" id="meal-yes" />
+			<input type="radio" name="baggage-weight" id="meal-yes" bind:value={meal_onboard_required} />
 			<label for="meal-yes" class="label">Yes</label>
-			<input type="radio" name="baggage-weight" id="meal-no" />
+			<input type="radio" name="baggage-weight" id="meal-no" bind:value={meal_onboard_required} />
 			<label for="meal-no" class="label">No</label>
 		</div>
 		<br />
@@ -132,6 +303,50 @@
 			<input type="checkbox" bind:checked={showAdditionalTraveller} />
 			&nbsp;&nbsp;Should there be more than one (1) traveller
 		</p>
+		{#if showProjectModal}
+			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
+				<div class="modal">
+					<h3>Select a Project</h3>
+					<div class="project-search">
+						<input
+							type="text"
+							placeholder="Project Name/Project ID"
+							class="project-search-input"
+							bind:value={projectSearch}
+							oninput={filterProjects}
+						/>
+						<button type="button" class="project-search-button" onclick={filterProjects}>
+							<Search />
+						</button>
+					</div>
+					<div class="project-list">
+						<div class="project-list-header">
+							<span>Project Name</span>
+							<span>Project ID</span>
+						</div>
+						{#if projectLoading}
+							<p class="project-status">Loading projects...</p>
+						{:else if projectError}
+							<p class="project-status error">{projectError}</p>
+						{:else if filteredProjects.length === 0}
+							<p class="project-status">No projects found.</p>
+						{:else}
+							{#each filteredProjects as project}
+								<button type="button" class="project-row" onclick={() => selectProject(project)}>
+									<span>{project.project_name ?? '-'}</span>
+									<span class="project-row-id">{project.project_id ?? '-'}</span>
+								</button>
+							{/each}
+						{/if}
+					</div>
+					<div class="modal-actions">
+						<button type="button" class="button-secondary" onclick={closeProjectModal}>
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 		{#if showAdditionalTraveller}
 			<h3 class="heading">Additional Traveller Information</h3>
 			<div class="forms-p">
@@ -188,7 +403,7 @@
 		<h2 class="heading">Acknowledgement and Submission</h2>
 		<div class="container">
 			<div class="checkbox">
-				<input type="checkbox" name="" id="" />
+				<input type="checkbox" name="checkbox" id="checkbox" bind:checked={acknowledged} />
 			</div>
 			<div class="declaration">
 				<p>The declaration for the Staff Claim Form Report as below:</p>
@@ -205,14 +420,27 @@
 			</div>
 		</div>
 		<p>Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
-			<input type="password" class="forms-input" />
-		</div>
+			<input type="password" class="forms-input" bind:value={confirmPassword} />
+		</div> -->
+		{#if errorMsg}
+			<p class="error">{errorMsg}</p>
+		{/if}
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit" disabled={saving}
+				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
+			>
 		</div>
 	</form>
+	{#if showSuccess}
+		<div class="success-overlay">
+			<div class="success-popup">
+				<h3>Success! <Check strokeWidth={4} /></h3>
+				<p>Your form submission was successful.</p>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -303,6 +531,115 @@
 		margin: 10px 0;
 		font-size: 20px;
 		font-weight: bold;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		z-index: 50;
+	}
+
+	.modal {
+		background: #ffffff;
+		border-radius: 10px;
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+		padding: 20px;
+		width: min(600px, 95vw);
+	}
+
+	.modal h3 {
+		margin: 0 0 16px 0;
+		font-size: 20px;
+	}
+
+	.project-search {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+
+	.project-search-input {
+		flex: 1;
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid #cfd6e4;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+
+	.project-search-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 36px;
+		padding: 0;
+		background-color: #091747;
+		border-radius: 6px;
+	}
+
+	.project-search-button:hover {
+		background-color: #091747b9;
+	}
+
+	.project-list {
+		border: 1px solid #cfd6e4;
+		border-radius: 8px;
+		overflow: hidden;
+		max-height: 320px;
+		overflow-y: auto;
+	}
+
+	.project-list-header,
+	.project-row {
+		display: grid;
+		grid-template-columns: 1.5fr 1fr;
+		gap: 10px;
+		padding: 10px 12px;
+	}
+
+	.project-list-header {
+		background-color: #f2f4f9;
+		font-weight: bold;
+		border-bottom: 1px solid #cfd6e4;
+		text-align: center;
+	}
+
+	.project-row {
+		width: 100%;
+		text-align: left;
+		background: #ffffff;
+		border: none;
+		border-bottom: 1px solid #e3e8f0;
+		cursor: pointer;
+	}
+
+	.project-row:last-child {
+		border-bottom: none;
+	}
+
+	.project-row:hover {
+		background-color: #dedede;
+	}
+
+	.project-row-id {
+		text-align: center;
+	}
+
+	.project-status {
+		padding: 12px;
+		margin: 0;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: 16px;
 	}
 
 	.project-box {

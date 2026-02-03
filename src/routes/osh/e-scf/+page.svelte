@@ -1,24 +1,222 @@
 <script>
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Search from '@lucide/svelte/icons/search';
+	import Check from '@lucide/svelte/icons/check';
+	import { supabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
+
+	let showProjectModal = false;
+	let projects = [];
+	let filteredProjects = [];
+	let projectSearch = '';
+	let projectLoading = false;
+	let projectError = '';
+
+	let staff_name = '';
+	let staff_position = '';
+	let department = '';
+	let claim_date = '';
+	let project_no = '';
+	let claim_location = '';
+	let site_allowance = '';
+	let accommodation = '';
+	let toll_fare = '';
+	let fuel_cost = '';
+	let claim_mileage = '';
+	let car_rental = '';
+	let site_purchase = '';
+	let maps_screenshot_path = '';
+	let claim_other = '';
+	let claim_remarks = '';
+	let acknowledged = false;
+	let created_at = '';
+	let created_by = '';
+
+	let maps_screenshot_file;
+
+	function onFile(e, setter) {
+		setter(e.currentTarget.files?.[0] ?? null);
+	}
+
+	// let confirmPassword = '';
+
+	// if (!confirmPassword) {
+	// 	throw new Error('Please confirm your login password.');
+	// }
+
+	let errorMsg = '';
+	let saving = false;
+
+	let showSuccess = false;
+	let successTimer;
+
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
+		]);
+	}
+
+	async function uploadToBucket(file, folder) {
+		if (!file) return null;
+
+		const ext = file.name.split('.').pop() || 'bin';
+		const fileName = `${crypto.randomUUID()}.${ext}`;
+		const path = `${folder}/${fileName}`;
+
+		const { data, error } = await supabase.storage
+			.from('scf_uploads')
+			.upload(path, file, { upsert: false });
+
+		if (error) {
+			console.error('[upload] error', error);
+			throw error;
+		}
+
+		return data.path;
+	}
+
+	async function handleSubmit(e) {
+		e.preventDefault();
+		errorMsg = '';
+		saving = true;
+
+		try {
+			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			if (authErr) throw authErr;
+			const user = auth?.user;
+			if (!user) throw new Error('Not signed in.');
+
+			const { data: profile, error: profileError } = await withTimeout(
+				supabase
+					.from('profiles')
+					.select('first_name, last_name, nickname')
+					.eq('id', user.id)
+					.single(),
+				15000
+			);
+
+			if (profileError) throw profileError;
+
+			const submitterName =
+				`${profile?.first_name ?? ''} ${profile?.last_name ?? ''}`.trim() || user.email;
+
+			const maps_screenshot_path = await Promise.all([
+				withTimeout(uploadToBucket(maps_screenshot_file, 'maps_screenshot'))
+			]);
+
+			const payload = {
+				staff_name,
+				staff_position,
+				department,
+				claim_date,
+				project_no,
+				claim_location,
+				site_allowance,
+				accommodation,
+				toll_fare,
+				fuel_cost,
+				claim_mileage,
+				car_rental,
+				site_purchase,
+				maps_screenshot_path,
+				claim_other,
+				claim_remarks,
+				acknowledged,
+				created_by: user.id,
+				created_by_name: submitterName
+			};
+
+			const { error: insErr } = await withTimeout(
+				supabase.from('scf_submissions').insert(payload),
+				15000
+			);
+			if (insErr) throw insErr;
+
+			showSuccess = true;
+
+			setTimeout(() => {
+				showSuccess = false;
+				goto('/');
+			}, 3000);
+		} catch (error) {
+			errorMsg = error?.message ?? String(error);
+		} finally {
+			saving = false;
+		}
+	}
+
+	async function loadProjects() {
+		projectLoading = true;
+		projectError = '';
+
+		const { data, error } = await supabase
+			.from('projects')
+			.select('project_name, project_id, region, location')
+			.order('project_name', { ascending: true });
+
+		if (error) {
+			projectError = error.message;
+			projects = [];
+			filteredProjects = [];
+		} else {
+			projects = data ?? [];
+			filterProjects();
+		}
+
+		projectLoading = false;
+	}
+
+	function filterProjects() {
+		const query = projectSearch.trim().toLowerCase();
+		if (!query) {
+			filteredProjects = projects;
+			return;
+		}
+
+		filteredProjects = projects.filter((project) => {
+			const name = project.project_name ?? '';
+			const id = project.project_id ?? '';
+			return `${name} ${id}`.toLowerCase().includes(query);
+		});
+	}
+
+	async function openProjectModal() {
+		showProjectModal = true;
+		if (projects.length === 0 && !projectLoading) {
+			await loadProjects();
+		}
+	}
+
+	function closeProjectModal() {
+		showProjectModal = false;
+	}
+
+	function selectProject(project) {
+		project_name = project.project_name ?? '';
+		project_no = project.project_id ?? '';
+		region = project.region ?? '';
+		location = project.location ?? '';
+		closeProjectModal();
+	}
 </script>
 
 <h1 class="title">Staff Claim Form Report (e-SCF) Submission</h1>
 
 <div class="project-box">
-	<form action="" class="forms">
+	<form class="forms" onsubmit={handleSubmit}>
 		<h2 class="heading">Staff Information</h2>
 		<div class="forms-p">
 			<label for="staff-name" class="forms-label">Name:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={staff_name} required />
 		</div>
 		<div class="forms-p">
 			<label for="staff-position" class="forms-label">Position:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={staff_position} required />
 		</div>
 		<div class="forms-p">
 			<label for="department" class="forms-label">Department:</label>
-			<select class="department-select">
+			<select class="department-select" bind:value={department} required>
 				<option value="" disabled selected></option>
 				<option value="Project">Project</option>
 				<option value="OSH">OSH</option>
@@ -29,67 +227,135 @@
 		<h2 class="heading">Claim Information</h2>
 		<div class="forms-p">
 			<label for="claim-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" />
+			<input type="date" class="forms-input" bind:value={claim_date} required />
 		</div>
 		<div class="forms-p">
-			<label for="project-id" class="forms-label">Project ID:</label>
-			<input type="text" placeholder="MP1234" class="forms-input" />
-			<button class="button-primary" id="button-search"><Search size={16} /></button>
+			<label for="project-no" class="forms-label">Project ID:</label>
+			<input type="text" class="forms-input" bind:value={project_no} disabled />
+			<button type="button" class="button-primary" onclick={openProjectModal} id="button-search"
+				><Search size={16} /></button
+			>
 		</div>
 		<div class="forms-p">
 			<label for="claim-location" class="forms-label">Location:</label>
-			<input type="text" placeholder="House-Site-House (0km)" class="forms-input" />
+			<input
+				type="text"
+				placeholder="House-Site-House (0km)"
+				class="forms-input"
+				bind:value={claim_location}
+				required
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="site-allowance" class="forms-label">Site Allowance:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={site_allowance} required />
 		</div>
 		<div class="forms-p">
 			<label for="accommodation" class="forms-label">Accommodation:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={accommodation} required />
 		</div>
 		<div class="forms-p">
 			<label for="toll-fare" class="forms-label">Toll Fare:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={toll_fare} required />
 		</div>
 		<div class="forms-p">
 			<label for="fuel-cost" class="forms-label">Fuel Cost:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={fuel_cost} required />
 		</div>
 		<div class="forms-p">
 			<label for="claim-mileage" class="forms-label">Mileage:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={claim_mileage} required />
 		</div>
 		<div class="forms-p">
 			<label for="car-rental" class="forms-label">Car Rental:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={car_rental} required />
 		</div>
 		<div class="forms-p">
 			<label for="site-purchase" class="forms-label">Site Purchase:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={site_purchase} required />
 		</div>
 		<div class="forms-p">
 			<label for="maps-screenshot" class="forms-label">Maps Screenshot:</label>
 			<div class="upload">
 				<p class="upload-text">
-					<input type="file" id="maps_photo" name="maps_photo" accept="image/png, image/jpeg" />
+					<input
+						type="file"
+						id="maps_photo"
+						name="maps_photo"
+						accept="image/png, image/jpeg"
+						multiple
+						onchange={(e) => (maps_screenshot_file = e.target.files[0])}
+						required
+					/>
 				</p>
 			</div>
 		</div>
 		<div class="forms-p">
 			<label for="claim-other" class="forms-label">Other:</label>
-			<input type="text" class="forms-input" />
+			<input type="text" class="forms-input" bind:value={claim_other} required />
 		</div>
 		<div class="forms-p">
 			<label for="claim-remarks" class="forms-label">Remarks:</label>
-			<textarea name="" id="" cols="30" rows="10" class="remarks" placeholder="Remarks"></textarea>
+			<textarea
+				name="remarks"
+				id="remarks"
+				cols="30"
+				rows="10"
+				class="remarks"
+				placeholder="Remarks"
+				bind:value={claim_remarks}
+			></textarea>
 		</div>
+		{#if showProjectModal}
+			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
+				<div class="modal">
+					<h3>Select a Project</h3>
+					<div class="project-search">
+						<input
+							type="text"
+							placeholder="Project Name/Project ID"
+							class="project-search-input"
+							bind:value={projectSearch}
+							oninput={filterProjects}
+						/>
+						<button type="button" class="project-search-button" onclick={filterProjects}>
+							<Search />
+						</button>
+					</div>
+					<div class="project-list">
+						<div class="project-list-header">
+							<span>Project Name</span>
+							<span>Project ID</span>
+						</div>
+						{#if projectLoading}
+							<p class="project-status">Loading projects...</p>
+						{:else if projectError}
+							<p class="project-status error">{projectError}</p>
+						{:else if filteredProjects.length === 0}
+							<p class="project-status">No projects found.</p>
+						{:else}
+							{#each filteredProjects as project}
+								<button type="button" class="project-row" onclick={() => selectProject(project)}>
+									<span>{project.project_name ?? '-'}</span>
+									<span class="project-row-id">{project.project_id ?? '-'}</span>
+								</button>
+							{/each}
+						{/if}
+					</div>
+					<div class="modal-actions">
+						<button type="button" class="button-secondary" onclick={closeProjectModal}>
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 		<br />
 		<hr />
 		<h2 class="heading">Acknowledgement and Submission</h2>
 		<div class="container">
 			<div class="checkbox">
-				<input type="checkbox" name="" id="" />
+				<input type="checkbox" name="checkbox" id="checkbox" bind:checked={acknowledged} required />
 			</div>
 			<div class="declaration">
 				<p>The declaration for the Staff Claim Form Report as below:</p>
@@ -106,14 +372,27 @@
 			</div>
 		</div>
 		<p>Note: Double check if content is correct before submitting.</p>
-		<div class="forms-p">
+		<!-- <div class="forms-p">
 			<p><b>Confirm Login Password</b></p>
-			<input type="password" class="forms-input" />
-		</div>
+			<input type="password" class="forms-input" bind:value={confirmPassword} />
+		</div> -->
+		{#if errorMsg}
+			<p class="error">{errorMsg}</p>
+		{/if}
 		<div class="submit">
-			<button type="submit" class="button-submit"><FileText />Submit</button>
+			<button type="submit" class="button-submit" disabled={saving}
+				><FileText />{saving ? 'Submitting...' : 'Submit'}</button
+			>
 		</div>
 	</form>
+	{#if showSuccess}
+		<div class="success-overlay">
+			<div class="success-popup">
+				<h3>Success! <Check strokeWidth={4} /></h3>
+				<p>Your form submission was successful.</p>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -210,6 +489,115 @@
 		margin: 10px 0;
 		font-size: 20px;
 		font-weight: bold;
+	}
+
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		z-index: 50;
+	}
+
+	.modal {
+		background: #ffffff;
+		border-radius: 10px;
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+		padding: 20px;
+		width: min(600px, 95vw);
+	}
+
+	.modal h3 {
+		margin: 0 0 16px 0;
+		font-size: 20px;
+	}
+
+	.project-search {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+
+	.project-search-input {
+		flex: 1;
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid #cfd6e4;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+
+	.project-search-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 36px;
+		padding: 0;
+		background-color: #091747;
+		border-radius: 6px;
+	}
+
+	.project-search-button:hover {
+		background-color: #091747b9;
+	}
+
+	.project-list {
+		border: 1px solid #cfd6e4;
+		border-radius: 8px;
+		overflow: hidden;
+		max-height: 320px;
+		overflow-y: auto;
+	}
+
+	.project-list-header,
+	.project-row {
+		display: grid;
+		grid-template-columns: 1.5fr 1fr;
+		gap: 10px;
+		padding: 10px 12px;
+	}
+
+	.project-list-header {
+		background-color: #f2f4f9;
+		font-weight: bold;
+		border-bottom: 1px solid #cfd6e4;
+		text-align: center;
+	}
+
+	.project-row {
+		width: 100%;
+		text-align: left;
+		background: #ffffff;
+		border: none;
+		border-bottom: 1px solid #e3e8f0;
+		cursor: pointer;
+	}
+
+	.project-row:last-child {
+		border-bottom: none;
+	}
+
+	.project-row:hover {
+		background-color: #dedede;
+	}
+
+	.project-row-id {
+		text-align: center;
+	}
+
+	.project-status {
+		padding: 12px;
+		margin: 0;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: 16px;
 	}
 
 	.project-box {
