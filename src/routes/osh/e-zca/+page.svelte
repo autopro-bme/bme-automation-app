@@ -908,33 +908,23 @@
 	}
 
 	.info-popup {
+		display: none;
 		position: absolute;
-		top: 110%;
+		top: 100%;
 		left: 50%;
-		transform: translate(-50%);
-		background-color: #ffffff;
-		color: #091747;
-		border: 1px solid #091747;
-		border-radius: 4px;
-		padding: 8px 12px;
-		font-size: 13px;
-		width: 900px;
-		z-index: 100;
-		opacity: 0;
-		visibility: hidden;
-		pointer-events: none;
-		transition: opacity 0.15s ease-in-out;
-	}
+		transform: translateX(-50%);
+		z-index: 20;
 
-	.info-wrapper {
-		position: relative;
-		display: inline-flex;
+		background: #ffffff;
+		border: 1px solid #091747;
+		border-radius: 6px;
+		padding: 12px;
+		width: 360px;
+		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 	}
 
 	.info-wrapper:hover .info-popup {
-		opacity: 1;
-		visibility: visible;
-		pointer-events: auto;
+		display: block;
 	}
 
 	.note {
