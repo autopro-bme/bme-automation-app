@@ -169,6 +169,13 @@
 	let showSuccess = false;
 	let successTimer;
 
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Submit timed out')), ms))
+		]);
+	}
+
 	async function handleSubmit(e) {
 		e.preventDefault();
 		errorMsg = '';
