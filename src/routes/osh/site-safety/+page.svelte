@@ -237,20 +237,29 @@
 	}
 
 	function formatSubsections(subsections) {
-		if (!Array.isArray(subsections) || !subsections.length) return '-';
+		if (!Array.isArray(subsections) || subsections.length === 0) return '-';
 
-		return subsections
+		const sectionText = subsections
 			.map((section) => {
-				const itemsText = (section.items || [])
-					.map(
-						(item) =>
-							`• ${item.label} — Score: ${item.score}${item.remarks ? ` (${item.remarks})` : ''}`
-					)
-					.join('\n');
+				const title = (section?.title ?? '').trim();
+				const items = Array.isArray(section?.items) ? section.items : [];
 
-				return `${section.title}\n${itemsText}`;
+				const lines = items.map((item) => {
+					const label = (item?.label ?? '').trim();
+					const score = item?.score ?? '';
+					const remarks = (item?.remarks ?? '').trim();
+
+					// Include remarks when not empty:
+					// const remarksText = remarks ? ` — Remark: ${remarks}` : '';
+
+					return `• ${label} — Score: ${score}`; // + remarksText;
+				});
+
+				return [title, ...lines].filter(Boolean).join('\n');
 			})
-			.join('\n\n');
+			.filter(Boolean);
+
+		return sectionText.join('\n\n');
 	}
 
 	loadForms();
@@ -432,7 +441,9 @@
 						<p class="form-details">{formatReportDay(details?.report_day ?? '-')}</p>
 					{:else if formType === 'eZCA'}
 						<p><b>Subsections:</b></p>
-						<p class="form-details">{formatSubsections(details?.subsections ?? '-')}</p>
+						<p class="form-details subsections-text">
+							{formatSubsections(details?.subsections ?? '-')}
+						</p>
 					{/if}
 
 					<div class="modal-actions">
@@ -589,6 +600,10 @@
 	.site-safety-download {
 		display: flex;
 		margin: 10px;
+	}
+
+	.subsections-text {
+		white-space: pre-wrap;
 	}
 
 	.title {
