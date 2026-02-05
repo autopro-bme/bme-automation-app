@@ -3,7 +3,7 @@
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
 	import { supabase } from '$lib/supabase';
 
-	let formType = 'TBM';
+	let formType = '';
 	let fromDate = '';
 	let toDate = '';
 	let searchText = '';
@@ -115,6 +115,11 @@
 		try {
 			const table = tableMap[formType];
 			const selectCols = selectMap[formType];
+
+			if (!table || !selectCols) {
+				loading = false;
+				return;
+			}
 
 			let q = supabase.from(table).select(selectCols).order('created_at', { ascending: false });
 
@@ -337,7 +342,9 @@
 </div>
 
 <div class="project-box">
-	{#if loading}
+	{#if !formType}
+		<p class="hint">Please choose an eForm data.</p>
+	{:else if loading}
 		<p>Loading...</p>
 	{:else if errorMsg}
 		<p class="error">{errorMsg}</p>
