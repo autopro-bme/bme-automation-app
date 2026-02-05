@@ -19,32 +19,32 @@
 	let activeRow = null;
 
 	const tableMap = {
-		TBM: 'tbm_submissions',
-		PPE: 'ppe_submissions',
-		HKP: 'hkp_submissions',
-		ZCA: 'zca_submissions'
+		eTBM: 'tbm_submissions',
+		ePPE: 'ppe_submissions',
+		eHKP: 'hkp_submissions',
+		eZCA: 'zca_submissions'
 	};
 
 	const selectMap = {
-		TBM: `
+		eTBM: `
 			id, created_at, created_by_name,
 			project_no, project_name,
 			meeting_date,
 			tbm_form_path, tbm_photo_path, ptw_form_path
 		`,
-		PPE: `
+		ePPE: `
 			id, created_at, created_by_name,
 			project_no, project_name,
 			activity_date,
 			ppe_photo_path
 		`,
-		HKP: `
+		eHKP: `
 			id, created_at, created_by_name,
 			project_no, project_name,
 			activity_date,
 			hkp_photo_path
 		`,
-		ZCA: `
+		eZCA: `
 			id, created_at, created_by_name,
 			project_no, project_name,
 			audit_date
@@ -52,17 +52,17 @@
 	};
 
 	const detailsSelectMap = {
-		TBM: 'meeting_topics, competency, attendance',
-		PPE: 'attendance',
-		HKP: 'report_day',
-		ZCA: 'subsections'
+		eTBM: 'meeting_topics, competency, attendance',
+		ePPE: 'attendance',
+		eHKP: 'report_day',
+		eZCA: 'subsections'
 	};
 
 	const searchCols = {
-		TBM: ['project_no', 'project_name', 'created_by_name'],
-		PPE: ['project_no', 'project_name', 'created_by_name'],
-		HKP: ['project_no', 'project_name', 'created_by_name'],
-		ZCA: ['project_no', 'project_name', 'created_by_name']
+		eTBM: ['project_no', 'project_name', 'created_by_name'],
+		ePPE: ['project_no', 'project_name', 'created_by_name'],
+		eHKP: ['project_no', 'project_name', 'created_by_name'],
+		eZCA: ['project_no', 'project_name', 'created_by_name']
 	};
 
 	function toISOStart(dateStr) {
@@ -88,9 +88,9 @@
 	}
 
 	const bucketMap = {
-		TBM: { tbm_form_path: 'tbm_form', tbm_photo_path: 'tbm_session', ptw_form_path: 'ptw_form' },
-		PPE: { ppe_photo_path: 'ppe_photo' },
-		HKP: { hkp_photo_path: 'hkp_photo' }
+		eTBM: { tbm_form_path: 'tbm_form', tbm_photo_path: 'tbm_session', ptw_form_path: 'ptw_form' },
+		ePPE: { ppe_photo_path: 'ppe_photo' },
+		eHKP: { hkp_photo_path: 'hkp_photo' }
 	};
 
 	function fileUrlFor(type, colName, path) {
@@ -178,12 +178,79 @@
 		}
 	}
 
-	function closeModal() {
+	function closeDetailsModal() {
 		showDetailsModal = false;
 		details = null;
 		activeRow = null;
 		modalError = '';
 		modalLoading = false;
+	}
+
+	function formatArray(value) {
+		if (!value) return '-';
+		if (Array.isArray(value)) return value.join(', ');
+		return String(value);
+	}
+
+	function formatAttendance(attendance) {
+		if (!attendance || typeof attendance !== 'object') return '-';
+
+		return Object.entries(attendance)
+			.filter(([, value]) => Number(value) > 0)
+			.map(
+				([key, value]) =>
+					`${key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}: ${value}`
+			)
+			.join(', ');
+	}
+
+	function formatCompetency(obj) {
+		if (!obj || typeof obj !== 'object') return '-';
+
+		return Object.entries(obj)
+			.filter(([, value]) => value && value !== 'no_activity')
+			.map(([key, value]) => `${key.replace(/_/g, ' ').toUpperCase()}: ${value}`)
+			.join(', ');
+	}
+
+	function formatReportDay(reportDay) {
+		if (!reportDay || typeof reportDay !== 'object') return '-';
+
+		const labelMap = {
+			opd: 'OPD',
+			uauc: 'UAUC',
+			high_risk: 'High Risk',
+			near_miss: 'Near Miss',
+			site_walk: 'Site Walk',
+			stop_work: 'Stop Work',
+			lt_injuries: 'LT Injuries',
+			nlt_injuries: 'NLT Injuries',
+			sd_occurrence: 'SD Occurrence',
+			non_compliance: 'Non-Compliance'
+		};
+
+		const parts = Object.entries(reportDay)
+			.filter(([, value]) => Number(value) > 0)
+			.map(([key, value]) => `${labelMap[key] ?? key}: ${value}`);
+
+		return parts.length ? parts.join(', ') : 'None';
+	}
+
+	function formatSubsections(subsections) {
+		if (!Array.isArray(subsections) || !subsections.length) return '-';
+
+		return subsections
+			.map((section) => {
+				const itemsText = (section.items || [])
+					.map(
+						(item) =>
+							`• ${item.label} — Score: ${item.score}${item.remarks ? ` (${item.remarks})` : ''}`
+					)
+					.join('\n');
+
+				return `${section.title}\n${itemsText}`;
+			})
+			.join('\n\n');
 	}
 
 	loadForms();
@@ -196,7 +263,7 @@
 		type="radio"
 		name="eForm-type"
 		id="eTBM-data"
-		value="TBM"
+		value="eTBM"
 		bind:group={formType}
 		onchange={loadForms}
 	/>
@@ -205,7 +272,7 @@
 		type="radio"
 		name="eForm-type"
 		id="ePPE-data"
-		value="PPE"
+		value="ePPE"
 		bind:group={formType}
 		onchange={loadForms}
 	/>
@@ -214,7 +281,7 @@
 		type="radio"
 		name="eForm-type"
 		id="eHKP-data"
-		value="HKP"
+		value="eHKP"
 		bind:group={formType}
 		onchange={loadForms}
 	/>
@@ -223,7 +290,7 @@
 		type="radio"
 		name="eForm-type"
 		id="eZCA-data"
-		value="ZCA"
+		value="eZCA"
 		bind:group={formType}
 		onchange={loadForms}
 	/>
@@ -280,13 +347,13 @@
 				<p><b>Project ID:&nbsp;</b>{r.project_no ?? '-'}</p>
 				<p><b>Submitted By:&nbsp;</b>{r.created_by_name ?? '-'}</p>
 				<p><b>Created Date:&nbsp;</b>{fmtDateTime(r.created_at)}</p>
-				{#if formType === 'TBM'}
+				{#if formType === 'eTBM'}
 					<p><b>Meeting Date:&nbsp;</b>{fmtDateOnly(r.meeting_date)}</p>
 
 					<p class="doc-line">
 						<b>TBM Form:&nbsp;</b>
 						{#if r.tbm_form_path}
-							<a href={fileUrlFor('TBM', 'tbm_form_path', r.tbm_form_path)} target="_blank">
+							<a href={fileUrlFor('eTBM', 'tbm_form_path', r.tbm_form_path)} target="_blank">
 								{fileName(r.tbm_form_path)}
 							</a>
 						{:else}
@@ -296,7 +363,7 @@
 					<p class="doc-line">
 						<b>TBM Photo:&nbsp;</b>
 						{#if r.tbm_photo_path}
-							<a href={fileUrlFor('TBM', 'tbm_photo_path', r.tbm_photo_path)} target="_blank">
+							<a href={fileUrlFor('eTBM', 'tbm_photo_path', r.tbm_photo_path)} target="_blank">
 								{fileName(r.tbm_photo_path)}
 							</a>
 						{:else}
@@ -306,38 +373,38 @@
 					<p class="doc-line">
 						<b>PTW Form:&nbsp;</b>
 						{#if r.ptw_form_path}
-							<a href={fileUrlFor('TBM', 'ptw_form_path', r.ptw_form_path)} target="_blank">
+							<a href={fileUrlFor('eTBM', 'ptw_form_path', r.ptw_form_path)} target="_blank">
 								{fileName(r.ptw_form_path)}
 							</a>
 						{:else}
 							-
 						{/if}
 					</p>
-				{:else if formType === 'PPE'}
+				{:else if formType === 'ePPE'}
 					<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
 					<p class="doc-line">
 						<b>PPE Photo:&nbsp;</b>
 						{#if r.ppe_photo_path}
-							<a href={fileUrlFor('PPE', 'ppe_photo_path', r.ppe_photo_path)} target="_blank">
+							<a href={fileUrlFor('ePPE', 'ppe_photo_path', r.ppe_photo_path)} target="_blank">
 								{fileName(r.ppe_photo_path)}
 							</a>
 						{:else}
 							-
 						{/if}
 					</p>
-				{:else if formType === 'HKP'}
+				{:else if formType === 'eHKP'}
 					<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
 					<p class="doc-line">
 						<b>HKP Photo:&nbsp;</b>
 						{#if r.hkp_photo_path}
-							<a href={fileUrlFor('HKP', 'hkp_photo_path', r.hkp_photo_path)} target="_blank">
+							<a href={fileUrlFor('eHKP', 'hkp_photo_path', r.hkp_photo_path)} target="_blank">
 								{fileName(r.hkp_photo_path)}
 							</a>
 						{:else}
 							-
 						{/if}
 					</p>
-				{:else if formType === 'ZCA'}
+				{:else if formType === 'eZCA'}
 					<p><b>Audit Date:&nbsp;</b>{fmtDateOnly(r.audit_date)}</p>
 				{/if}
 			</div>
@@ -345,25 +412,31 @@
 		{#if showDetailsModal}
 			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select details">
 				<div class="modal">
-					<h3 class="form-heading">Form Details</h3>
+					<h3 class="form-heading">eForm Details</h3>
 					{#if modalLoading}
 						<p>Loading...</p>
 					{:else if modalError}
 						<p class="error">{modalError}</p>
-					{:else if formType === 'TBM'}
-						<p><b>Meeting Topics:</b> {JSON.stringify(details?.meeting_topics ?? '-')}</p>
-						<p><b>Competency:</b> {JSON.stringify(details?.competency ?? '-')}</p>
-						<p><b>Attendance:</b> {JSON.stringify(details?.attendance ?? '-')}</p>
-					{:else if formType === 'PPE'}
-						<p><b>Attendance:</b> {JSON.stringify(details?.attendance ?? '-')}</p>
-					{:else if formType === 'HKP'}
-						<p><b>Report Day:</b> {JSON.stringify(details?.report_day ?? '-')}</p>
-					{:else if formType === 'ZCA'}
-						<p><b>Subsections:</b> {JSON.stringify(details?.subsections ?? '-')}</p>
+					{:else if formType === 'eTBM'}
+						<p><b>Meeting Topics:</b></p>
+						<p class="form-details">{formatArray(details?.meeting_topics ?? '-')}</p>
+						<p><b>Competency:</b></p>
+						<p class="form-details">{formatCompetency(details?.competency ?? '-')}</p>
+						<p><b>Attendance:</b></p>
+						<p class="form-details">{formatAttendance(details?.attendance ?? '-')}</p>
+					{:else if formType === 'ePPE'}
+						<p><b>Attendance:</b></p>
+						<p class="form-details">{formatAttendance(details?.attendance ?? '-')}</p>
+					{:else if formType === 'eHKP'}
+						<p><b>Report Day:</b></p>
+						<p class="form-details">{formatReportDay(details?.report_day ?? '-')}</p>
+					{:else if formType === 'eZCA'}
+						<p><b>Subsections:</b></p>
+						<p class="form-details">{formatSubsections(details?.subsections ?? '-')}</p>
 					{/if}
 
 					<div class="modal-actions">
-						<button type="button" class="button-primary" onclick={closeModal}>Close</button>
+						<button type="button" class="button-primary" onclick={closeDetailsModal}>Close</button>
 					</div>
 				</div>
 			</div>
@@ -453,6 +526,10 @@
 		font-size: 14px;
 	}
 
+	.form-details {
+		margin-bottom: 10px;
+	}
+
 	.form-heading {
 		font-size: 20px;
 		font-weight: bold;
@@ -481,6 +558,7 @@
 		width: min(600px, 92vw);
 		max-height: 80vh;
 		overflow: auto;
+		overflow-wrap: anywhere;
 	}
 
 	.modal-actions {
