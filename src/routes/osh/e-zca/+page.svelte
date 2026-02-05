@@ -899,6 +899,10 @@
 		color: #091747;
 		cursor: pointer;
 		padding: 0;
+		border: none;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.info-details {
@@ -930,7 +934,13 @@
 		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 	}
 
-	.info-wrapper:hover .info-popup {
+	.info-wrapper {
+		position: relative;
+		display: inline-block;
+	}
+
+	.info-wrapper:hover .info-popup,
+	.info-wrapper:focus-within .info-popup {
 		display: block;
 	}
 
