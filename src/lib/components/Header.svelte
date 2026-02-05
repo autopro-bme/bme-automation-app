@@ -5,6 +5,7 @@
 	import { getSupabase } from '$lib/supabase';
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
+	import Bell from '@lucide/svelte/icons/bell';
 
 	const isAuthPage = $derived.by(() => {
 		const path = $page.url.pathname;
@@ -82,8 +83,9 @@
 		<div class="welcome">
 			<p>Welcome, <b>{userName}</b>!</p>
 			<div class="calendar-history">
-				<a href="/osh/submission-history" class="navigation"><History />History</a>
+				<a href="/osh/notifications" class="navigation"><Bell />Notifications</a>
 				<a href="/osh/calendar-view" class="navigation"><Calendar />Calendar</a>
+				<a href="/osh/submission-history" class="navigation"><History />History</a>
 				<button type="submit" onclick={signOut} class="button-primary">Sign Out</button>
 			</div>
 		</div>
