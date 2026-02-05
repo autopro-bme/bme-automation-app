@@ -319,7 +319,7 @@
 					remarks: '',
 					showInfo: false,
 					infoDetails: [
-						'All scaffolds and ladders are in excellent condition, fully compliant with safety standards, inspected regularly, and tagged.',
+						'SWA not included in documentation, but some awareness exists, typically through informal channels or past experience.',
 						'SWA not actively communicated. Workers unaware of their right to stop unsafe work.',
 						'SWA mentioned in plan, but limited awareness among workers, or no visible evidence of briefing or procedure circulation.',
 						'SWA case occurred but Documentation is incomplete (e.g. missing signatures, unclear description), or No actual SWA case, but clear system in place, workers briefed, and preparedness demonstrated.',
@@ -925,12 +925,11 @@
 		left: 50%;
 		transform: translateX(-50%);
 		z-index: 20;
-
 		background: #ffffff;
 		border: 1px solid #091747;
 		border-radius: 6px;
 		padding: 12px;
-		width: 360px;
+		width: max-content;
 		box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
 	}
 
