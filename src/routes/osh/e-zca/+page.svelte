@@ -40,15 +40,53 @@
 					label: 'Approved Safety Plan & Risk Assessment (HIRARC) on site',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Document exists but is lacking critical sections or less relevant to current site work.',
+						'Incomplete or draft version is available; approval status unclear or still pending.',
+						'Document is available but either: Outdated, Unsigned, or Partially approved.',
+						'Latest and signed document is available, but accessibility is limited (e.g. only in digital format or stored but not communicated to workers).',
+						'Latest version, signed and dated, clearly approved, physically available at the site office, and known to site personnel.'
+					]
 				},
-				{ label: 'Approved SOPs', score: null, remarks: '', showInfo: false },
-				{ label: 'Daily Toolbox Briefing Records', score: null, remarks: '', showInfo: false },
+				{
+					label: 'Approved SOPs',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'SOPs exist, but are generic, outdated, or not relevant to current site activities.',
+						'Draft or incomplete SOPs are present; site team is unclear on SOPs approval or usage.',
+						'SOPs are available but either:Missing one or more activity areas (e.g., no Confined Space SOP), Not specific to site, or Not signed by both Safety & PM.',
+						'All SOPs listed are approved and signed, but partially generic (not fully tailored to the site).',
+						'All SOPs listed are site-specific, signed by Safety & Project Manager, and accessible on-site.'
+					]
+				},
+				{
+					label: 'Daily Toolbox Briefing Records',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Toolbox briefing done verbally but not documented properly or missing signatures/topics.',
+						'Some briefings done but records are incomplete, rarely signed, or topics generic.',
+						'Briefings conducted irregularly or with partial attendance; some missing signatures or unclear topics.',
+						'Briefings are conducted and signed, but some records have less relevant or repeated topics, or occasional missing days.',
+						'Daily toolbox briefings are well-documented with relevant topics and full attendance (with signatures) for each day. Consistent practice.'
+					]
+				},
 				{
 					label: 'Work Permit Process (Hot works, Confined Space, etc.)',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Work is done without permits, or permits are used only occasionally, with minimal oversight.',
+						'Permit system exists but is poorly implemented (e.g., only used reactively or permits are poorly filled and not reviewed).',
+						'Work permits are used, but inconsistently (e.g., some high-risk jobs done without permit, or records incomplete).',
+						'Permit system is in place and mostly followed, but some minor inconsistencies (e.g., permit not displayed, or missing one signature).',
+						'Work permit system is fully implemented and strictly followed for all high-risk work. All permits are complete, signed, and aligned with actual site conditions.'
+					]
 				}
 			]
 		},
@@ -60,19 +98,40 @@
 					label: 'Presence of Competent Safety Supervisor on Site',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Supervisor name is mentioned, but no real presence or engagement at site.',
+						'Supervisor is rarely on site, or unclear if one is officially assigned.',
+						'Supervisor is assigned but only part-time or shared with more than 2 projects.',
+						'Safety Supervisor is assigned and generally present, but some gaps in enforcement or site visibility, or Safety Supervisor is assigned, shared by 2 projects.',
+						'Competent Safety Supervisor is officially assigned, present full-time, actively involved in enforcement and safety audits.'
+					]
 				},
 				{
 					label: 'Project Supervisor/Engineer Responsible in Absence of Safety Supervisor',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Team assumes Safety Supervisor will handle all safety; no one steps in during absence.',
+						'Ad-hoc safety supervision occurs, only when issues arise. No clear person-in-charge is designated during absence.',
+						'Project personnel attempt to manage safety, but with limited consistency or documentation.',
+						'Responsibility is informally taken up by a Project Supervisor/Engineer, who generally monitors safety but may lack structured follow-through.',
+						'Substitution protocol is in place and actively practiced. Project Supervisor/Engineer is briefed and consistently performs safety duties during Safety Supervisor’s absence. Team is aware of this role.'
+					]
 				},
 				{
 					label: 'Safety Officer Attendance at High-Risk Activities',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Rarely present during high-risk activities; only appears after issues arise or for brief checks.',
+						'Occasionally present or only visits site after works have started.',
+						'Present for major high-risk works only; relies on supervisors for others. Monitoring inconsistent.',
+						'Generally present for high-risk works but misses some less frequent or minor activities (e.g. short WAH tasks).',
+						'Safety Officer is consistently present and actively supervises all high-risk activities. Attendance is well-documented.'
+					]
 				}
 			]
 		},
@@ -84,21 +143,54 @@
 					label: 'Full PPE Compliance (Helmet, Harness, Vest, Boots, Gloves)',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Less than 50% compliance. Widespread non-use of PPE, even during hazardous tasks. Unsafe behavior common.',
+						'50–69% compliance. PPE use is inconsistent across work areas. Little to no enforcement.',
+						'70–84% compliance. Noticeable lapses in one or more PPE items. Repeated reminders needed.',
+						'85–94% compliance. Minor lapses observed (e.g., helmet not strapped, gloves missing), but mostly well-managed.',
+						'≥95% of site workforce is fully PPE compliant at all times. Non-compliances are rare and corrected immediately.'
+					]
 				},
 				{
 					label: 'Workers briefed & aware of Safety SOPs',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Very few workers aware of SOPs. Briefings are rare or inconsistent understanding.',
+						'Briefings are irregular. Workers show limited awareness of SOPs. Many unsure what procedures apply.',
+						'Briefings are conducted, but some workers are unsure of SOPs. Records may be incomplete or outdated.',
+						'Most workers understand SOPs and can explain key points. Minor gaps in records or some newer workers not yet briefed.',
+						'Workers are well-briefed and aware. Can explain SOPs clearly. Toolbox talks and safety induction records are complete and signed.'
+					]
 				},
 				{
 					label: 'Workers possess valid CIDB/OSH/Safety Cards/NIOSH passport',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Less than 50% compliant. Most workers are unverified, expired cards, or no records at all.',
+						'50–74% of workers have valid cards.',
+						'75–89% of workers have valid cards. Several missing or expired, but rectification is ongoing.',
+						'90–99% of workers have valid cards. A few pending replacements or newly joined workers in progress.',
+						'All workers have valid CIDB/Safety cards. Site keeps records and tracks expiry.'
+					]
 				},
-				{ label: 'No unauthorized personal on site', score: null, remarks: '', showInfo: false }
+				{
+					label: 'No unauthorized personal on site',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Regular presence of unregistered or unknown individuals on site. Serious lapse in control.',
+						'Frequent unauthorized entries, especially among subcontractor or logistics personnel.',
+						'Occasional unauthorized individuals observed (e.g., unfamiliar subcontractors or unescorted visitors).',
+						'Minor lapse (e.g. unclear ID on 1 person), but no safety risk. System is working, just needs minor tightening.',
+						'Site is fully secured. All personnel authorized, with ID. No unauthorized presence observed.'
+					]
+				}
 			]
 		},
 		{
@@ -109,13 +201,27 @@
 					label: "Subcontractors's OSH Qualifications Verified",
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Minimal verification done. Documents unclear, outdated, or not project-specific.',
+						'Several key documents missing or expired. Verification incomplete for most workers.',
+						'Partial verification. Some missing green cards or competencies documents.',
+						'Minor gaps (e.g. 1–2 documents pending but follow-up in progress), most requirements fulfilled.',
+						'All required HSE qualifications verified. Green cards, competency certs, and engagement documents complete and valid for current project.'
+					]
 				},
 				{
 					label: 'OSH Terms Embedded in Subcontract Agreement',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'HSE terms mostly absent or not project-specific.',
+						'HSE terms vague or minimal.',
+						'General HSE terms present, but no specific reference to site rules or enforcement clauses.',
+						'HSE clauses included but with minor gaps (e.g. not tailored to site or missing 1–2 elements).',
+						'All HSE terms clearly defined, site-specific, signed, and cover full scope of engagement.'
+					]
 				}
 			]
 		},
@@ -123,17 +229,84 @@
 			docs: 'c&c',
 			title: 'Site Condition & Controls',
 			items: [
-				{ label: 'Housekeeping & Waste Disposal', score: null, remarks: '', showInfo: false },
-				{ label: 'Edge & Fall Protection', score: null, remarks: '', showInfo: false },
-				{ label: 'Equipment & Machinery Safety', score: null, remarks: '', showInfo: false },
-				{ label: 'Signage & Emergency Access', score: null, remarks: '', showInfo: false },
+				{
+					label: 'Housekeeping & Waste Disposal',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Poor housekeeping at all. Severe safety hazards due to waste and obstruction.',
+						'Multiple zones with poor housekeeping. Obstructions or tripping hazards observed. Waste not regularly removed.',
+						'Some areas cluttered or with unmanaged waste. Walkways partially blocked. Housekeeping inconsistent.',
+						'Generally clean, but minor scattered debris or untidy zones observed. No major risk. Housekeeping evident.',
+						'Site fully clean and orderly. Waste managed well. No visible hazards or obstructions. Housekeeping is routine.'
+					]
+				},
+				{
+					label: 'Edge & Fall Protection',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Severe lack of fall protection.',
+						'Significant areas without fall protection. Some workers are exposed.',
+						'Some edges or work areas lack proper fall protection. Relevant nets or harness points not consistently provided.',
+						'Edge protection mostly complete, with only minor gaps. Harness points available.',
+						'Full edge protection provided. All safety measures (relevant barricades, nets, harness points) are in place and effective.'
+					]
+				},
+				{
+					label: 'Equipment & Machinery Safety',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Significant equipment lacks safety tags or guards. Multiple instances of unsafe machinery.',
+						'Majority of machinery lacks inspection tags or safety guards. Equipment shows visible defects.',
+						'Several pieces of equipment without proper inspection tags, or missing guards. Maintenance records incomplete.',
+						'Minor issues (e.g., one or two pieces missing tags or guards). Inspection tags mostly up-to-date.',
+						'All machinery/equipment inspected, tagged, and guarded. No visible defects or safety concerns. Maintenance logs available.'
+					]
+				},
+				{
+					label: 'Signage & Emergency Access',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Critical emergency signage is missing or insufficient. Workers unaware of key emergency procedures.',
+						'Significant gaps in signage. Emergency exits obstructed or poorly marked.',
+						'Some key signs (e.g., exit routes, first aid) missing or hard to read. Minor obstruction of emergency exits.',
+						'Most signage in place and visible. Minor issues with visibility or placement of some signs.',
+						'All signage and emergency access points are clearly marked and functional. No obstructions or gaps.'
+					]
+				},
 				{
 					label: 'Presence of lifting crew (competent person)',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Aware but no lifting crew present during ongoing lifting activities. High-risk non-compliance. Immediate action required.',
+						'Lifting crew present but not competent (expired certs, roles unclear, or not formally appointed). Unsafe practices noted.',
+						'Only partial crew available, with some roles not clearly assigned or present. Lifting operations continue under minimal oversight.',
+						'Competent lifting crew present with minor gaps (e.g., one role temporarily not on-site but coverage is arranged). No impact on safety observed.',
+						'Full team of competent lifting crew (e.g., lifting supervisor, rigger, signaler) is present, roles clearly defined, and actively managing all lifting operations.'
+					]
 				},
-				{ label: 'Scaffold & ladder', score: null, remarks: '', showInfo: false }
+				{
+					label: 'Scaffold & ladder',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Personnel are aware of requirements, but usage is clearly unsafe — e.g., unstable scaffolds, broken ladders, or work done without fall protection/supervision. Immediate stop-work required.',
+						'Unsafe or poorly maintained scaffold/ladder found. Evidence of improper use or lack of access control. High potential risk present.',
+						'Some non-compliant usage or equipment found (e.g., workers using untagged or makeshift ladders/scaffold), but no immediate hazard.',
+						'Minor issues observed (e.g., one ladder not tagged or a scaffold without recent inspection), but overall setup remains safe and compliant.',
+						'All scaffolds and ladders are in excellent condition, fully compliant with safety standards, inspected regularly, and tagged.'
+					]
+				}
 			]
 		},
 		{
@@ -144,14 +317,40 @@
 					label: 'Stop Work Authority (SWA) Exercised Where Needed',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'All scaffolds and ladders are in excellent condition, fully compliant with safety standards, inspected regularly, and tagged.',
+						'SWA not actively communicated. Workers unaware of their right to stop unsafe work.',
+						'SWA mentioned in plan, but limited awareness among workers, or no visible evidence of briefing or procedure circulation.',
+						'SWA case occurred but Documentation is incomplete (e.g. missing signatures, unclear description), or No actual SWA case, but clear system in place, workers briefed, and preparedness demonstrated.',
+						'SWA exercised recently with proper documentation and follow-up action. All workers aware of their authority. Or No actual SWA case, but all workers aware of their authority.'
+					]
 				},
-				{ label: 'Near Miss & Incident Reporting', score: null, remarks: '', showInfo: false },
+				{
+					label: 'Near Miss & Incident Reporting',
+					score: null,
+					remarks: '',
+					showInfo: false,
+					infoDetails: [
+						'Reporting culture weak. Many incidents or near misses are not reported.',
+						'Some reports filed, but inconsistent or incomplete. Follow-up actions are slow or unclear.',
+						'Near misses and incidents reported, but some delays in follow-up actions.',
+						'Active reporting, but minor gaps in follow-up or reporting consistency.',
+						'Strong, active reporting culture. All incidents and near misses logged, with clear follow-up actions and regular reviews.'
+					]
+				},
 				{
 					label: 'Disciplinary Action Taken on Violations',
 					score: null,
 					remarks: '',
-					showInfo: false
+					showInfo: false,
+					infoDetails: [
+						'Very few disciplinary actions taken or penalties are not properly documented.',
+						'Limited disciplinary actions taken, with incomplete or inconsistent documentation on penalties.',
+						'Some violations lead to disciplinary actions, but inconsistencies or missing documentation on show-cause letters or suspension records.',
+						'Disciplinary actions are mostly consistent, but some minor gaps in documentation or follow-up actions.',
+						'All violations consistently result in show-cause letters or suspension, with corrective actions documented.'
+					]
 				}
 			]
 		}
@@ -427,28 +626,16 @@
 					<p>{item.label}</p>
 					<div class="audit-select info-wrapper">
 						<button type="button" class="info-button"><Info /></button>
-						<div class="info-popup">
-							<p class="info-details">
-								<span class="one">1</span> Document exists but is lacking critical sections or less relevant
-								to current site work.
-							</p>
-							<p class="info-details">
-								<span class="two">2</span> Incomplete or draft version is available; approval status unclear
-								or still pending.
-							</p>
-							<p class="info-details">
-								<span class="three">3</span> Document is available but either: Outdated, Unsigned, or
-								Partially approved.
-							</p>
-							<p class="info-details">
-								<span class="four">4</span> Latest and signed document is available, but accessibility
-								is limited (e.g. only in digital format or stored but not communicated to workers).
-							</p>
-							<p class="info-details">
-								<span class="five">5</span> Latest version, signed and dated, clearly approved, physically
-								available at the site office, and known to site personnel.
-							</p>
-						</div>
+						{#if item.showInfo}
+							<div class="info-popup" role="dialog" aria-label="Score guidance">
+								{#each item.infoDetails as text, idx}
+									<p class="info-details">
+										<span class={['one', 'two', 'three', 'four', 'five'][idx]}>{idx + 1}</span>
+										{text}
+									</p>
+								{/each}
+							</div>
+						{/if}
 					</div>
 					<p class="audit-select">
 						<select
