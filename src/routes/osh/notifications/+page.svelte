@@ -75,12 +75,12 @@
 </script>
 
 <h1 class="title">Notifications and Announcements</h1>
-<p>Stay informed with the latest company updates and announcements</p>
+<!-- <p>Stay informed with the latest company updates and announcements</p> -->
 
-<div>
+<div class="notifications-create">
 	<button class="button-create"><Plus /><span>Create Notification</span></button>
 </div>
-<div class="project-box">
+<div class="notifications-filter">
 	<div>
 		<p>Priority</p>
 		<select bind:value={selectedPriority} class="priority-select">
@@ -108,6 +108,7 @@
 		<input type="date" name="created-date" id="date-to" class="date-to" bind:value={toDate} />
 	</div>
 	<div>
+		<p></p>
 		<button class="button-primary" id="button-search"><Search /><span>Search</span></button>
 	</div>
 </div>
@@ -139,7 +140,7 @@
 	}
 
 	.button-create {
-		width: 150px;
+		width: 200px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;
@@ -164,6 +165,11 @@
 
 	#button-search {
 		vertical-align: middle;
+		width: 120px;
+		display: flex;
+		align-items: center;
+		color: #ffffff;
+		gap: 10px;
 	}
 
 	/* .created-date,
@@ -173,12 +179,12 @@
 		margin: 10px 0;
 	} */
 
-	.date-from,
+	/* .date-from,
 	.date-to {
 		height: 30px;
 		margin: 0 15px;
 		font-size: 14px;
-	}
+	} */
 
 	.filter-input {
 		width: 350px;
@@ -210,6 +216,20 @@
 		display: flex;
 		justify-content: flex-end;
 	} */
+
+	.notifications-create {
+		display: flex;
+		margin: 10px;
+	}
+
+	.notifications-filter {
+		display: flex;
+		gap: 10px;
+		margin: 10px;
+		border-radius: 4px;
+		padding: 10px;
+		font-size: 14px;
+	}
 
 	.project-box {
 		margin: 10px;
