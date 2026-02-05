@@ -169,28 +169,22 @@
 	let showSuccess = false;
 	let successTimer;
 
-	function withTimeout(promise, ms = 20000) {
-		return Promise.race([
-			promise,
-			new Promise((_, reject) => setTimeout(() => reject(new Error('Submit timed out')), ms))
-		]);
-	}
-
 	async function handleSubmit(e) {
 		e.preventDefault();
 		errorMsg = '';
 		saving = true;
 
 		try {
-			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
+			const { data: auth, error: authErr } = await supabase.auth.getUser();
 			if (authErr) throw authErr;
 			const user = auth?.user;
 			if (!user) throw new Error('Not signed in.');
 
-			const { data: profile, error: profileError } = await withTimeout(
-				supabase.from('profiles').select('first_name, last_name').eq('id', user.id).single(),
-				15000
-			);
+			const { data: profile, error: profileError } = await supabase
+				.from('profiles')
+				.select('first_name, last_name')
+				.eq('id', user.id)
+				.single();
 
 			if (profileError) throw profileError;
 
@@ -213,10 +207,7 @@
 				overall_percent: calculateOverallPercentage
 			};
 
-			const { error, insError } = await withTimeout(
-				supabase.from('zca_submissions').insert(payload),
-				15000
-			);
+			const { error, insError } = await supabase.from('zca_submissions').insert(payload);
 			if (insError) throw insError;
 
 			showSuccess = true;
