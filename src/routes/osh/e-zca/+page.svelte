@@ -626,16 +626,14 @@
 					<p>{item.label}</p>
 					<div class="audit-select info-wrapper">
 						<button type="button" class="info-button"><Info /></button>
-						{#if item.showInfo}
-							<div class="info-popup" role="dialog" aria-label="Score guidance">
-								{#each item.infoDetails as text, idx}
-									<p class="info-details">
-										<span class={['one', 'two', 'three', 'four', 'five'][idx]}>{idx + 1}</span>
-										{text}
-									</p>
-								{/each}
-							</div>
-						{/if}
+						<div class="info-popup" role="dialog" aria-label="Score guidance">
+							{#each item.infoDetails as text, idx}
+								<p class="info-details">
+									<span class={['one', 'two', 'three', 'four', 'five'][idx]}>{idx + 1}</span>
+									{text}
+								</p>
+							{/each}
+						</div>
 					</div>
 					<p class="audit-select">
 						<select
