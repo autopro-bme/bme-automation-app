@@ -902,7 +902,16 @@
 	}
 
 	.info-details {
+		display: flex;
+		gap: 8px;
 		margin: 3px 0;
+		font-size: 14px;
+	}
+
+	.info-details span {
+		font-weight: bold;
+		min-width: 18px;
+		text-align: center;
 	}
 
 	.info-popup {
