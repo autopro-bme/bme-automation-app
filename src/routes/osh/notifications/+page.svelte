@@ -166,10 +166,14 @@
 	#button-search {
 		vertical-align: middle;
 		width: 120px;
+		margin-top: 20px;
 		display: flex;
 		align-items: center;
-		color: #ffffff;
 		gap: 10px;
+	}
+
+	#button-search span {
+		color: #ffffff;
 	}
 
 	/* .created-date,
@@ -227,7 +231,7 @@
 		gap: 10px;
 		margin: 10px;
 		border-radius: 4px;
-		padding: 10px;
+		padding: 10px 0;
 		font-size: 14px;
 	}
 
