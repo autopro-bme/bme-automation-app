@@ -345,21 +345,21 @@
 		{#if showDetailsModal}
 			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select details">
 				<div class="modal">
-					<h3>Form Details</h3>
+					<h3 class="form-heading">Form Details</h3>
 					{#if modalLoading}
 						<p>Loading...</p>
 					{:else if modalError}
 						<p class="error">{modalError}</p>
 					{:else if formType === 'TBM'}
-						<p><b>Meeting Topics:</b> {JSON.stringify(details?.meeting_topics ?? [])}</p>
-						<p><b>Competency:</b> {details?.competency ?? '-'}</p>
-						<p><b>Attendance:</b> {JSON.stringify(details?.attendance ?? {})}</p>
+						<p><b>Meeting Topics:</b> {JSON.stringify(details?.meeting_topics ?? '-')}</p>
+						<p><b>Competency:</b> {JSON.stringify(details?.competency ?? '-')}</p>
+						<p><b>Attendance:</b> {JSON.stringify(details?.attendance ?? '-')}</p>
 					{:else if formType === 'PPE'}
-						<p><b>Attendance:</b> {JSON.stringify(details?.attendance ?? {})}</p>
+						<p><b>Attendance:</b> {JSON.stringify(details?.attendance ?? '-')}</p>
 					{:else if formType === 'HKP'}
-						<p><b>Report Day:</b> {details?.report_day ?? '-'}</p>
+						<p><b>Report Day:</b> {JSON.stringify(details?.report_day ?? '-')}</p>
 					{:else if formType === 'ZCA'}
-						<p><b>Subsections:</b> {JSON.stringify(details?.subsections ?? [])}</p>
+						<p><b>Subsections:</b> {JSON.stringify(details?.subsections ?? '-')}</p>
 					{/if}
 
 					<div class="modal-actions">
@@ -451,6 +451,12 @@
 	.filter-input {
 		width: 350px;
 		font-size: 14px;
+	}
+
+	.form-heading {
+		font-size: 20px;
+		font-weight: bold;
+		margin-bottom: 10px;
 	}
 
 	.label {
