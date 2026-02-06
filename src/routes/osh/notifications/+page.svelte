@@ -89,9 +89,6 @@
 			)
 			.order('created_at', { ascending: false });
 
-		console.log('[notifications] error:', error);
-		console.log('[notifications] rows:', data);
-
 		if (error) {
 			errorMsg = error.message;
 			notifications = [];
@@ -180,9 +177,6 @@
 	</div>
 </div>
 
-<p>Loaded: {notifications.length} notifications</p>
-{#if errorMsg}<p class="error">{errorMsg}</p>{/if}
-
 <div class="notifications-create">
 	<button class="button-create" on:click={openCreateModal}
 		><Plus /><span>Create Notification</span></button
@@ -193,12 +187,22 @@
 	{#each filteredNotifications as n (n.id)}
 		<div class="notification-card">
 			<div class="notification-info">
+				<div class="priority-date">
+					<span
+						class="priority-badge"
+						class:normal={n.priority === 'Normal'}
+						class:important={n.priority === 'Important'}
+						class:urgent={n.priority === 'Urgent'}
+					>
+						{n.priority}
+					</span>
+					<p>{n.created_date ?? ''}</p>
+				</div>
 				<h3>{n.title ?? '-'}</h3>
-				<p><b>Summary:</b> {n.summary ?? ''}</p>
-				<p><b>Full Content:</b> {n.full_content ?? ''}</p>
-				<p><b>Priority:</b> {n.priority ?? ''}</p>
-				<p><b>Photo:</b> {n.photo_path ?? '-'}</p>
-				<p><b>File:</b> {n.file_path ?? '-'}</p>
+				<p><b>{n.summary ?? ''}</b></p>
+				<p>{n.full_content ?? ''}</p>
+				<p>Photo: {n.photo_path ?? '-'}</p>
+				<p>File: {n.file_path ?? '-'}</p>
 			</div>
 		</div>
 	{/each}
@@ -322,20 +326,6 @@
 		gap: 10px;
 	}
 
-	/* .created-date,
-	.project-id {
-		font-size: large;
-		font-weight: bold;
-		margin: 10px 0;
-	} */
-
-	/* .date-from,
-	.date-to {
-		height: 30px;
-		margin: 0 15px;
-		font-size: 14px;
-	} */
-
 	.filter-input {
 		width: 350px;
 		font-size: 14px;
@@ -343,6 +333,12 @@
 
 	h2 {
 		font-weight: bold;
+	}
+
+	h3 {
+		font-size: 18px;
+		font-weight: bold;
+		margin-bottom: 5px;
 	}
 
 	.modal-backdrop {
@@ -397,6 +393,16 @@
 		margin-top: 18px;
 	}
 
+	.notification-card {
+		align-items: center;
+		background-color: #ffffff;
+		border: 1px solid #dcdcdc;
+		border-radius: 4px;
+		padding: 15px 20px;
+		margin: 10px 10px 0;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	}
+
 	.notifications-create {
 		display: flex;
 		margin: 10px;
@@ -411,9 +417,35 @@
 		font-size: 14px;
 	}
 
+	.priority-date {
+		display: flex;
+		padding: 10px;
+		justify-content: space-between;
+	}
+
+	.priority-badge {
+		padding: 4px 10px;
+		border-radius: 12px;
+		font-size: 12px;
+		font-weight: bold;
+		color: #fff;
+		display: inline-block;
+	}
+
+	.priority-badge.normal {
+		background-color: #064c6dd7;
+	}
+
+	.priority-badge.important {
+		background-color: #fb8c00;
+	}
+
+	.priority-badge.urgent {
+		background-color: #e53935;
+	}
+
 	.project-box {
 		margin: 10px;
-		border: 1px solid #091747;
 		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
