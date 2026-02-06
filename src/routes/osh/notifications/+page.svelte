@@ -324,31 +324,57 @@
 		font-size: 14px;
 	}
 
-	/* .modal-overlay {
+	.modal-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.4);
+		background: rgba(9, 23, 71, 0.45);
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
-		z-index: 9999;
+		padding: 32px 20px;
+		z-index: 10;
 	}
 
 	.modal {
-		background: white;
-		padding: 20px;
-		border-radius: 6px;
-		width: min(600px, 92vw);
-		max-height: 80vh;
+		width: min(560px, 100%);
+		max-height: calc(100vh - 64px);
 		overflow: auto;
-		overflow-wrap: anywhere;
+		background: #ffffff;
+		border-radius: 8px;
+		padding: 20px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal h2 {
+		margin: 0 0 16px;
+		font-size: 20px;
+	}
+
+	.modal-body {
+		display: grid;
+		gap: 12px;
+	}
+
+	.modal-body label {
+		display: grid;
+		gap: 6px;
+		font-size: 13px;
+		font-weight: bold;
+	}
+
+	.modal-body input {
+		border: 1px solid #dcdcdc;
+		border-radius: 4px;
+		padding: 8px 10px;
+		font-size: 14px;
 	}
 
 	.modal-actions {
-		margin-top: 20px;
 		display: flex;
 		justify-content: flex-end;
-	} */
+		gap: 10px;
+		margin-top: 18px;
+	}
 
 	.notifications-create {
 		display: flex;
