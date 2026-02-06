@@ -181,6 +181,23 @@
 		notifications = data ? [data, ...notifications] : notifications;
 		closeCreateModal();
 	};
+
+	function formatDate(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		const hours = String(gmt8.getUTCHours()).padStart(2, '0');
+		const minutes = String(gmt8.getUTCMinutes()).padStart(2, '0');
+
+		return `${day} ${month} ${year} ${hours}:${minutes}`;
+	}
 </script>
 
 <h1 class="title">Notifications and Announcements</h1>
@@ -220,7 +237,7 @@
 
 <div class="notifications-create">
 	<button class="button-create" on:click={openCreateModal}
-		><Plus /><span>Create Notification</span></button
+		><Plus /><span>New Notification</span></button
 	>
 </div>
 
@@ -237,7 +254,7 @@
 					>
 						{n.priority}
 					</span>
-					<p>{n.created_at ?? ''}</p>
+					<p>{formatDate(n.created_at) ?? ''}</p>
 				</div>
 				<h3>{n.title ?? '-'}</h3>
 				<p class="summary">{n.summary ?? ''}</p>
@@ -255,8 +272,15 @@
 			<h2>New Notification</h2>
 			<div class="modal-body">
 				<label>Title: <input type="text" bind:value={createForm.title} /></label>
-				<label>Summary: <textarea name="summary" id="summary" rows="6"></textarea></label>
-				<label>Full Content: <input type="text" bind:value={createForm.full_content} /></label>
+				<label>Summary: <input type="text" bind:value={createForm.summary} /></label>
+				<label
+					>Full Content: <textarea
+						name="content"
+						id="content"
+						rows="6"
+						bind:value={createForm.full_content}
+					></textarea></label
+				>
 				<label
 					>Priority:
 					<select bind:value={createForm.priority} class="priority-select">
