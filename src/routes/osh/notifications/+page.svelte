@@ -25,6 +25,42 @@
 		file_path: ''
 	};
 
+	let noti_photo;
+	let noti_file;
+
+	function onFile(e, setter) {
+		setter(e.currentTarget.files?.[0] ?? null);
+	}
+
+	let showSuccess = false;
+	let successTimer;
+
+	function withTimeout(promise, ms = 20000) {
+		return Promise.race([
+			promise,
+			new Promise((_, reject) => setTimeout(() => reject(new Error('Upload timed out')), ms))
+		]);
+	}
+
+	async function uploadToBucket(file, folder) {
+		if (!file) return null;
+
+		const ext = file.name.split('.').pop() || 'bin';
+		const fileName = `${crypto.randomUUID()}.${ext}`;
+		const path = `${folder}/${fileName}`;
+
+		const { data, error } = await supabase.storage
+			.from('noti_uploads')
+			.upload(path, file, { upsert: false });
+
+		if (error) {
+			console.error('[upload] error', error);
+			throw error;
+		}
+
+		return data.path;
+	}
+
 	const normalize = (v) => String(v ?? '').toLowerCase();
 
 	$: filteredNotifications = (notifications ?? []).filter((n) => {
@@ -118,6 +154,11 @@
 		isSaving = true;
 		errorMsg = '';
 
+		const [photo_path, file_path] = await Promise.all([
+			uploadToBucket(noti_photo_file, 'noti_photo'),
+			uploadToBucket(noti_file_file, 'noti_file')
+		]);
+
 		const payload = {
 			title: createForm.title.trim() || null,
 			summary: createForm.summary.trim() || null,
@@ -196,10 +237,10 @@
 					>
 						{n.priority}
 					</span>
-					<p>{n.created_date ?? ''}</p>
+					<p>{n.created_at ?? ''}</p>
 				</div>
 				<h3>{n.title ?? '-'}</h3>
-				<p><b>{n.summary ?? ''}</b></p>
+				<p class="summary">{n.summary ?? ''}</p>
 				<p>{n.full_content ?? ''}</p>
 				<p>Photo: {n.photo_path ?? '-'}</p>
 				<p>File: {n.file_path ?? '-'}</p>
@@ -214,11 +255,11 @@
 			<h2>New Notification</h2>
 			<div class="modal-body">
 				<label>Title: <input type="text" bind:value={createForm.title} /></label>
-				<label>Summary: <input type="text" bind:value={createForm.summary} /></label>
+				<label>Summary: <textarea name="summary" id="summary" rows="6"></textarea></label>
 				<label>Full Content: <input type="text" bind:value={createForm.full_content} /></label>
 				<label
 					>Priority:
-					<select bind:value={createForm.priority}>
+					<select bind:value={createForm.priority} class="priority-select">
 						<option value="" disabled selected>Choose Priority</option>
 						<option value="Normal">Normal</option>
 						<option value="Important">Important</option>
@@ -227,23 +268,29 @@
 				</label>
 				<label
 					>Photo:
-					<input
-						type="file"
-						name=""
-						id=""
-						accept="image/png, image/jpeg"
-						on:change={(e) => (noti_photo_file = e.target.files[0])}
-					/>
+					<p class="upload-text">
+						<input
+							type="file"
+							name="noti_photo"
+							id="noti_photo"
+							accept="image/png, image/jpeg"
+							multiple
+							on:change={(e) => (noti_photo_file = e.target.files[0])}
+						/>
+					</p>
 				</label>
 				<label
 					>File:
-					<input
-						type="file"
-						name=""
-						id=""
-						accept="image/png, image/jpeg"
-						on:change={(e) => (noti_file_file = e.target.files[0])}
-					/>
+					<p class="upload-text">
+						<input
+							type="file"
+							name="noti_file"
+							id="noti_file"
+							accept="image/png, image/jpeg"
+							multiple
+							on:change={(e) => (noti_file_file = e.target.files[0])}
+						/>
+					</p>
 				</label>
 			</div>
 			<div class="modal-actions">
@@ -271,6 +318,7 @@
 		border: none;
 		font-size: small;
 		padding: 6px 14px;
+		border: 2px solid #ffffff;
 		border-radius: 4px;
 		cursor: pointer;
 	}
@@ -297,7 +345,6 @@
 		background-color: #ffffff;
 		color: #064c6dd7;
 		font-size: small;
-		margin-top: 5px;
 		padding: 6px 14px;
 		border: 2px solid #064c6dd7;
 		border-radius: 4px;
@@ -398,8 +445,7 @@
 		background-color: #ffffff;
 		border: 1px solid #dcdcdc;
 		border-radius: 4px;
-		padding: 15px 20px;
-		margin: 10px 10px 0;
+		padding: 15px;
 		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 	}
 
@@ -419,7 +465,7 @@
 
 	.priority-date {
 		display: flex;
-		padding: 10px;
+		padding: 10px 0;
 		justify-content: space-between;
 	}
 
@@ -444,11 +490,20 @@
 		background-color: #e53935;
 	}
 
+	.priority-select {
+		cursor: pointer;
+	}
+
 	.project-box {
 		margin: 10px;
 		border-radius: 4px;
-		padding: 10px;
 		font-size: 14px;
+	}
+
+	.summary {
+		font-size: 16px;
+		font-weight: bold;
+		text-decoration: underline;
 	}
 
 	.title {
@@ -456,5 +511,27 @@
 		font-weight: bold;
 		margin-bottom: 20px;
 		padding: 0 10px;
+	}
+
+	.upload-text {
+		width: fit-content;
+	}
+
+	.upload-text input[type='file'] {
+		font-size: 14px;
+	}
+
+	.upload-text input[type='file']::file-selector-button {
+		background-color: #091747;
+		color: #ffffff;
+		border: none;
+		padding: 6px 12px;
+		border-radius: 4px;
+		cursor: pointer;
+		margin-right: 10px;
+	}
+
+	.upload-text input[type='file']::file-selector-button:hover {
+		background-color: #091747b9;
 	}
 </style>
