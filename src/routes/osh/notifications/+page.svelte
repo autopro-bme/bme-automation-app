@@ -5,16 +5,13 @@
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { derived } from 'svelte/store';
 
 	let notifications = [];
 	let errorMsg = '';
-	let loading = false;
 	let isSaving = false;
 	let fromDate = '';
 	let toDate = '';
 	let showCreateModal = false;
-
 	let selectedPriority = 'All';
 	let searchTitle = '';
 
@@ -28,9 +25,11 @@
 	};
 
 	$: filteredNotifications = notifications.filter((n) => {
-		const title = `${n.title ?? ''}`;
+		const title = `${n.title ?? ''}`.toLowerCase();
 
-		const matchesPriority = selectedPriority === 'All'(n.priority ?? []).includes(selectedPriority);
+		const matchesPriority =
+			selectedPriority === 'All' ||
+			(n.priority ?? '').toLowerCase() === selectedPriority.toLowerCase();
 
 		return matchesPriority;
 	});
@@ -54,35 +53,45 @@
 		return fromOk && toOk;
 	}
 
-	async function loadNotification() {
-		loading = true;
-		errorMsg = '';
-		notifications = [];
+	onMount(async () => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
 
-		try {
-			const {
-				data: { user }
-			} = await supabase.auth.getUser();
-
-			if (!user) {
-				goto('/auth/signin');
-				return;
-			}
-
-			const notiRes = await supabase
-				.from('notifications')
-				.select(
-					'id, created_at, created_by, title, summary, full_content, priority, photo_path, file_path'
-				)
-				.order('created_at', { ascending: false });
-
-			if (notiRes.error) throw notiRes.error;
-		} catch (error) {
-			errorMsg = error?.message ?? String(error);
-		} finally {
-			loading = false;
+		if (!user) {
+			goto('/auth/signin');
+			return;
 		}
-	}
+
+		const { data: profileData, error: profileError } = await supabase
+			.from('profiles')
+			.select('first_name, last_name')
+			.eq('id', user.id)
+			.single();
+
+		if (profileError) {
+			errorMsg = profileError.message;
+		} else {
+			const firstName = profileData?.first_name ?? '';
+			const lastName = profileData?.last_name ?? '';
+			currentUserName = `${firstName} ${lastName}`.trim();
+		}
+
+		const { data, error } = await supabase
+			.from('notifications')
+			.select(
+				'id, created_at, created_by, title, summary, full_content, priority, photo_path, file_path'
+			)
+			.order('created_at', { ascending: false });
+
+		if (error) {
+			errorMsg = error.message;
+			notifications = [];
+			return;
+		}
+
+		notifications = data ?? [];
+	});
 
 	const openCreateModal = () => {
 		createForm = {
@@ -125,14 +134,12 @@
 		notifications = data ? [data, ...notifications] : notifications;
 		closeCreateModal();
 	};
-
-	onMount(loadNotification);
 </script>
 
 <h1 class="title">Notifications and Announcements</h1>
 
 <div class="notifications-create">
-	<button class="button-create" onclick={openCreateModal}
+	<button class="button-create" on:click={openCreateModal}
 		><Plus /><span>Create Notification</span></button
 	>
 </div>
@@ -193,37 +200,40 @@
 				<label>Summary: <input type="text" bind:value={createForm.summary} /></label>
 				<label>Full Content: <input type="text" bind:value={createForm.full_content} /></label>
 				<label
-					>Priority: <select bind:value={createForm.priority}>
+					>Priority:
+					<select bind:value={createForm.priority}>
 						<option value="All">All Priorities</option>
 						<option value="Normal">Normal</option>
 						<option value="Important">Important</option>
 						<option value="Urgent">Urgent</option>
-					</select></label
-				>
+					</select>
+				</label>
 				<label
-					>Photo: <input
+					>Photo:
+					<input
 						type="file"
 						name=""
 						id=""
 						accept="image/png, image/jpeg"
-						onchange={(e) => (noti_photo_file = e.target.files[0])}
-					/></label
-				>
+						on:change={(e) => (noti_photo_file = e.target.files[0])}
+					/>
+				</label>
 				<label
-					>File: <input
+					>File:
+					<input
 						type="file"
 						name=""
 						id=""
 						accept="image/png, image/jpeg"
-						onchange={(e) => (noti_file_file = e.target.files[0])}
-					/></label
-				>
+						on:change={(e) => (noti_file_file = e.target.files[0])}
+					/>
+				</label>
 			</div>
 			<div class="modal-actions">
-				<button class="button-inverted" onclick={closeCreateModal} disabled={isSaving}>
+				<button class="button-inverted" on:click={closeCreateModal} disabled={isSaving}>
 					Cancel
 				</button>
-				<button onclick={createNotification} disabled={isSaving}>
+				<button on:click={createNotification} disabled={isSaving}>
 					{isSaving ? 'Saving...' : 'Confirm'}
 				</button>
 			</div>
