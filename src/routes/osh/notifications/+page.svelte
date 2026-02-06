@@ -144,11 +144,6 @@
 
 <h1 class="title">Notifications and Announcements</h1>
 
-<div class="notifications-create">
-	<button class="button-create" on:click={openCreateModal}
-		><Plus /><span>Create Notification</span></button
-	>
-</div>
 <div class="notifications-filter">
 	<div>
 		<p>Priority</p>
@@ -178,8 +173,14 @@
 	</div>
 	<div>
 		<p></p>
-		<button class="button-primary" id="button-search"><Search /><span>Search</span></button>
+		<button class="button-primary" id="button-search"><Search /></button>
 	</div>
+</div>
+
+<div class="notifications-create">
+	<button class="button-create" on:click={openCreateModal}
+		><Plus /><span>Create Notification</span></button
+	>
 </div>
 
 <div class="project-box">
@@ -275,11 +276,26 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.button-create span {
 		color: #ffffff;
+	}
+
+	.button-inverted {
+		background-color: #ffffff;
+		color: #064c6dd7;
+		font-size: small;
+		margin-top: 5px;
+		padding: 6px 14px;
+		border: 2px solid #064c6dd7;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	.button-inverted:hover {
+		background-color: #dedede;
 	}
 
 	.button-primary {
@@ -301,10 +317,6 @@
 		gap: 10px;
 	}
 
-	#button-search span {
-		color: #ffffff;
-	}
-
 	/* .created-date,
 	.project-id {
 		font-size: large;
@@ -322,6 +334,10 @@
 	.filter-input {
 		width: 350px;
 		font-size: 14px;
+	}
+
+	h2 {
+		font-weight: bold;
 	}
 
 	.modal-backdrop {
