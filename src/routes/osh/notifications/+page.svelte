@@ -25,14 +25,18 @@
 		file_path: ''
 	};
 
-	$: filteredNotifications = notifications.filter((n) => {
-		const title = `${n.title ?? ''}`.toLowerCase();
+	const normalize = (v) => String(v ?? '').toLowerCase();
 
+	$: filteredNotifications = (notifications ?? []).filter((n) => {
 		const matchesPriority =
-			selectedPriority === 'All' ||
-			(n.priority ?? '').toLowerCase() === selectedPriority.toLowerCase();
+			selectedPriority === 'All' || normalize(n.priority) === normalize(selectedPriority);
 
-		return matchesPriority;
+		const matchesSearch =
+			!searchTitle.trim() || normalize(n.title).includes(normalize(searchTitle));
+
+		const matchesDate = withinRange(n.created_at);
+
+		return matchesPriority && matchesSearch && matchesDate;
 	});
 
 	function toISOStart(dateStr) {
@@ -103,7 +107,7 @@
 			photo_path: '',
 			file_path: ''
 		};
-		showCreateModal - true;
+		showCreateModal = true;
 	};
 
 	const closeCreateModal = () => {
@@ -204,7 +208,7 @@
 				<label
 					>Priority:
 					<select bind:value={createForm.priority}>
-						<option value="All">All Priorities</option>
+						<option value="" disabled selected>Choose Priority</option>
 						<option value="Normal">Normal</option>
 						<option value="Important">Important</option>
 						<option value="Urgent">Urgent</option>
@@ -246,6 +250,7 @@
 <style>
 	* {
 		font-family: Arial, Helvetica, sans-serif;
+		font-size: 14px;
 		color: #091747;
 	}
 
