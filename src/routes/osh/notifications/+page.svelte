@@ -89,6 +89,9 @@
 			)
 			.order('created_at', { ascending: false });
 
+		console.log('[notifications] error:', error);
+		console.log('[notifications] rows:', data);
+
 		if (error) {
 			errorMsg = error.message;
 			notifications = [];
@@ -176,6 +179,9 @@
 		<button class="button-primary" id="button-search"><Search /></button>
 	</div>
 </div>
+
+<p>Loaded: {notifications.length} notifications</p>
+{#if errorMsg}<p class="error">{errorMsg}</p>{/if}
 
 <div class="notifications-create">
 	<button class="button-create" on:click={openCreateModal}
@@ -310,7 +316,6 @@
 
 	#button-search {
 		vertical-align: middle;
-		width: 120px;
 		margin-top: 20px;
 		display: flex;
 		align-items: center;
