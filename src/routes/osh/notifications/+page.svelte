@@ -13,6 +13,7 @@
 	let isSaving = false;
 	let fromDate = '';
 	let toDate = '';
+	let showCreateModal = false;
 
 	let selectedPriority = 'All';
 	let searchTitle = '';
