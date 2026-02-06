@@ -424,6 +424,7 @@
 		border: none;
 		font-size: small;
 		padding: 6px 14px;
+		border: 2px solid #ffffff;
 		border-radius: 4px;
 		cursor: pointer;
 	}
@@ -476,7 +477,6 @@
 		background-color: #ffffff;
 		color: #064c6dd7;
 		font-size: small;
-		margin-top: 5px;
 		padding: 6px 14px;
 		border: 2px solid #064c6dd7;
 		border-radius: 4px;

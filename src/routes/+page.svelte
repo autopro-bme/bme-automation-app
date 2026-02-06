@@ -105,9 +105,11 @@
 
 	h3 {
 		font-weight: bold;
+		font-size: 16px;
 	}
 
 	.section {
+		font-size: large;
 		color: #064c6dd7;
 	}
 
