@@ -1,5 +1,6 @@
 export const menuSections = [
 	{
+		key: 'Admin',
 		department: 'Admin',
 		items: [
 			// {
@@ -23,6 +24,7 @@ export const menuSections = [
 		]
 	},
 	{
+		key: 'Project',
 		department: 'Project',
 		items: [
 			{
@@ -34,6 +36,7 @@ export const menuSections = [
 		]
 	},
 	{
+		key: 'OSH',
 		department: 'Occupational Safety & Health (OSH)',
 		items: [
 			{

@@ -5,22 +5,42 @@
 	import { onMount } from 'svelte';
 
 	let allowedDepartments = [];
-	let visibleSections = [];
 	let errorMsg = '';
 
 	function deptKey(label) {
-		if (label.startsWith('Occupational, Safety')) return 'OSH';
+		if (label.includes('(OSH)') || label.toLowerCase().includes('osh')) return 'OSH';
+		if (label.toLowerCase().includes('project')) return 'Project';
+		if (label.toLowerCase().includes('admin')) return 'Admin';
 		return label;
 	}
 
-	function computeVisible() {
-		const isAdmin = allowedDepartments.includes('Admin');
+	function normalizeDepartments(raw) {
+		if (Array.isArray(raw)) return raw;
 
-		visibleSections = menuSections.filter((section) => {
-			if (isAdmin) return true;
-			return allowedDepartments.includes(deptKey(section.department));
-		});
+		if (typeof raw === 'string') {
+			try {
+				const parsed = JSON.parse(raw);
+				if (Array.isArray(parsed)) return parsed;
+			} catch (_) {}
+
+			return raw
+				.split(',')
+				.map((s) => s.replace(/[\[\]"]/g, '').trim())
+				.filter(Boolean);
+		}
+
+		return [];
 	}
+
+	const visibleSections = () => {
+		const isAdmin = allowedDepartments.includes('Admin');
+		if (isAdmin) return menuSections;
+
+		return menuSections.filter((section) => {
+			const key = deptKey(section.department);
+			return allowedDepartments.includes(key);
+		});
+	};
 
 	onMount(async () => {
 		const { data: auth } = await supabase.auth.getUser();
@@ -40,8 +60,7 @@
 			return;
 		}
 
-		allowedDepartments = profile?.department ?? [];
-		computeVisible();
+		allowedDepartments = normalizeDepartments(profile?.department);
 	});
 </script>
 
