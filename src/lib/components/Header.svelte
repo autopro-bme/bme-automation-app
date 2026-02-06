@@ -83,9 +83,9 @@
 		<div class="welcome">
 			<p>Welcome, <b>{userName}</b>!</p>
 			<div class="calendar-history">
-				<a href="/osh/notifications" class="navigation"><Bell />Notifications</a>
-				<a href="/osh/calendar-view" class="navigation"><Calendar />Calendar</a>
-				<a href="/osh/submission-history" class="navigation"><History />History</a>
+				<a href="/osh/notifications" class="navigation"><Bell size={20} />Notifications</a>
+				<a href="/osh/calendar-view" class="navigation"><Calendar size={20} />Calendar</a>
+				<a href="/osh/submission-history" class="navigation"><History size={20} />History</a>
 				<button type="submit" onclick={signOut} class="button-primary">Sign Out</button>
 			</div>
 		</div>

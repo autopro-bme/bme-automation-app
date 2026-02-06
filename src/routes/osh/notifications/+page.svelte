@@ -1,20 +1,32 @@
 <script>
+	/** @type {Array<{ items: Array<any>}>} */
 	import Plus from '@lucide/svelte/icons/plus';
 	import Search from '@lucide/svelte/icons/search';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { derived } from 'svelte/store';
 
-	let notifications = $state([]);
-	let errorMsg = $state('');
-	let loading = $state(false);
-	let fromDate = $state('');
-	let toDate = $state('');
+	let notifications = [];
+	let errorMsg = '';
+	let loading = false;
+	let isSaving = false;
+	let fromDate = '';
+	let toDate = '';
 
-	let selectedPriority = $state('All');
-	let searchTitle = $state('');
+	let selectedPriority = 'All';
+	let searchTitle = '';
 
-	let filteredNotifications = $derived.by((n) => {
+	let createForm = {
+		title: '',
+		summary: '',
+		full_content: '',
+		priority: '',
+		photo_path: '',
+		file_path: ''
+	};
+
+	$: filteredNotifications = notifications.filter((n) => {
 		const title = `${n.title ?? ''}`;
 
 		const matchesPriority = selectedPriority === 'All'(n.priority ?? []).includes(selectedPriority);
@@ -71,14 +83,57 @@
 		}
 	}
 
+	const openCreateModal = () => {
+		createForm = {
+			title: '',
+			summary: '',
+			full_content: '',
+			priority: '',
+			photo_path: '',
+			file_path: ''
+		};
+		showCreateModal - true;
+	};
+
+	const closeCreateModal = () => {
+		showCreateModal = false;
+	};
+
+	const createNotification = async () => {
+		isSaving = true;
+		errorMsg = '';
+
+		const payload = {
+			title: createForm.title.trim() || null,
+			summary: createForm.summary.trim() || null,
+			full_content: createForm.full_content.trim() || null,
+			priority: createForm.priority.trim() || null,
+			photo_path: createForm.photo_path.trim() || null,
+			file_path: createForm.file_path.trim() || null
+		};
+
+		const { data, error } = await supabase.from('notifications').insert(payload).select().single();
+
+		isSaving = false;
+
+		if (error) {
+			errorMsg = error.message;
+			return;
+		}
+
+		notifications = data ? [data, ...notifications] : notifications;
+		closeCreateModal();
+	};
+
 	onMount(loadNotification);
 </script>
 
 <h1 class="title">Notifications and Announcements</h1>
-<!-- <p>Stay informed with the latest company updates and announcements</p> -->
 
 <div class="notifications-create">
-	<button class="button-create"><Plus /><span>Create Notification</span></button>
+	<button class="button-create" onclick={openCreateModal}
+		><Plus /><span>Create Notification</span></button
+	>
 </div>
 <div class="notifications-filter">
 	<div>
@@ -114,10 +169,66 @@
 </div>
 
 <div class="project-box">
-	<div>
-		<p>Notification</p>
-	</div>
+	{#each filteredNotifications as n (n.id)}
+		<div class="notification-card">
+			<div class="notification-info">
+				<h3>{n.title ?? '-'}</h3>
+				<p><b>Summary:</b> {n.summary ?? ''}</p>
+				<p><b>Full Content:</b> {n.full_content ?? ''}</p>
+				<p><b>Priority:</b> {n.priority ?? ''}</p>
+				<p><b>Photo:</b> {n.photo_path ?? '-'}</p>
+				<p><b>File:</b> {n.file_path ?? '-'}</p>
+			</div>
+		</div>
+	{/each}
 </div>
+
+{#if showCreateModal}
+	<div class="modal-backdrop" role="presentation">
+		<div class="modal" role="dialog" aria-modal="true" aria-label="Create notification">
+			<h2>New Notification</h2>
+			<div class="modal-body">
+				<label>Title: <input type="text" bind:value={createForm.title} /></label>
+				<label>Summary: <input type="text" bind:value={createForm.summary} /></label>
+				<label>Full Content: <input type="text" bind:value={createForm.full_content} /></label>
+				<label
+					>Priority: <select bind:value={createForm.priority}>
+						<option value="All">All Priorities</option>
+						<option value="Normal">Normal</option>
+						<option value="Important">Important</option>
+						<option value="Urgent">Urgent</option>
+					</select></label
+				>
+				<label
+					>Photo: <input
+						type="file"
+						name=""
+						id=""
+						accept="image/png, image/jpeg"
+						onchange={(e) => (noti_photo_file = e.target.files[0])}
+					/></label
+				>
+				<label
+					>File: <input
+						type="file"
+						name=""
+						id=""
+						accept="image/png, image/jpeg"
+						onchange={(e) => (noti_file_file = e.target.files[0])}
+					/></label
+				>
+			</div>
+			<div class="modal-actions">
+				<button class="button-inverted" onclick={closeCreateModal} disabled={isSaving}>
+					Cancel
+				</button>
+				<button onclick={createNotification} disabled={isSaving}>
+					{isSaving ? 'Saving...' : 'Confirm'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	* {
