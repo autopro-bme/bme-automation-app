@@ -13,6 +13,7 @@
 	let toDate = '';
 	let showCreateModal = false;
 	let selectedPriority = 'All';
+	let currentUserName = '';
 	let searchTitle = '';
 
 	let createForm = {
@@ -119,7 +120,8 @@
 			full_content: createForm.full_content.trim() || null,
 			priority: createForm.priority.trim() || null,
 			photo_path: createForm.photo_path.trim() || null,
-			file_path: createForm.file_path.trim() || null
+			file_path: createForm.file_path.trim() || null,
+			created_by: currentUserName || null
 		};
 
 		const { data, error } = await supabase.from('notifications').insert(payload).select().single();
