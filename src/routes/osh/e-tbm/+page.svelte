@@ -1201,4 +1201,155 @@
 	.upload-text input[type='file']::file-selector-button:hover {
 		background-color: #091747b9;
 	}
+
+	@media (max-width: 1024px) {
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 12px;
+		}
+
+		.title {
+			font-size: 24px;
+			margin-bottom: 12px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 6px;
+		}
+
+		.forms-label {
+			width: auto;
+		}
+
+		.button-primary {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.topics-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 10px 12px;
+		}
+
+		.topic-item {
+			white-space: normal;
+			align-items: flex-start;
+		}
+
+		.topic-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.attendance-grid {
+			grid-template-columns: 1fr;
+			gap: 10px;
+		}
+
+		.attendance-type {
+			justify-content: space-between;
+			width: 100%;
+		}
+
+		.attendance-label {
+			width: auto;
+			max-width: 75%;
+			white-space: normal;
+			word-break: break-word;
+		}
+
+		.attendance-count {
+			width: 70px;
+		}
+
+		.categories,
+		.competency-grid {
+			grid-template-columns: 260px 90px 90px 120px;
+		}
+
+		.categories,
+		.competency-grid {
+			overflow-x: auto;
+		}
+
+		.upload {
+			height: auto;
+			min-height: 140px;
+			padding: 14px;
+		}
+
+		.modal {
+			width: min(520px, 95vw);
+			padding: 16px;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1.4fr 1fr;
+		}
+
+		p,
+		label,
+		.note,
+		.declaration p {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.success-popup {
+			width: min(420px, 90vw);
+			height: auto;
+			min-height: 180px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 24px;
+		}
+
+		.heading {
+			font-size: 16px;
+		}
+
+		.topics-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.categories,
+		.competency-grid {
+			grid-template-columns: 220px 80px 80px 110px;
+			padding: 8px;
+		}
+
+		.container {
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.declaration {
+			padding: 0;
+		}
+
+		.submit {
+			justify-content: stretch;
+		}
+
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+	}
 </style>

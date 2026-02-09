@@ -11,6 +11,7 @@
 	let isSaving = false;
 	let fromDate = '';
 	let toDate = '';
+	let isAdmin = false;
 	let showCreateModal = false;
 	let selectedPriority = 'All';
 	let currentUserName = '';
@@ -112,11 +113,15 @@
 
 		if (profileError) {
 			errorMsg = profileError.message;
-		} else {
-			const firstName = profileData?.first_name ?? '';
-			const lastName = profileData?.last_name ?? '';
-			currentUserName = `${firstName} ${lastName}`.trim();
+			return;
 		}
+
+		const firstName = profileData?.first_name ?? '';
+		const lastName = profileData?.last_name ?? '';
+		currentUserName = `${firstName} ${lastName}`.trim();
+
+		const departments = profileData?.department ?? [];
+		isAdmin = Array.isArray(departments) && departments.includes('Admin');
 
 		const { data, error } = await supabase
 			.from('notifications')
@@ -235,11 +240,13 @@
 	</div>
 </div>
 
-<div class="notifications-create">
-	<button class="button-create" on:click={openCreateModal}
-		><Plus /><span>New Notification</span></button
-	>
-</div>
+{#if isAdmin}
+	<div class="notifications-create">
+		<button class="button-create" on:click={openCreateModal}
+			><Plus /><span>New Notification</span></button
+		>
+	</div>
+{/if}
 
 <div class="project-box">
 	{#each filteredNotifications as n (n.id)}
@@ -557,5 +564,130 @@
 
 	.upload-text input[type='file']::file-selector-button:hover {
 		background-color: #091747b9;
+	}
+
+	@media (max-width: 1024px) {
+		.notifications-filter {
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.notifications-filter > div {
+			min-width: 220px;
+			flex: 1 1 220px;
+		}
+
+		.filter-input {
+			width: 100%;
+		}
+
+		#button-search {
+			margin-top: 0;
+		}
+
+		.notification-card {
+			padding: 12px;
+		}
+
+		.notification-info p {
+			overflow-wrap: anywhere;
+			word-break: break-word;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.title {
+			font-size: 24px;
+			padding: 0 6px;
+			margin-bottom: 15px;
+		}
+
+		.notifications-filter {
+			flex-direction: column;
+			align-items: stretch;
+			margin: 8px;
+			padding: 8px 0;
+		}
+
+		.notifications-filter > div {
+			width: 100%;
+		}
+
+		.filter-input,
+		.date-from,
+		.date-to,
+		.priority-select {
+			width: 100%;
+		}
+
+		#button-search {
+			width: 100%;
+			justify-content: center;
+			margin-top: 6px;
+		}
+
+		.notifications-create {
+			margin: 8px;
+		}
+
+		.button-create {
+			width: 100%;
+			margin-right: 0;
+		}
+
+		.project-box {
+			margin: 8px;
+		}
+
+		.notification-card {
+			padding: 12px;
+		}
+
+		.priority-date {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+			padding: 8px 0;
+		}
+
+		h3 {
+			font-size: 16px;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.notification-info p {
+			overflow-wrap: anywhere;
+			word-break: break-word;
+		}
+
+		.summary {
+			font-size: 14px;
+		}
+
+		.modal-backdrop {
+			padding: 16px 12px;
+		}
+
+		.modal {
+			padding: 16px;
+		}
+
+		.modal-actions {
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.modal-actions button {
+			width: 100%;
+		}
+
+		.upload-text {
+			width: 100%;
+		}
+
+		.upload-text input[type='file'] {
+			width: 100%;
+		}
 	}
 </style>

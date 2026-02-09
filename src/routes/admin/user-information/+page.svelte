@@ -419,4 +419,110 @@
 		gap: 10px;
 		margin-top: 18px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.filter-bar {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.filter-input {
+			width: 100%;
+		}
+
+		.department-select {
+			width: 100%;
+		}
+
+		#button-search {
+			width: 100%;
+		}
+
+		.card-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 15px;
+		}
+
+		.user-card {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.user-info {
+			width: 100%;
+		}
+
+		.user-info p,
+		.user-info h3 {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+			white-space: normal;
+		}
+
+		.button-modify {
+			width: 100%;
+			display: flex;
+			gap: 10px;
+			margin-top: 10px;
+		}
+
+		.button-modify button {
+			flex: 1;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 24px;
+		}
+
+		.card-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.user-card {
+			padding: 12px;
+		}
+
+		/* Modal */
+		.modal {
+			width: 100%;
+			padding: 16px;
+		}
+
+		.modal-body {
+			gap: 10px;
+		}
+
+		.modal-body label {
+			font-size: 12px;
+		}
+
+		.modal-body input {
+			font-size: 14px;
+			width: 100%;
+		}
+
+		.modal-actions {
+			flex-direction: column;
+		}
+
+		.modal-actions button {
+			width: 100%;
+		}
+
+		p,
+		h3,
+		label {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
 </style>

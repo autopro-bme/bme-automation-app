@@ -602,4 +602,101 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.filter-bar {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.status-select,
+		.option-select,
+		.filter-input {
+			width: 100%;
+		}
+
+		.button-modify {
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.button-assign,
+		.button-download {
+			width: 100%;
+		}
+
+		.card-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.project-card {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.project-info {
+			width: 100%;
+		}
+
+		.project-info h3,
+		.project-info p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+			white-space: normal;
+		}
+
+		.button-edit {
+			width: 100%;
+			margin-top: 10px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 24px;
+		}
+
+		.card-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.project-card {
+			padding: 12px;
+			margin: 8px 0;
+		}
+
+		.project-info h3 {
+			font-size: 16px;
+		}
+
+		.project-info p {
+			font-size: 13px;
+		}
+
+		#button-edit {
+			width: 100%;
+		}
+
+		button {
+			width: 100%;
+		}
+
+		.modal {
+			padding: 16px;
+		}
+
+		.modal-body {
+			gap: 10px;
+		}
+
+		.modal-body input {
+			width: 100%;
+		}
+	}
 </style>

@@ -353,4 +353,100 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.filter-bar {
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.department-select,
+		.user-select {
+			width: 100%;
+		}
+
+		.menu-access {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 10px;
+		}
+
+		.menu-info {
+			width: 100%;
+		}
+
+		.menu-info h3,
+		.menu-info p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+			white-space: normal;
+		}
+
+		.access-check {
+			align-self: flex-end;
+		}
+
+		.button-modify {
+			width: 100%;
+			padding: 10px;
+			gap: 10px;
+		}
+
+		.button-assign,
+		.button-inverted {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 24px;
+		}
+
+		.department,
+		.user {
+			font-size: 16px;
+		}
+
+		.menu-card {
+			padding: 12px;
+		}
+
+		.menu-info h3 {
+			font-size: 16px;
+		}
+
+		.menu-info p {
+			font-size: 13px;
+		}
+
+		.circle-checkbox {
+			width: 26px;
+			height: 26px;
+		}
+
+		.circle-checkbox .checkmark {
+			width: 26px;
+			height: 26px;
+		}
+
+		.circle-checkbox .checkmark::after {
+			width: 14px;
+			height: 14px;
+		}
+
+		.button-modify {
+			flex-direction: column;
+		}
+
+		button {
+			width: 100%;
+		}
+	}
 </style>

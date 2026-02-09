@@ -416,15 +416,73 @@
 		margin: 8px 0;
 	}
 
-	@media (max-width: 1100px) {
-		.card-grid {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
+	@media (max-width: 768px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+			padding: 0 6px;
 		}
-	}
 
-	@media (max-width: 700px) {
+		.project-box {
+			margin: 6px;
+			padding: 10px;
+		}
+
+		.submit-dates {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.submit-date {
+			width: 100%;
+			font-size: 14px;
+		}
+
+		.acc-header {
+			padding: 10px;
+			font-size: 14px;
+			gap: 10px;
+		}
+
+		.acc-body {
+			padding: 10px 0 0;
+		}
+
 		.card-grid {
 			grid-template-columns: 1fr;
+			gap: 12px;
+		}
+
+		.history-card {
+			min-height: auto;
+			padding: 12px;
+		}
+
+		.card-title {
+			font-size: 16px;
+			word-break: break-word;
+		}
+
+		.history-card p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.doc-line {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.photo-link {
+			display: inline-block;
+			max-width: 100%;
+			word-break: break-all;
+		}
+
+		.acc-icon :global(svg) {
+			width: 16px;
+			height: 16px;
 		}
 	}
 </style>

@@ -40,7 +40,13 @@
 		}
 	}
 
-	let index = $state(0);
+	const today = new Date();
+
+	const currentIndex = months.findIndex(
+		(m) => m.year === today.getFullYear() && m.month === today.getMonth()
+	);
+
+	let index = $state(currentIndex !== -1 ? currentIndex : 0);
 
 	function prev() {
 		if (index > 0) index -= 1;
@@ -592,5 +598,117 @@
 	.week {
 		display: grid;
 		grid-template-columns: repeat(7, 1fr);
+	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.calendar {
+			overflow-x: auto;
+		}
+
+		.calendar-header {
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.calendar-header .month-label {
+			font-size: 15px;
+			text-align: center;
+			width: 100%;
+		}
+
+		.cell {
+			min-height: 70px;
+			padding: 6px;
+		}
+
+		.cell-status {
+			font-size: 12px;
+			word-break: break-word;
+		}
+
+		.day-num {
+			font-size: 12px;
+		}
+
+		.download {
+			justify-content: flex-start;
+		}
+
+		.button-download {
+			margin-left: 0;
+			width: 100%;
+		}
+
+		.modal {
+			height: auto;
+			max-height: 80vh;
+		}
+
+		.submissions-info {
+			gap: 10px;
+		}
+	}
+	@media (max-width: 600px) {
+		.title {
+			font-size: 24px;
+		}
+
+		.weekdays > div {
+			padding: 6px 2px;
+			font-size: 11px;
+		}
+
+		.week {
+			grid-template-columns: repeat(7, minmax(44px, 1fr));
+		}
+
+		.cell {
+			min-height: 60px;
+			padding: 4px;
+		}
+
+		.cell-status {
+			font-size: 11px;
+			line-height: 1.2;
+		}
+
+		.day-num {
+			font-size: 11px;
+			right: 4px;
+			bottom: 4px;
+		}
+
+		.nav {
+			font-size: 16px;
+			padding: 4px 8px;
+		}
+
+		.modal {
+			width: 100%;
+			padding: 16px;
+		}
+
+		.modal h3 {
+			font-size: 14px;
+		}
+
+		.submissions-info {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.submissions-info p {
+			font-size: 13px;
+		}
 	}
 </style>

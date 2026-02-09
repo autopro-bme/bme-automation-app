@@ -620,4 +620,130 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.container {
+			flex-wrap: wrap;
+			gap: 8px 12px;
+		}
+
+		.label {
+			margin: 0 10px 0 6px;
+			white-space: nowrap;
+		}
+
+		.filter-bar {
+			display: flex;
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.filter-input {
+			width: 100%;
+		}
+
+		.date-from,
+		.date-to {
+			width: 100%;
+			margin: 4px 0;
+		}
+
+		.site-safety-download {
+			justify-content: flex-start;
+		}
+
+		.button-download {
+			margin-left: 0;
+			width: 100%;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.project-box-top {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.project-name {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.project-box p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.modal {
+			max-height: 85vh;
+		}
+
+		.form-details {
+			white-space: normal;
+			word-break: break-word;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 24px;
+		}
+
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.container input[type='radio'] {
+			margin-right: 6px;
+		}
+
+		.label {
+			margin: 0 0 6px 0;
+		}
+
+		.filter-input {
+			font-size: 13px;
+		}
+
+		.created-date,
+		.project-id {
+			font-size: 16px;
+		}
+
+		button,
+		.button-primary,
+		.button-download {
+			width: 100%;
+		}
+
+		.project-box {
+			padding: 8px;
+		}
+
+		.project-box p {
+			font-size: 13px;
+		}
+
+		.project-name {
+			font-size: 15px;
+		}
+
+		.modal {
+			padding: 16px;
+		}
+
+		.form-heading {
+			font-size: 18px;
+		}
+	}
 </style>
