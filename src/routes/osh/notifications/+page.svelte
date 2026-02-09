@@ -113,9 +113,11 @@
 
 		if (profileError) {
 			errorMsg = profileError.message;
+			console.log('profileError:', profileError);
 			return;
 		}
 
+		console.log('profileData:', profileData);
 		const firstName = profileData?.first_name ?? '';
 		const lastName = profileData?.last_name ?? '';
 		currentUserName = `${firstName} ${lastName}`.trim();
@@ -240,13 +242,13 @@
 	</div>
 </div>
 
-{#if isAdmin}
-	<div class="notifications-create">
+<div class="notifications-create">
+	{#if isAdmin}
 		<button class="button-create" on:click={openCreateModal}
 			><Plus /><span>New Notification</span></button
 		>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <div class="project-box">
 	{#each filteredNotifications as n (n.id)}
