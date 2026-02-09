@@ -107,7 +107,7 @@
 
 		const { data: profileData, error: profileError } = await supabase
 			.from('profiles')
-			.select('first_name, last_name')
+			.select('first_name, last_name, department')
 			.eq('id', user.id)
 			.single();
 
@@ -123,7 +123,9 @@
 		currentUserName = `${firstName} ${lastName}`.trim();
 
 		const departments = profileData?.department ?? [];
-		isAdmin = Array.isArray(departments) && departments.includes('Admin');
+		isAdmin = Array.isArray(departments) && departments.some((d) => normalize(d) === 'admin');
+
+		console.log('department:', departments, 'isAdmin:', isAdmin);
 
 		const { data, error } = await supabase
 			.from('notifications')
