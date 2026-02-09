@@ -9,7 +9,7 @@
 	let errorMsg = '';
 
 	function deptKey(label) {
-		if (label.startsWith('Occupational, Safety')) return 'OSH';
+		if (label.startsWith('Occupational Safety')) return 'OSH';
 		return label;
 	}
 
