@@ -2,24 +2,22 @@
 	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { authReady, session } from '$lib/stores/auth';
-	import { get } from 'svelte/store';
 
 	let email = '';
 	let password = '';
 	let error = '';
+	let loading = false;
 
 	async function signIn() {
-		while (!get(authReady)) {
-			await new Promise((r) => setTimeout(r, 25));
-		}
+		errorMsg = '';
+		loading = true;
 
-		const s = get(session);
-		if (!s?.user) {
-			goto('/auth/signin');
+		const supabase = getSupabase();
+		if (!supabase) {
+			errorMsg = 'Supabase is not ready yet. Please try again.';
+			loading = false;
 			return;
 		}
-		const supabase = getSupabase();
-		if (!supabase) return;
 
 		error = '';
 		const { data, error: signInError } = await supabase.auth.signInWithPassword({
@@ -113,7 +111,7 @@
 			{#if error}
 				<p class="error">{error}</p>
 			{/if}
-			<button type="submit" class="button-primary">Sign In</button>
+			<button type="button" class="button-primary">Sign In</button>
 			<p class="no-account">
 				Don't have an account? Sign up <a href="/signup" class="signup">here</a>.
 			</p>
