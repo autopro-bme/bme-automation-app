@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 
 	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
 	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
@@ -37,6 +37,9 @@
 	}
 
 	async function ensureSignedIn() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		const {
 			data: { session }
 		} = await supabase.auth.getSession();
@@ -48,6 +51,9 @@
 	}
 
 	async function loadAttendance() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		loading = true;
 		errorMsg = '';
 		rows = [];

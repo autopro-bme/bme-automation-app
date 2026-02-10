@@ -25,6 +25,8 @@
 
 	onMount(() => {
 		const supabase = getSupabase();
+		if (!supabase) return;
+
 		if (supabase) {
 			const { data } = supabase.auth.onAuthStateChange((_event, session) => {
 				if (

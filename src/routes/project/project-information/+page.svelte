@@ -2,7 +2,7 @@
 	/** @type {Array<{ items: Array<any>}>} */
 	import ListPlus from '@lucide/svelte/icons/list-plus';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -60,6 +60,9 @@
 	});
 
 	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();

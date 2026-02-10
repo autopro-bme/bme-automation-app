@@ -3,7 +3,7 @@
 	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
 	import X from '@lucide/svelte/icons/x';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 
 	const startYear = 2026;
 	const endYear = 2028;

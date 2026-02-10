@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Search from '@lucide/svelte/icons/search';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 
 	let users = [];
 	let errorMsg = '';
@@ -37,6 +37,9 @@
 	});
 
 	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();

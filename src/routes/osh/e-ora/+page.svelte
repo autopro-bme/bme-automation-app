@@ -1,7 +1,7 @@
 <script>
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Check from '@lucide/svelte/icons/check';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
 	let employee_name = '';
@@ -35,6 +35,9 @@
 	let successTimer;
 
 	async function handleSubmit(e) {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		e.preventDefault();
 		errorMsg = '';
 		saving = true;

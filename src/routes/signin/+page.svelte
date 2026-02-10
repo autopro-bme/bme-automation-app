@@ -1,5 +1,5 @@
 <script>
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
 	let email = '';
@@ -7,6 +7,9 @@
 	let error = '';
 
 	async function signIn() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		error = '';
 		const { data, error: signInError } = await supabase.auth.signInWithPassword({
 			email,

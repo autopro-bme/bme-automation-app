@@ -9,6 +9,9 @@
 	let saving = false;
 
 	async function sendReset(e) {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		e.preventDefault();
 		errorMsg = '';
 		saving = true;

@@ -1,7 +1,7 @@
 <script>
 	import Search from '@lucide/svelte/icons/search';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 
 	let formType = '';
 	let fromDate = '';
@@ -108,6 +108,9 @@
 	}
 
 	async function loadForms() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		loading = true;
 		errorMsg = '';
 		rows = [];
@@ -153,6 +156,9 @@
 	}
 
 	async function openDetailsModal(row) {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		showDetailsModal = true;
 		modalLoading = true;
 		modalError = '';

@@ -16,6 +16,9 @@
 	let unsub = null;
 
 	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		errorMsg = '';
 
 		const { data } = supabase.auth.onAuthStateChange((event) => {
@@ -36,6 +39,9 @@
 	});
 
 	async function submitNewPassword(e) {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		e.preventDefault();
 		errorMsg = '';
 

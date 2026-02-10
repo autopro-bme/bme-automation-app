@@ -1,5 +1,5 @@
 <script>
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
 	let first_name = '';
@@ -39,6 +39,9 @@
 	$: isPasswordValid = hasUppercase && hasLowercase && hasNumber && hasSpecial && hasMinLength;
 
 	async function signUp() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		error = '';
 
 		if (emailError) {

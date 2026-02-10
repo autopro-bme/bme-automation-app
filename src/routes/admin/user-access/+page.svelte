@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 
 	let users = [];
 	let departments = [];
@@ -83,6 +83,9 @@
 	};
 
 	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();

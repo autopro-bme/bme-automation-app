@@ -1,5 +1,5 @@
 <script>
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { menuSections } from '$lib/data/menu';
 	import { onMount } from 'svelte';
@@ -23,6 +23,9 @@
 	}
 
 	onMount(async () => {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		const { data: auth } = await supabase.auth.getUser();
 		if (!auth?.user) {
 			goto('/auth/signin');

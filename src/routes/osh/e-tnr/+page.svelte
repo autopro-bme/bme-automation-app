@@ -2,7 +2,7 @@
 	import Search from '@lucide/svelte/icons/search';
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Check from '@lucide/svelte/icons/check';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
 	let showProjectModal = false;
@@ -49,6 +49,9 @@
 	}
 
 	async function uploadToBucket(file, folder) {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		if (!file) return null;
 
 		const ext = file.name.split('.').pop() || 'bin';
@@ -68,6 +71,9 @@
 	}
 
 	async function handleSubmit(e) {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		e.preventDefault();
 		errorMsg = '';
 		saving = true;
@@ -132,6 +138,9 @@
 	}
 
 	async function loadProjects() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		projectLoading = true;
 		projectError = '';
 

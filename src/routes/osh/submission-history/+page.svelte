@@ -1,7 +1,7 @@
 <script>
 	import ChevronLeft from '@lucide/svelte/icons/chevron-left';
 	import ChevronDown from '@lucide/svelte/icons/chevron-down';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 
 	let submissions = $state([]);
@@ -33,6 +33,9 @@
 	}
 
 	async function loadHistory() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
 		loading = true;
 		errorMsg = '';
 		submissions = [];
