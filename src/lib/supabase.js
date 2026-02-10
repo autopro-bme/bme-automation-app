@@ -6,17 +6,16 @@ let _client = null;
 
 export function getSupabase() {
 	if (!browser) return null;
-	if (_client) return _client;
 
-	_client = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		auth: {
-			persistSession: true,
-			autoRefreshToken: true,
-			detectSessionInUrl: true
-		}
-	});
+	if (!_client) {
+		_client = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+			auth: {
+				persistSession: true,
+				autoRefreshToken: true,
+				detectSessionInUrl: true
+			}
+		});
+	}
 
 	return _client;
 }
-
-export const supabase = getSupabase();

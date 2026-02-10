@@ -2,7 +2,7 @@
 	/** @type {Array<{ items: Array<any>}>} */
 	import Plus from '@lucide/svelte/icons/plus';
 	import Search from '@lucide/svelte/icons/search';
-	import { supabase } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -96,9 +96,11 @@
 	}
 
 	onMount(async () => {
-		const {
-			data: { user }
-		} = await supabase.auth.getUser();
+		const supabase = getSupabase();
+		if (!supabase) return;
+
+		const { data: sessionData } = await supabase.auth.getSession();
+		const user = sessionData?.session?.user;
 
 		if (!user) {
 			goto('/auth/signin');
@@ -116,12 +118,10 @@
 			return;
 		}
 
-		const firstName = profileData?.first_name ?? '';
-		const lastName = profileData?.last_name ?? '';
-		currentUserName = `${firstName} ${lastName}`.trim();
+		currentUserName = `${profileData.first_name ?? ''} ${profileData.last_name ?? ''}`.trim();
 
-		const departments = profileData?.department ?? [];
-		isAdmin = Array.isArray(departments) && departments.some((d) => normalize(d) === 'admin');
+		const departments = profileData.department ?? [];
+		isAdmin = Array.isArray(departments) && departments.some((d) => d.toLowerCase() === 'admin');
 
 		const { data, error } = await supabase
 			.from('notifications')
@@ -132,7 +132,6 @@
 
 		if (error) {
 			errorMsg = error.message;
-			notifications = [];
 			return;
 		}
 
