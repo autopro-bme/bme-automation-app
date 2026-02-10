@@ -5,7 +5,7 @@
 
 	let email = '';
 	let password = '';
-	let error = '';
+	let errorMsg = '';
 	let loading = false;
 
 	async function signIn() {
@@ -18,8 +18,6 @@
 			loading = false;
 			return;
 		}
-
-		error = '';
 		const { data, error: signInError } = await supabase.auth.signInWithPassword({
 			email,
 			password
@@ -111,7 +109,7 @@
 			{#if error}
 				<p class="error">{error}</p>
 			{/if}
-			<button type="button" class="button-primary">Sign In</button>
+			<button type="submit" class="button-primary">Sign In</button>
 			<p class="no-account">
 				Don't have an account? Sign up <a href="/signup" class="signup">here</a>.
 			</p>
