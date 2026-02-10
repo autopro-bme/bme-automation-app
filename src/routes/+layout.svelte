@@ -7,12 +7,11 @@
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { spinner } from '$lib/stores/spinner.js';
 	import { onMount, onDestroy } from 'svelte';
-	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
-	import { authReady, session } from '$lib/stores/auth';
+	import { authReady, session } from '$lib/stores/auth.js';
 
 	/** @type {null | (() => void)} */
-	let authUnsub = null;
+	let authStoresUnsub = null;
 
 	/** @type {{ children: any }} */
 	const { children } = $props();
@@ -25,22 +24,7 @@
 	let navUnsub = null;
 
 	onMount(() => {
-		const supabase = getSupabase();
-		if (!supabase) return;
-
-		if (supabase) {
-			const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-				if (
-					!session &&
-					$page.url.pathname !== '/auth/signin' &&
-					$page.url.pathname !== '/auth/signup'
-				) {
-					goto('/auth/signin');
-				}
-			});
-			authUnsub = () => data.subscription.unsubscribe();
-		}
-
+		// Spinner control during navigation
 		navUnsub = navigating.subscribe((nav) => {
 			if (nav) {
 				if (hideTimer) {
@@ -56,26 +40,41 @@
 			}
 		});
 
-		authUnsub = authReady.subscribe((ready) => {
+		// Auth guard: wait for authReady before redirecting
+		let ready = false;
+		let sess = null;
+		const check = () => {
 			if (!ready) return;
-
-			let s;
-			const unsubSession = session.subscribe((val) => (s = val));
-
 			const path = $page.url.pathname;
 			const isAuthPage =
-				path === '/auth/signin' || path === '/auth/signup' || path === '/auth/forgotpw';
+				path === '/auth/signin' ||
+				path === '/auth/signup' ||
+				path === '/auth/forgotpw' ||
+				path === '/auth/forgotpw/confirm' ||
+				path === '/auth/resetpw';
 
-			if (!s && !isAuthPage) {
+			if (!sess && !isAuthPage) {
 				goto('/auth/signin');
 			}
+		};
 
-			unsubSession();
+		const unsubReady = authReady.subscribe((val) => {
+			ready = val;
+			check();
 		});
+		const unsubSession = session.subscribe((val) => {
+			sess = val;
+			check();
+		});
+
+		authStoresUnsub = () => {
+			unsubReady();
+			unsubSession();
+		};
 	});
 
 	onDestroy(() => {
-		if (authUnsub) authUnsub();
+		if (authStoresUnsub) authStoresUnsub();
 		// @ts-ignore
 		if (navUnsub) navUnsub();
 		if (hideTimer) clearTimeout(hideTimer);
