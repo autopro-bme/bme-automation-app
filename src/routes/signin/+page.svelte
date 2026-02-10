@@ -1,6 +1,8 @@
 <script>
 	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
+	import { authReady, session } from '$lib/stores/auth';
+	import { get } from 'svelte/store';
 
 	let email = '';
 	let password = '';

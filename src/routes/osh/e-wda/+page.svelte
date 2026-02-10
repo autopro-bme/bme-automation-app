@@ -2,6 +2,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { getSupabase } from '$lib/supabase';
+	import { authReady, session } from '$lib/stores/auth';
+	import { get } from 'svelte/store';
 
 	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
 	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';

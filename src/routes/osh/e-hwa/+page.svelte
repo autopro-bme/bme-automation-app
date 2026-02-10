@@ -10,6 +10,8 @@
 	import Check from '@lucide/svelte/icons/check';
 	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
+	import { authReady, session } from '$lib/stores/auth';
+	import { get } from 'svelte/store';
 
 	let permit_date = '';
 	let location_allowed = '';

@@ -5,6 +5,8 @@
 	import { getSupabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { authReady, session } from '$lib/stores/auth';
+	import { get } from 'svelte/store';
 
 	let projects = [];
 	let errorMsg = '';
