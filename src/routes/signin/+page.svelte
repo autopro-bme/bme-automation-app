@@ -5,16 +5,16 @@
 
 	let email = '';
 	let password = '';
-	let errorMsg = '';
+	let error = '';
 	let loading = false;
 
 	async function signIn() {
-		errorMsg = '';
+		error = '';
 		loading = true;
 
 		const supabase = getSupabase();
 		if (!supabase) {
-			errorMsg = 'Supabase is not ready yet. Please try again.';
+			error = 'Supabase is not ready yet. Please try again.';
 			loading = false;
 			return;
 		}
