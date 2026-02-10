@@ -88,9 +88,6 @@
 			} else {
 				submissions = merged;
 			}
-
-			console.log('fromDate/toDate:', fromDate, toDate);
-			console.log('merged:', merged.length, 'final submissions:', submissions.length);
 		} catch (e) {
 			errorMsg = e?.message ?? String(e);
 		} finally {

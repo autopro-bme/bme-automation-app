@@ -113,19 +113,15 @@
 
 		if (profileError) {
 			errorMsg = profileError.message;
-			console.log('profileError:', profileError);
 			return;
 		}
 
-		console.log('profileData:', profileData);
 		const firstName = profileData?.first_name ?? '';
 		const lastName = profileData?.last_name ?? '';
 		currentUserName = `${firstName} ${lastName}`.trim();
 
 		const departments = profileData?.department ?? [];
 		isAdmin = Array.isArray(departments) && departments.some((d) => normalize(d) === 'admin');
-
-		console.log('department:', departments, 'isAdmin:', isAdmin);
 
 		const { data, error } = await supabase
 			.from('notifications')
@@ -239,7 +235,7 @@
 		<input type="date" name="created-date" id="date-to" class="date-to" bind:value={toDate} />
 	</div>
 	<div>
-		<p></p>
+		<p class="hidden">Search</p>
 		<button class="button-primary" id="button-search"><Search /></button>
 	</div>
 </div>
@@ -402,7 +398,6 @@
 
 	#button-search {
 		vertical-align: middle;
-		margin-top: 20px;
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -421,6 +416,10 @@
 		font-size: 18px;
 		font-weight: bold;
 		margin-bottom: 5px;
+	}
+
+	.hidden {
+		display: none;
 	}
 
 	.modal-backdrop {
