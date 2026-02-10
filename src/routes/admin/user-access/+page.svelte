@@ -83,6 +83,15 @@
 	};
 
 	onMount(async () => {
+		while (!get(authReady)) {
+			await new Promise((r) => setTimeout(r, 25));
+		}
+
+		const s = get(session);
+		if (!s?.user) {
+			goto('/auth/signin');
+			return;
+		}
 		const supabase = getSupabase();
 		if (!supabase) return;
 

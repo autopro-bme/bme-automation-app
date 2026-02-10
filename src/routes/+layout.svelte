@@ -9,6 +9,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { getSupabase } from '$lib/supabase';
 	import { goto } from '$app/navigation';
+	import { authReady, session } from '$lib/stores/auth';
 
 	/** @type {null | (() => void)} */
 	let authUnsub = null;
@@ -53,6 +54,23 @@
 					hideTimer = null;
 				}, MIN_SPINNER_MS);
 			}
+		});
+
+		authUnsub = authReady.subscribe((ready) => {
+			if (!ready) return;
+
+			let s;
+			const unsubSession = session.subscribe((val) => (s = val));
+
+			const path = $page.url.pathname;
+			const isAuthPage =
+				path === '/auth/signin' || path === '/auth/signup' || path === '/auth/forgotpw';
+
+			if (!s && !isAuthPage) {
+				goto('/auth/signin');
+			}
+
+			unsubSession();
 		});
 	});
 

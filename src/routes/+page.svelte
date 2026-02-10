@@ -3,6 +3,8 @@
 	import { goto } from '$app/navigation';
 	import { menuSections } from '$lib/data/menu';
 	import { onMount } from 'svelte';
+	import { authReady, session } from '$lib/stores/auth';
+	import { get } from 'svelte/store';
 
 	let allowedDepartments = [];
 	let visibleSections = [];
@@ -23,6 +25,15 @@
 	}
 
 	onMount(async () => {
+		while (!get(authReady)) {
+			await new Promise((r) => setTimeout(r, 25));
+		}
+
+		const s = get(session);
+		if (!s?.user) {
+			goto('/auth/signin');
+			return;
+		}
 		const supabase = getSupabase();
 		if (!supabase) return;
 
