@@ -749,4 +749,190 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-label {
+			width: 180px;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.categories {
+			grid-template-columns: 40px 2.5fr 50px 50px 2.5fr;
+			font-size: 13px;
+		}
+
+		.audit-grid {
+			grid-template-columns: 40px 2.5fr 50px 2.5fr;
+			gap: 8px;
+		}
+
+		.audit-remarks {
+			font-size: 13px;
+		}
+
+		.circle-checkbox {
+			width: 32px;
+			height: 32px;
+		}
+
+		.circle-checkbox .checkmark {
+			width: 32px;
+			height: 32px;
+		}
+
+		.remarks {
+			height: 180px;
+		}
+
+		.modal {
+			width: min(600px, 92vw);
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-row span {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 6px;
+		}
+
+		.forms-label {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.forms-input {
+			width: 100%;
+			height: 34px;
+			font-size: 13px;
+		}
+
+		.categories {
+			display: none;
+		}
+
+		.audit-grid {
+			grid-template-columns: 1fr;
+			gap: 8px;
+			padding: 10px 0;
+			border-bottom: 1px solid #e3e8f0;
+		}
+
+		.index {
+			font-weight: bold;
+			text-align: left;
+		}
+
+		.audit-check {
+			justify-content: flex-start;
+		}
+
+		.audit-remarks {
+			width: 100%;
+			height: 36px;
+			font-size: 13px;
+		}
+
+		.circle-checkbox {
+			width: 30px;
+			height: 30px;
+		}
+
+		.circle-checkbox .checkmark {
+			width: 30px;
+			height: 30px;
+		}
+
+		.item-note {
+			font-size: 12px;
+		}
+
+		.remarks {
+			width: 100%;
+			height: 160px;
+			font-size: 13px;
+		}
+
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+			font-size: 13px;
+		}
+
+		.declaration p {
+			font-size: 13px;
+		}
+
+		.button-primary,
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.submit {
+			justify-content: center;
+		}
+
+		.modal {
+			width: 94vw;
+			padding: 16px;
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1fr;
+		}
+
+		.project-row-id {
+			text-align: left;
+			opacity: 0.85;
+		}
+	}
 </style>

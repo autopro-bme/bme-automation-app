@@ -236,7 +236,7 @@
 	</div>
 	<div>
 		<p class="hidden">Search</p>
-		<button class="button-primary" id="button-search"><Search /></button>
+		<button class="button-primary" id="button-search"><Search /><span>Search</span></button>
 	</div>
 </div>
 
@@ -397,10 +397,16 @@
 	}
 
 	#button-search {
-		vertical-align: middle;
-		display: flex;
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
 		align-items: center;
-		gap: 10px;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	#button-search span {
+		color: #ffffff;
 	}
 
 	.filter-input {
@@ -419,7 +425,7 @@
 	}
 
 	.hidden {
-		display: none;
+		opacity: 0;
 	}
 
 	.modal-backdrop {
@@ -600,20 +606,26 @@
 
 	@media (max-width: 768px) {
 		.title {
-			font-size: 24px;
-			padding: 0 6px;
-			margin-bottom: 15px;
+			font-size: 22px;
+			margin-bottom: 14px;
 		}
 
 		.notifications-filter {
-			flex-direction: column;
-			align-items: stretch;
-			margin: 8px;
-			padding: 8px 0;
+			gap: 8px;
+		}
+
+		.notifications-filter p {
+			margin: 0 0 4px 0;
+			line-height: 1.2;
 		}
 
 		.notifications-filter > div {
-			width: 100%;
+			margin: 0;
+			padding: 0;
+		}
+
+		.hidden {
+			display: none;
 		}
 
 		.filter-input,

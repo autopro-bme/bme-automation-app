@@ -254,7 +254,7 @@
 		<hr />
 		<h2 class="heading">Inspection Details</h2>
 		<h3>Please upload the required documentation photos for this inspection record.</h3>
-		<p>Checklist Image</p>
+		<p class="image-text">Checklist Image</p>
 		<div class="upload">
 			<p class="upload-text">
 				<input
@@ -268,7 +268,7 @@
 				/>
 			</p>
 		</div>
-		<p>Activity Image</p>
+		<p class="image-text">Activity Image</p>
 		<div class="upload">
 			<p class="upload-text">
 				<input
@@ -433,6 +433,10 @@
 		margin: 10px 0;
 		font-size: 20px;
 		font-weight: bold;
+	}
+
+	.image-text {
+		margin-top: 10px;
 	}
 
 	.modal-overlay {
@@ -650,5 +654,130 @@
 
 	.upload-text input[type='file']::file-selector-button:hover {
 		background-color: #091747b9;
+	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.forms-label {
+			width: 180px;
+		}
+
+		.forms-p {
+			align-items: flex-start;
+		}
+
+		.upload {
+			height: 180px;
+		}
+
+		.observations {
+			height: 180px;
+		}
+
+		.container {
+			align-items: flex-start;
+		}
+
+		.declaration {
+			padding-left: 8px;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.modal {
+			max-height: 85vh;
+			overflow-y: auto;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+		}
+
+		.forms-label {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.forms-input {
+			width: 100%;
+			height: 34px;
+			font-size: 13px;
+		}
+
+		.image-text {
+			font-size: 13px;
+		}
+
+		.upload {
+			height: 160px;
+		}
+
+		.upload-text input[type='file'] {
+			font-size: 13px;
+		}
+
+		.observations {
+			height: 160px;
+			font-size: 13px;
+		}
+
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+			font-size: 13px;
+		}
+
+		.declaration p {
+			font-size: 13px;
+		}
+
+		.submit {
+			justify-content: center;
+		}
+
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
 	}
 </style>

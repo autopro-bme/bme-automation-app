@@ -159,7 +159,7 @@
 		<option value="Project">Project</option>
 		<option value="OSH">OSH</option>
 	</select>
-	<button class="button-primary" id="button-search"><Search /></button>
+	<button class="button-primary" id="button-search"><Search /><span>Search</span></button>
 </div>
 
 {#if errorMsg}
@@ -313,7 +313,16 @@
 	}
 
 	#button-search {
-		vertical-align: middle;
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	#button-search span {
+		color: #ffffff;
 	}
 
 	.card-grid {
@@ -465,6 +474,10 @@
 			white-space: normal;
 		}
 
+		.button-inverted {
+			margin-top: 0;
+		}
+
 		.button-modify {
 			width: 100%;
 			display: flex;
@@ -479,7 +492,7 @@
 
 	@media (max-width: 600px) {
 		.title {
-			font-size: 24px;
+			font-size: 22px;
 		}
 
 		.card-grid {

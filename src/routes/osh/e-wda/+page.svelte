@@ -298,4 +298,94 @@
 	.wda-table tbody tr:nth-child(even) {
 		background-color: #ececec;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 12px;
+		}
+
+		.date-records {
+			flex-wrap: wrap;
+			align-items: flex-start;
+			gap: 10px;
+		}
+
+		.records {
+			width: 100%;
+			text-align: left;
+		}
+
+		.table-container {
+			overflow-x: auto;
+		}
+
+		.wda-table {
+			min-width: 900px;
+		}
+
+		.wda-table th,
+		.wda-table td {
+			padding: 10px 12px;
+			font-size: 13px;
+		}
+
+		.pagination {
+			flex-wrap: wrap;
+			gap: 6px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.date-records {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.filter-date {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.records {
+			font-size: 12px;
+		}
+
+		.table-container {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.wda-table {
+			min-width: 720px;
+		}
+
+		.wda-table th,
+		.wda-table td {
+			padding: 8px 10px;
+			font-size: 12px;
+			white-space: nowrap;
+		}
+
+		.pagination {
+			justify-content: center;
+			flex-wrap: wrap;
+		}
+
+		.pagination button {
+			min-width: 36px;
+			height: 36px;
+		}
+	}
 </style>

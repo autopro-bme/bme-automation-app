@@ -461,4 +461,119 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 520px;
+		}
+
+		.forms-p {
+			flex-wrap: wrap;
+			align-items: flex-start;
+			row-gap: 6px;
+		}
+
+		.forms-label {
+			width: auto;
+			min-width: 180px;
+			white-space: normal;
+			word-break: break-word;
+		}
+
+		.container {
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.button-primary,
+		.button-submit {
+			width: fit-content;
+		}
+
+		.remarks {
+			height: 180px;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.subheading {
+			font-size: 15px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 6px;
+		}
+
+		.forms-label {
+			width: 100%;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.remarks {
+			height: 160px;
+		}
+
+		.container {
+			flex-direction: row;
+			align-items: flex-start;
+			gap: 10px;
+		}
+
+		.button-primary,
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.submit {
+			justify-content: stretch;
+		}
+
+		.declaration,
+		.declaration p {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
 </style>

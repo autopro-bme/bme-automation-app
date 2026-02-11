@@ -571,4 +571,131 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		#button-history {
+			margin: 0 10px 12px auto;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-p {
+			flex-wrap: wrap;
+			align-items: flex-start;
+			row-gap: 6px;
+		}
+
+		.forms-label {
+			width: auto;
+			min-width: 180px;
+			white-space: normal;
+			word-break: break-word;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 520px;
+		}
+
+		textarea {
+			width: 100%;
+			max-width: 100%;
+			box-sizing: border-box;
+		}
+
+		.container {
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.declaration {
+			padding: 0;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.submit {
+			justify-content: flex-end;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 6px;
+		}
+
+		.forms-label {
+			width: 100%;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		textarea {
+			width: 100%;
+			min-height: 160px;
+		}
+
+		#button-history {
+			width: 100%;
+			margin: 0 0 12px 0;
+		}
+
+		.button-primary,
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
+		#button-select-user {
+			width: 100%;
+			margin: 6px 0 0 0;
+		}
+
+		.container {
+			flex-direction: row;
+			align-items: flex-start;
+			gap: 10px;
+		}
+
+		.declaration,
+		.declaration p {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.submit {
+			justify-content: stretch;
+		}
+	}
 </style>

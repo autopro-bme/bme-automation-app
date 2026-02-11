@@ -641,4 +641,171 @@
 	.upload-text {
 		width: fit-content;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-label {
+			width: 180px;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.department-select {
+			width: 180px;
+		}
+
+		.upload {
+			width: 100%;
+			height: auto;
+			min-height: 140px;
+		}
+
+		.upload-text {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0;
+		}
+
+		.remarks {
+			width: 100%;
+		}
+
+		.modal {
+			width: min(600px, 92vw);
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-row span {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 6px;
+		}
+
+		.forms-label {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.forms-input {
+			width: 100%;
+			height: 34px;
+			font-size: 13px;
+		}
+
+		.department-select {
+			width: 100%;
+			height: 34px;
+		}
+
+		#button-search {
+			width: 100%;
+			height: 36px;
+		}
+
+		.button-primary {
+			width: 100%;
+			display: flex;
+			justify-content: center;
+		}
+
+		.upload {
+			width: 100%;
+			height: auto;
+			min-height: 140px;
+			padding: 12px;
+		}
+
+		.upload-text {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+		}
+
+		.remarks {
+			width: 100%;
+			height: 160px;
+			font-size: 13px;
+		}
+
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+			font-size: 13px;
+		}
+
+		.declaration p {
+			font-size: 13px;
+		}
+
+		.submit {
+			justify-content: center;
+		}
+
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.modal {
+			width: 94vw;
+			padding: 16px;
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1fr;
+		}
+
+		.project-row-id {
+			text-align: left;
+			opacity: 0.85;
+		}
+	}
 </style>

@@ -335,7 +335,9 @@
 <div class="filter-bar">
 	<h2 class="project-id">Project Name/Project ID</h2>
 	<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
-	<button class="button-primary" id="button-search" onclick={loadForms}><Search /></button>
+	<button class="button-primary" id="button-search" onclick={loadForms}
+		><Search /><span>Search</span></button
+	>
 </div>
 <div class="site-safety-download">
 	<button class="button-download"><CloudDownload /><span>Excel</span></button>
@@ -513,7 +515,16 @@
 	}
 
 	#button-search {
-		vertical-align: middle;
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+
+	#button-search span {
+		color: #ffffff;
 	}
 
 	.container {
@@ -695,20 +706,33 @@
 
 	@media (max-width: 600px) {
 		.title {
-			font-size: 24px;
+			font-size: 22px;
+			margin-bottom: 14px;
 		}
 
 		.container {
-			flex-direction: column;
-			align-items: flex-start;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 8px 12px;
+			align-items: center;
 		}
 
 		.container input[type='radio'] {
-			margin-right: 6px;
+			margin: 0;
 		}
 
 		.label {
-			margin: 0 0 6px 0;
+			margin: 0;
+			white-space: nowrap;
+			font-size: 13px;
+		}
+
+		.container input[type='radio'] {
+			grid-column: span 1;
+		}
+
+		.container label {
+			margin-left: 4px;
 		}
 
 		.filter-input {

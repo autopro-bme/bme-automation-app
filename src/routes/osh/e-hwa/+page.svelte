@@ -390,4 +390,134 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.forms-label {
+			width: 180px;
+		}
+
+		.forms-p {
+			align-items: flex-start;
+		}
+
+		.checklist-grid {
+			grid-template-columns: 30px 1fr 90px 1.5fr;
+			gap: 8px;
+		}
+
+		.checklist-remarks {
+			height: 36px;
+		}
+
+		.container {
+			align-items: flex-start;
+		}
+
+		.declaration {
+			padding-left: 8px;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.subheading {
+			font-size: 15px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+		}
+
+		.forms-label {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.forms-input {
+			width: 100%;
+			height: 34px;
+			font-size: 13px;
+		}
+
+		.checklist-grid {
+			grid-template-columns: 1fr;
+			gap: 6px;
+			padding: 8px 0;
+			border-bottom: 1px solid #09174733;
+		}
+
+		.index {
+			text-align: left;
+			font-weight: bold;
+		}
+
+		.checklist-radio {
+			justify-content: flex-start;
+		}
+
+		.checklist-remarks {
+			height: 36px;
+			font-size: 13px;
+		}
+
+		/* Declaration section stacks nicely */
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+			font-size: 13px;
+		}
+
+		.declaration p {
+			font-size: 13px;
+		}
+
+		.submit {
+			justify-content: center;
+		}
+
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+	}
 </style>

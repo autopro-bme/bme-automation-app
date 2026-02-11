@@ -668,4 +668,175 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.forms-input,
+		.select {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.forms-label {
+			width: 200px;
+		}
+
+		#button-search {
+			height: 34px;
+		}
+
+		.forms-p:has(input[type='radio']) {
+			flex-wrap: wrap;
+			align-items: flex-start;
+		}
+
+		.label {
+			white-space: nowrap;
+		}
+
+		.modal {
+			width: min(600px, 92vw);
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-row span {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.heading {
+			font-size: 17px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 6px;
+		}
+
+		.forms-label {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.forms-input,
+		.select {
+			width: 100%;
+			height: 34px;
+			font-size: 13px;
+		}
+
+		.forms-p:has(#button-search) {
+			flex-direction: row;
+			align-items: center;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.forms-p:has(#button-search) .forms-label {
+			flex-basis: 100%;
+		}
+
+		#button-search {
+			height: 34px;
+			min-width: 44px;
+		}
+
+		.forms-p:has(input[type='radio']) {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: center;
+			gap: 8px;
+		}
+
+		.forms-p:has(input[type='radio']) .forms-label {
+			flex-basis: 100%;
+		}
+
+		.label {
+			margin-right: 6px;
+		}
+
+		.button-primary,
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.submit {
+			justify-content: center;
+		}
+
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+		}
+
+		.declaration p {
+			font-size: 13px;
+		}
+
+		.modal {
+			width: 94vw;
+			padding: 16px;
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-search {
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.project-search-button {
+			width: 100%;
+			height: 38px;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1fr;
+		}
+
+		.project-row-id {
+			text-align: left;
+			opacity: 0.85;
+		}
+	}
 </style>

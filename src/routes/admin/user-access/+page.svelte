@@ -406,7 +406,7 @@
 
 	@media (max-width: 600px) {
 		.title {
-			font-size: 24px;
+			font-size: 22px;
 		}
 
 		.department,

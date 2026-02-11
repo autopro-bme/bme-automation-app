@@ -266,7 +266,7 @@
 				cols="30"
 				rows="10"
 				class="remarks"
-				placeholder="remarks"
+				placeholder="Remarks"
 				bind:value={remarks}
 			></textarea>
 		</p>
@@ -624,5 +624,177 @@
 
 	.upload-text input[type='file']::file-selector-button:hover {
 		background-color: #091747b9;
+	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.forms-label {
+			width: 180px;
+		}
+
+		.forms-input {
+			width: 100%;
+			max-width: 100%;
+		}
+
+		.forms-p {
+			align-items: flex-start;
+		}
+
+		.upload {
+			height: auto;
+			min-height: 140px;
+		}
+
+		.upload-text {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin: 0;
+		}
+
+		.upload-text input[type='file'] {
+			max-width: 100%;
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.declaration p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.modal {
+			width: min(600px, 92vw);
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-row span {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.heading {
+			font-size: 18px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		.forms-p {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
+		}
+
+		.forms-label {
+			width: 100%;
+			font-size: 13px;
+		}
+
+		.forms-input {
+			width: 100%;
+			height: 34px;
+			font-size: 13px;
+		}
+
+		.button-primary {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.upload {
+			height: auto;
+			min-height: 140px;
+			padding: 12px;
+		}
+
+		.upload-text {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			margin: 0;
+		}
+
+		.upload-text input[type='file'] {
+			width: 100%;
+			max-width: 100%;
+			font-size: 13px;
+		}
+
+		.remarks {
+			height: 160px;
+			font-size: 13px;
+		}
+
+		.container {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.declaration {
+			padding: 0;
+			font-size: 13px;
+		}
+
+		.declaration p {
+			font-size: 13px;
+		}
+
+		.submit {
+			justify-content: center;
+		}
+
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.modal {
+			width: 94vw;
+			padding: 16px;
+			max-height: 85vh;
+			overflow: auto;
+		}
+
+		.project-search {
+			gap: 8px;
+		}
+
+		.project-search-button {
+			width: 44px;
+			min-width: 44px;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1fr;
+		}
+
+		.project-row-id {
+			text-align: left;
+			opacity: 0.9;
+		}
 	}
 </style>

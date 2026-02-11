@@ -136,4 +136,103 @@
 		margin-bottom: 20px;
 		padding: 0 10px;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+		}
+
+		.project-box {
+			margin: 8px;
+			padding: 10px;
+		}
+
+		.info {
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.report-overview,
+		.approval-timeline {
+			width: 100%;
+		}
+
+		h2 {
+			font-size: 18px;
+		}
+
+		.timeline {
+			flex-direction: column;
+			gap: 6px;
+			padding: 8px;
+			border-bottom: 1px solid #09174733;
+		}
+
+		.profile {
+			align-items: center;
+			flex-wrap: wrap;
+		}
+
+		.submitted-date {
+			font-size: 13px;
+			color: #444;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.project-box {
+			margin: 6px;
+			padding: 8px;
+		}
+
+		h2 {
+			font-size: 17px;
+		}
+
+		.info {
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.report-overview,
+		.approval-timeline {
+			width: 100%;
+			padding: 8px;
+		}
+
+		.label {
+			margin-top: 8px;
+		}
+
+		.timeline {
+			flex-direction: column;
+			gap: 4px;
+			padding: 8px 0;
+		}
+
+		.submitted-level p,
+		.submitted-date p {
+			word-break: break-word;
+			overflow-wrap: anywhere;
+		}
+
+		.profile {
+			gap: 6px;
+		}
+
+		.profile p {
+			font-size: 13px;
+		}
+
+		.submitted-date {
+			font-size: 12px;
+			color: #555;
+		}
+	}
 </style>
