@@ -11,6 +11,8 @@
 	let selectedUser = '';
 	let selectedMenuAccess = [];
 
+	let showSuccess = false;
+
 	const getUserName = (user) => {
 		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
 		return name || user.email || 'Unknown';
@@ -45,29 +47,46 @@
 
 		isSaving = true;
 		errorMsg = '';
+		showSuccess = false;
 
 		try {
-			const { data, error } = await supabase
+			const { error: updateError } = await supabase
 				.from('profiles')
 				.update({ menu_access: selectedMenuAccess })
+				.eq('id', selectedUser);
+
+			if (updateError) {
+				errorMsg = updateError.message;
+				return;
+			}
+
+			const { data: updated, error: readError } = await supabase
+				.from('profiles')
+				.select('id, menu_access')
 				.eq('id', selectedUser)
-				.select('id, menu_access');
+				.maybeSingle();
 
-			if (error) {
-				errorMsg = error.message;
+			if (readError) {
+				errorMsg = readError.message;
 				return;
 			}
 
-			if (!data || data.length === 0) {
+			if (!updated) {
 				errorMsg =
-					'Update returned no rows. This usually means RLS blocked the admin from updating this user.';
+					'Update succeeded but read-back returned no row (likely SELECT RLS blocked for this user).';
 				return;
 			}
 
-			const updated = data[0];
 			users = users.map((u) =>
 				u.id === selectedUser ? { ...u, menu_access: updated.menu_access } : u
 			);
+
+			showSuccess = true;
+
+			setTimeout(() => {
+				showSuccess = false;
+				goto('/');
+			}, 3000);
 		} catch (e) {
 			errorMsg = e?.message ?? String(e);
 		} finally {
@@ -160,6 +179,14 @@
 	<button class="button-assign" on:click={saveMenuAccess} disabled={!selectedUser || isSaving}>
 		{isSaving ? 'Saving...' : 'Assign Access To This User'}
 	</button>
+	{#if showSuccess}
+		<div class="success-overlay">
+			<div class="success-popup">
+				<h3>Success! <Check strokeWidth={4} /></h3>
+				<p>The user access was updated.</p>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>

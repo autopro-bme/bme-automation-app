@@ -329,7 +329,6 @@
 
 	.project-box {
 		margin: 10px;
-		border: 1px solid #091747;
 		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
