@@ -9,14 +9,13 @@
 	let isSaving = false;
 
 	let selectedUser = '';
-	let selectedMenuAccess = []; // <-- NEW (array of routes)
+	let selectedMenuAccess = [];
 
 	const getUserName = (user) => {
 		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
 		return name || user.email || 'Unknown';
 	};
 
-	// Flatten menu sections into list of items (keep section info for display)
 	const allMenuItems = menuSections.flatMap((section) =>
 		(section.items ?? []).map((item) => ({
 			sectionKey: section.key,
@@ -78,7 +77,6 @@
 			return;
 		}
 
-		// IMPORTANT: select menu_access
 		const { data, error } = await supabase
 			.from('profiles')
 			.select('id, first_name, last_name, email, menu_access, created_at')
@@ -121,8 +119,9 @@
 		<div class="menu-card">
 			<div class="menu-access">
 				<div class="menu-info">
+					<p><b>Department:</b> {item.sectionLabel}</p>
 					<p><b>Page Name:</b> {item.title}</p>
-					<p><b>Personal:</b> {item.sectionLabel}</p>
+					\
 					<p><b>Description:</b> {item.description}</p>
 				</div>
 
