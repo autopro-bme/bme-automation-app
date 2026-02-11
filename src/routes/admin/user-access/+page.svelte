@@ -50,6 +50,7 @@
 		showSuccess = false;
 
 		try {
+			console.log('saveMenuAccess start', selectedUser, selectedMenuAccess);
 			const { error: updateError } = await supabase
 				.from('profiles')
 				.update({ menu_access: selectedMenuAccess })
@@ -59,6 +60,7 @@
 				errorMsg = updateError.message;
 				return;
 			}
+			console.log('update result', res);
 
 			const { data: updated, error: readError } = await supabase
 				.from('profiles')
@@ -134,10 +136,6 @@
 
 <h1 class="title">User Access Management</h1>
 
-{#if errorMsg}
-	<p class="error">{errorMsg}</p>
-{/if}
-
 <div class="filter-bar">
 	<h2 class="user">User</h2>
 	<select bind:value={selectedUser} class="user-select">
@@ -188,6 +186,10 @@
 		</div>
 	{/if}
 </div>
+
+{#if errorMsg}
+	<p class="error">{errorMsg}</p>
+{/if}
 
 <style>
 	* {
@@ -349,6 +351,56 @@
 		margin: 4px 0 0;
 		font-size: 14px;
 		color: #091747;
+	}
+
+	.success-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 9999;
+	}
+
+	.success-popup {
+		height: 250px;
+		background: #ffffff;
+		padding: 25px 35px;
+		border: 1px solid #091747;
+		border-radius: 6px;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+		animation: fadeIn 0.3s ease;
+	}
+
+	.success-popup h3 {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: #2e7d32;
+		font-size: 20px;
+		font-weight: bold;
+		margin-bottom: 15px;
+	}
+
+	.success-popup h3 :global(svg) {
+		display: block;
+	}
+
+	@keyframes fadeIn {
+		from {
+			opacity: 0;
+			transform: scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: scale(1);
+		}
 	}
 
 	.title {
