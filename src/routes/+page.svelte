@@ -4,22 +4,23 @@
 	import { menuSections } from '$lib/data/menu';
 	import { onMount } from 'svelte';
 
-	let allowedDepartments = [];
+	let allowedMenuAccess = [];
 	let visibleSections = [];
 	let errorMsg = '';
 
-	function deptKey(label) {
-		if (label.startsWith('Occupational Safety')) return 'OSH';
-		return label;
-	}
-
 	function computeVisible() {
-		const isAdmin = allowedDepartments.includes('Admin');
+		const allowedRoutes = new Set(allowedMenuAccess ?? []);
+		const isAdmin = allowedRoutes.size === 0 ? false : false; // optional, see note below
 
-		visibleSections = menuSections.filter((section) => {
-			if (isAdmin) return true;
-			return allowedDepartments.includes(deptKey(section.department));
-		});
+		visibleSections = menuSections
+			.map((section) => {
+				const items = (section.items ?? []).filter((item) => {
+					// show item only if route is allowed
+					return allowedRoutes.has(item.route);
+				});
+				return { ...section, items };
+			})
+			.filter((section) => section.items.length > 0);
 	}
 
 	onMount(async () => {
@@ -31,7 +32,7 @@
 
 		const { data: profile, error } = await supabase
 			.from('profiles')
-			.select('department')
+			.select('menu_access')
 			.eq('id', auth.user.id)
 			.single();
 
@@ -40,7 +41,7 @@
 			return;
 		}
 
-		allowedDepartments = profile?.department ?? [];
+		allowedMenuAccess = profile?.menu_access ?? [];
 		computeVisible();
 	});
 </script>
@@ -61,7 +62,11 @@
 				<h3>{item.title}</h3>
 				<p>{item.description}</p>
 			</div>
-			<button disabled={item.disabled} onclick={() => !item.disabled && goto(item.route)}>
+			<button
+				type="button"
+				disabled={item.disabled}
+				on:click={() => !item.disabled && goto(item.route)}
+			>
 				Go To
 			</button>
 		</div>

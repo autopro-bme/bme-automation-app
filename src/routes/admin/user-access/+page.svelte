@@ -42,24 +42,31 @@
 
 	const saveMenuAccess = async () => {
 		if (!selectedUser) return;
+
 		isSaving = true;
 		errorMsg = '';
 
-		const { error } = await supabase
-			.from('profiles')
-			.update({ menu_access: selectedMenuAccess })
-			.eq('id', selectedUser);
+		try {
+			const { data, error } = await supabase
+				.from('profiles')
+				.update({ menu_access: selectedMenuAccess })
+				.eq('id', selectedUser)
+				.select('id, menu_access')
+				.single();
 
-		isSaving = false;
+			if (error) {
+				errorMsg = error.message;
+				return;
+			}
 
-		if (error) {
-			errorMsg = error.message;
-			return;
+			users = users.map((u) =>
+				u.id === selectedUser ? { ...u, menu_access: data.menu_access } : u
+			);
+		} catch (e) {
+			errorMsg = e?.message ?? String(e);
+		} finally {
+			isSaving = false;
 		}
-
-		users = users.map((u) =>
-			u.id === selectedUser ? { ...u, menu_access: selectedMenuAccess } : u
-		);
 	};
 
 	const removeAllAccess = async () => {
@@ -129,7 +136,7 @@
 						<input
 							type="checkbox"
 							checked={selectedMenuAccess.includes(item.route)}
-							onchange={() => toggleMenuItem(item.route)}
+							on:change={() => toggleMenuItem(item.route)}
 							disabled={!selectedUser || isSaving || item.disabled}
 						/>
 						<span class="checkmark" aria-hidden="true"></span>
@@ -141,10 +148,10 @@
 </div>
 
 <div class="button-modify">
-	<button class="button-inverted" onclick={removeAllAccess} disabled={!selectedUser || isSaving}>
+	<button class="button-inverted" on:click={removeAllAccess} disabled={!selectedUser || isSaving}>
 		Remove All Access From This User
 	</button>
-	<button class="button-assign" onclick={saveMenuAccess} disabled={!selectedUser || isSaving}>
+	<button class="button-assign" on:click={saveMenuAccess} disabled={!selectedUser || isSaving}>
 		{isSaving ? 'Saving...' : 'Assign Access To This User'}
 	</button>
 </div>
