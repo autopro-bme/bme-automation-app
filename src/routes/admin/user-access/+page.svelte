@@ -50,7 +50,6 @@
 		showSuccess = false;
 
 		try {
-			console.log('saveMenuAccess start', selectedUser, selectedMenuAccess);
 			const { error: updateError } = await supabase
 				.from('profiles')
 				.update({ menu_access: selectedMenuAccess })
@@ -60,7 +59,6 @@
 				errorMsg = updateError.message;
 				return;
 			}
-			console.log('update result', res);
 
 			const { data: updated, error: readError } = await supabase
 				.from('profiles')
