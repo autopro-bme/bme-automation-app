@@ -51,16 +51,22 @@
 				.from('profiles')
 				.update({ menu_access: selectedMenuAccess })
 				.eq('id', selectedUser)
-				.select('id, menu_access')
-				.single();
+				.select('id, menu_access');
 
 			if (error) {
 				errorMsg = error.message;
 				return;
 			}
 
+			if (!data || data.length === 0) {
+				errorMsg =
+					'Update returned no rows. This usually means RLS blocked the admin from updating this user.';
+				return;
+			}
+
+			const updated = data[0];
 			users = users.map((u) =>
-				u.id === selectedUser ? { ...u, menu_access: data.menu_access } : u
+				u.id === selectedUser ? { ...u, menu_access: updated.menu_access } : u
 			);
 		} catch (e) {
 			errorMsg = e?.message ?? String(e);
