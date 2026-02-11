@@ -273,42 +273,25 @@
 <h1 class="title">Site Safety eForm Information</h1>
 
 <div class="container">
-	<input
-		type="radio"
-		name="eForm-type"
-		id="eTBM-data"
-		value="eTBM"
-		bind:group={formType}
-		onchange={loadForms}
-	/>
-	<label for="eTBM-data" class="label">eTBM Data</label>
-	<input
-		type="radio"
-		name="eForm-type"
-		id="ePPE-data"
-		value="ePPE"
-		bind:group={formType}
-		onchange={loadForms}
-	/>
-	<label for="ePPE-data" class="label">ePPE Data</label>
-	<input
-		type="radio"
-		name="eForm-type"
-		id="eHKP-data"
-		value="eHKP"
-		bind:group={formType}
-		onchange={loadForms}
-	/>
-	<label for="eHKP-data" class="label">eHKP Data</label>
-	<input
-		type="radio"
-		name="eForm-type"
-		id="eZCA-data"
-		value="eZCA"
-		bind:group={formType}
-		onchange={loadForms}
-	/>
-	<label for="eZCA-data" class="label">eZCA Data</label>
+	<label class="radio-item">
+		<input type="radio" name="eForm-type" value="eTBM" bind:group={formType} onchange={loadForms} />
+		<span>e-TBM Data</span>
+	</label>
+
+	<label class="radio-item">
+		<input type="radio" name="eForm-type" value="ePPE" bind:group={formType} onchange={loadForms} />
+		<span>e-PPE Data</span>
+	</label>
+
+	<label class="radio-item">
+		<input type="radio" name="eForm-type" value="eHKP" bind:group={formType} onchange={loadForms} />
+		<span>e-HKP Data</span>
+	</label>
+
+	<label class="radio-item">
+		<input type="radio" name="eForm-type" value="eZCA" bind:group={formType} onchange={loadForms} />
+		<span>e-ZCA Data</span>
+	</label>
 </div>
 
 <div class="filter-bar">
@@ -529,7 +512,8 @@
 
 	.container {
 		display: flex;
-		padding: 0 10px;
+		flex-wrap: wrap;
+		gap: 10px 16px;
 		align-items: center;
 	}
 
@@ -564,11 +548,6 @@
 		font-size: 20px;
 		font-weight: bold;
 		margin-bottom: 10px;
-	}
-
-	.label {
-		font-weight: bold;
-		margin: 0 25px 0 10px;
 	}
 
 	.modal-overlay {
@@ -616,6 +595,17 @@
 		font-size: 16px;
 	}
 
+	.radio-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		white-space: nowrap;
+	}
+
+	.radio-item input[type='radio'] {
+		margin: 0;
+	}
+
 	.site-safety-download {
 		display: flex;
 		margin: 10px;
@@ -643,9 +633,8 @@
 			gap: 8px 12px;
 		}
 
-		.label {
-			margin: 0 10px 0 6px;
-			white-space: nowrap;
+		.radio-item {
+			flex: 0 0 calc(33.333% - 16px);
 		}
 
 		.filter-bar {
@@ -719,16 +708,11 @@
 
 		.container input[type='radio'] {
 			margin: 0;
-		}
-
-		.label {
-			margin: 0;
-			white-space: nowrap;
-			font-size: 13px;
-		}
-
-		.container input[type='radio'] {
 			grid-column: span 1;
+		}
+
+		.radio-item {
+			flex: 0 0 calc(33.333% - 16px);
 		}
 
 		.container label {
