@@ -121,7 +121,6 @@
 				<div class="menu-info">
 					<p><b>Department:</b> {item.sectionLabel}</p>
 					<p><b>Page Name:</b> {item.title}</p>
-					\
 					<p><b>Description:</b> {item.description}</p>
 				</div>
 
