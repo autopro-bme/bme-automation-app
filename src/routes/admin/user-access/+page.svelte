@@ -2,67 +2,53 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { menuSections } from '$lib/data/menu';
 
 	let users = [];
-	let departments = [];
 	let errorMsg = '';
 	let isSaving = false;
-	let selectedDepartment = 'All';
+
 	let selectedUser = '';
-	let selectedDepartments = [];
-
-	$: filteredUsers =
-		selectedDepartment === 'All'
-			? users
-			: users.filter((user) => (user.department ?? []).includes(selectedDepartment));
-
-	const departmentCards = [
-		{
-			value: 'Admin',
-			label: 'Admin',
-			items: 'User Information Management, User Access Management'
-		},
-		{
-			value: 'Project',
-			label: 'Project',
-			items: 'Project Information Management'
-		},
-		{
-			value: 'OSH',
-			label: 'Occupational Safety & Health (OSH)',
-			items:
-				'Site Safety eForm Information, Working Day Attendance (e-WDA) Record, Site Safety eForms Submission'
-		}
-	];
+	let selectedMenuAccess = [];
 
 	const getUserName = (user) => {
 		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
 		return name || user.email || 'Unknown';
 	};
 
-	const syncSelectedDepartments = () => {
-		const user = users.find((item) => item.id === selectedUser);
-		selectedDepartments = user?.department ? [...user.department] : [];
+	const allMenuItems = menuSections.flatMap((section) =>
+		(section.items ?? []).map((item) => ({
+			sectionKey: section.key,
+			sectionLabel: section.department,
+			title: item.title,
+			description: item.description,
+			route: item.route,
+			disabled: item.disabled ?? false
+		}))
+	);
+
+	const syncSelectedMenuAccess = () => {
+		const user = users.find((u) => u.id === selectedUser);
+		selectedMenuAccess = user?.menu_access ? [...user.menu_access] : [];
 	};
 
-	const toggleDepartment = (value) => {
-		if (selectedDepartments.includes(value)) {
-			selectedDepartments = selectedDepartments.filter((item) => item !== value);
+	const toggleMenuItem = (route) => {
+		if (selectedMenuAccess.includes(route)) {
+			selectedMenuAccess = selectedMenuAccess.filter((r) => r !== route);
 		} else {
-			selectedDepartments = [...selectedDepartments, value];
+			selectedMenuAccess = [...selectedMenuAccess, route];
 		}
 	};
 
-	const saveDepartments = async () => {
+	const saveMenuAccess = async () => {
 		if (!selectedUser) return;
 		isSaving = true;
 		errorMsg = '';
 
-		const payload = {
-			department: selectedDepartments
-		};
-
-		const { error } = await supabase.from('profiles').update(payload).eq('id', selectedUser);
+		const { error } = await supabase
+			.from('profiles')
+			.update({ menu_access: selectedMenuAccess })
+			.eq('id', selectedUser);
 
 		isSaving = false;
 
@@ -71,22 +57,21 @@
 			return;
 		}
 
-		users = users.map((user) =>
-			user.id === selectedUser ? { ...user, department: selectedDepartments } : user
+		users = users.map((u) =>
+			u.id === selectedUser ? { ...u, menu_access: selectedMenuAccess } : u
 		);
 	};
 
 	const removeAllAccess = async () => {
 		if (!selectedUser) return;
-		selectedDepartments = [];
-		await saveDepartments();
+		selectedMenuAccess = [];
+		await saveMenuAccess();
 	};
 
 	onMount(async () => {
 		const {
 			data: { user }
 		} = await supabase.auth.getUser();
-
 		if (!user) {
 			goto('/auth/signin');
 			return;
@@ -94,32 +79,21 @@
 
 		const { data, error } = await supabase
 			.from('profiles')
-			.select(
-				'id, first_name, last_name, nickname, email, phone, department, position, region, created_at'
-			)
+			.select('id, first_name, last_name, email, menu_access, created_at')
 			.order('created_at', { ascending: false });
 
 		if (error) {
 			errorMsg = error.message;
 			users = [];
-			departments = [];
 			return;
 		}
 
 		users = data ?? [];
-		const departmentSet = new Set();
-		users.forEach((item) => {
-			(item.department ?? []).forEach((dept) => departmentSet.add(dept));
-		});
-		departments = Array.from(departmentSet);
-		syncSelectedDepartments();
+		syncSelectedMenuAccess();
 	});
 
-	$: if (selectedUser) {
-		syncSelectedDepartments();
-	} else {
-		selectedDepartments = [];
-	}
+	$: if (selectedUser) syncSelectedMenuAccess();
+	else selectedMenuAccess = [];
 </script>
 
 <svelte:head>
@@ -133,35 +107,30 @@
 {/if}
 
 <div class="filter-bar">
-	<h2 class="department">Department</h2>
-	<select bind:value={selectedDepartment} class="department-select">
-		<option value="All">All Departments</option>
-		{#each departments as department}
-			<option value={department}>{department}</option>
-		{/each}
-	</select>
 	<h2 class="user">User</h2>
 	<select bind:value={selectedUser} class="user-select">
-		<option value="" disabled selected>All Users</option>
-		{#each filteredUsers as item}
+		<option value="" disabled selected>Select User</option>
+		{#each users as item}
 			<option value={item.id}>{getUserName(item)}</option>
 		{/each}
 	</select>
-	{#each departmentCards as card}
+
+	{#each allMenuItems as item (item.route)}
 		<div class="menu-card">
 			<div class="menu-access">
 				<div class="menu-info">
-					<h3><b>Department:</b> {card.label}</h3>
-					<p><b>Item(s):</b> {card.items}</p>
+					<p><b>Department:</b> {item.sectionLabel}</p>
+					<p><b>Page Name:</b> {item.title}</p>
+					<p><b>Description:</b> {item.description}</p>
 				</div>
+
 				<div class="access-check">
 					<label class="circle-checkbox">
 						<input
 							type="checkbox"
-							name="access-status"
-							checked={selectedDepartments.includes(card.value)}
-							onchange={() => toggleDepartment(card.value)}
-							disabled={!selectedUser || isSaving}
+							checked={selectedMenuAccess.includes(item.route)}
+							onchange={() => toggleMenuItem(item.route)}
+							disabled={!selectedUser || isSaving || item.disabled}
 						/>
 						<span class="checkmark" aria-hidden="true"></span>
 					</label>
@@ -170,11 +139,12 @@
 		</div>
 	{/each}
 </div>
+
 <div class="button-modify">
 	<button class="button-inverted" onclick={removeAllAccess} disabled={!selectedUser || isSaving}>
 		Remove All Access From This User
 	</button>
-	<button class="button-assign" onclick={saveDepartments} disabled={!selectedUser || isSaving}>
+	<button class="button-assign" onclick={saveMenuAccess} disabled={!selectedUser || isSaving}>
 		{isSaving ? 'Saving...' : 'Assign Access To This User'}
 	</button>
 </div>
@@ -299,14 +269,12 @@
 		padding: 0 10px 10px;
 	}
 
-	.department,
 	.user {
 		font-size: large;
 		font-weight: bold;
 		margin: 10px 0;
 	}
 
-	.department-select,
 	.user-select {
 		font-size: 14px;
 		width: 40%;
@@ -337,10 +305,6 @@
 		flex-grow: 1;
 	}
 
-	.menu-info h3 {
-		margin: 0;
-	}
-
 	.menu-info p {
 		margin: 4px 0 0;
 		font-size: 14px;
@@ -366,7 +330,6 @@
 			gap: 10px;
 		}
 
-		.department-select,
 		.user-select {
 			width: 100%;
 		}
@@ -381,7 +344,6 @@
 			width: 100%;
 		}
 
-		.menu-info h3,
 		.menu-info p {
 			word-break: break-word;
 			overflow-wrap: anywhere;
@@ -409,17 +371,12 @@
 			font-size: 22px;
 		}
 
-		.department,
 		.user {
 			font-size: 16px;
 		}
 
 		.menu-card {
 			padding: 12px;
-		}
-
-		.menu-info h3 {
-			font-size: 16px;
 		}
 
 		.menu-info p {
