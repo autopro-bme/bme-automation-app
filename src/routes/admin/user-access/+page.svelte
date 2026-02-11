@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
 	import { menuSections } from '$lib/data/menu';
+	import Check from '@lucide/svelte/icons/check';
 
 	let users = [];
 	let errorMsg = '';
