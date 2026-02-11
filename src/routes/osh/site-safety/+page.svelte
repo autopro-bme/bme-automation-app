@@ -513,6 +513,7 @@
 	.container {
 		display: flex;
 		flex-wrap: wrap;
+		margin: 0 10px;
 		gap: 10px 16px;
 		align-items: center;
 	}
