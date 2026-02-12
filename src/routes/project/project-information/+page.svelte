@@ -2,6 +2,7 @@
 	/** @type {Array<{ items: Array<any>}>} */
 	import ListPlus from '@lucide/svelte/icons/list-plus';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
+	import Search from '@lucide/svelte/icons/search';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';

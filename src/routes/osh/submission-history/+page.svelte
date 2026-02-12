@@ -105,7 +105,6 @@
 <h1 class="title">Submission History</h1>
 
 <div class="project-box">
-	<h2 class="heading">Submission Date(s)</h2>
 	<div class="date-container">
 		<div>
 			<p>From Date</p>
@@ -318,16 +317,10 @@
 	.date-container {
 		display: flex;
 		gap: 10px;
-		margin: 10px;
+		margin: 10px 0;
 		border-radius: 4px;
 		padding: 10px 0;
 		font-size: 14px;
-	}
-
-	.heading {
-		margin: 10px 0;
-		font-size: 20px;
-		font-weight: bold;
 	}
 
 	.photo-link {

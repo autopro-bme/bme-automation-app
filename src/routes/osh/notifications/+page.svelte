@@ -218,7 +218,7 @@
 		</select>
 	</div>
 	<div>
-		<p>Search</p>
+		<p>Title</p>
 		<input
 			type="text"
 			placeholder="Search by title"
@@ -397,7 +397,6 @@
 	}
 
 	#button-search {
-		width: 150px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;
@@ -492,10 +491,22 @@
 
 	.notifications-filter {
 		display: flex;
-		gap: 10px;
+		align-items: flex-end;
+		gap: 12px;
 		margin: 10px;
-		border-radius: 4px;
 		padding: 10px 0;
+	}
+
+	.notifications-filter p {
+		margin: 0 0 6px 0;
+	}
+
+	.priority-select,
+	.filter-input,
+	.date-from,
+	.date-to {
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 	}
 

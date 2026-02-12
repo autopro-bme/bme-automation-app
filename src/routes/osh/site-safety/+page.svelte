@@ -294,17 +294,22 @@
 	</label>
 </div>
 
+<h2 class="created-date">Created Date</h2>
 <div class="filter-bar">
-	<h2 class="created-date">Created Date</h2>
 	<div>
-		From<input
+		<p>From Date</p>
+		<input
 			type="date"
 			name="created-date"
 			id="date-from"
 			class="date-from"
 			bind:value={fromDate}
 			onchange={loadForms}
-		/>To<input
+		/>
+	</div>
+	<div>
+		<p>To Date</p>
+		<input
 			type="date"
 			name="created-date"
 			id="date-to"
@@ -315,12 +320,16 @@
 	</div>
 </div>
 
+<h2 class="project-id">Project Name/Project ID</h2>
 <div class="filter-bar">
-	<h2 class="project-id">Project Name/Project ID</h2>
-	<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
-	<button class="button-primary" id="button-search" onclick={loadForms}
-		><Search />Search Project</button
-	>
+	<div>
+		<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
+	</div>
+	<div>
+		<button class="button-primary" id="button-search" onclick={loadForms}
+			><Search />Search Project</button
+		>
+	</div>
 </div>
 <div class="site-safety-download">
 	<button class="button-download"><CloudDownload /><span>Excel</span></button>
@@ -530,14 +539,14 @@
 
 	.filter-bar {
 		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 10px;
+		align-items: flex-end;
+		gap: 12px;
+		margin: 10px;
+		padding: 10px 0;
 	}
 
 	.filter-input {
-		flex: 1;
-		min-width: 250px;
+		width: 350px;
 		height: 40px;
 		padding: 0 10px;
 		font-size: 14px;

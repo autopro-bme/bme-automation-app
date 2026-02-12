@@ -101,7 +101,7 @@
 
 <div class="project-box">
 	<div class="filter-bar">
-		<h2 class="department">Department</h2>
+		<p>Department</p>
 		<select class="department-select" bind:value={selectedDepartment}>
 			{#each departments as department}
 				<option value={department}>{department === 'All' ? 'All Departments' : department}</option>
@@ -111,14 +111,19 @@
 
 	<div class="employee-records">
 		<div class="filter-bar">
-			<h2 class="user">Employees</h2>
-			<input
-				type="text"
-				placeholder="Search here..."
-				class="filter-input"
-				bind:value={searchText}
-			/>
-			<button class="button-primary" id="button-search"><Search />Search Employee</button>
+			<div>
+				<p>Employee</p>
+				<input
+					type="text"
+					placeholder="Search here..."
+					class="filter-input"
+					bind:value={searchText}
+				/>
+			</div>
+			<div>
+				<p class="hidden">Search</p>
+				<button class="button-primary" id="button-search"><Search />Search Employee</button>
+			</div>
 		</div>
 		<div class="records">
 			Showing <b>{paginatedEmployees.length}</b> of <b>{records.length}</b> records
@@ -199,7 +204,6 @@
 	}
 
 	#button-search {
-		width: 150px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;
@@ -244,16 +248,19 @@
 		padding: 10px;
 	}
 
+	.filter-bar p {
+		margin: 0 0 6px 0;
+	}
+
 	.filter-input {
-		flex: 1;
-		min-width: 250px;
+		width: 350px;
 		height: 40px;
 		padding: 0 10px;
 		font-size: 14px;
 	}
 
-	h2 {
-		font-weight: bold;
+	.hidden {
+		opacity: 0;
 	}
 
 	.project-box {

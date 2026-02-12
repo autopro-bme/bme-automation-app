@@ -152,14 +152,23 @@
 <h1 class="title">User Information Management</h1>
 
 <div class="filter-bar">
-	<input type="text" placeholder="Search here..." bind:value={searchText} class="filter-input" />
-	<select bind:value={selectedDepartment} class="department-select">
-		<option value="All">All Departments</option>
-		<option value="Admin">Admin</option>
-		<option value="Project">Project</option>
-		<option value="OSH">OSH</option>
-	</select>
-	<button class="button-primary" id="button-search"><Search />Search</button>
+	<div>
+		<p>User</p>
+		<input type="text" placeholder="Search here..." bind:value={searchText} class="filter-input" />
+	</div>
+	<div>
+		<p>Department</p>
+		<select bind:value={selectedDepartment} class="department-select">
+			<option value="All">All Departments</option>
+			<option value="Admin">Admin</option>
+			<option value="Project">Project</option>
+			<option value="OSH">OSH</option>
+		</select>
+	</div>
+	<div>
+		<p class="hidden">Search</p>
+		<button class="button-primary" id="button-search"><Search />Search User</button>
+	</div>
 </div>
 
 {#if errorMsg}
@@ -343,14 +352,14 @@
 
 	.filter-bar {
 		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 10px;
+		align-items: flex-end;
+		gap: 12px;
+		margin: 10px;
+		padding: 10px 0;
 	}
 
 	.filter-input {
-		flex: 1;
-		min-width: 250px;
+		width: 350px;
 		height: 40px;
 		padding: 0 10px;
 		font-size: 14px;
