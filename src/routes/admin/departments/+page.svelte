@@ -101,12 +101,15 @@
 
 <div class="project-box">
 	<div class="filter-bar">
-		<p>Department</p>
-		<select class="department-select" bind:value={selectedDepartment}>
-			{#each departments as department}
-				<option value={department}>{department === 'All' ? 'All Departments' : department}</option>
-			{/each}
-		</select>
+		<div>
+			<p>Department</p>
+			<select class="department-select" bind:value={selectedDepartment}>
+				{#each departments as department}
+					<option value={department}>{department === 'All' ? 'All Departments' : department}</option
+					>
+				{/each}
+			</select>
+		</div>
 	</div>
 
 	<div class="employee-records">
@@ -209,6 +212,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
+		border: 1px;
 	}
 
 	.col-email {
@@ -230,6 +234,9 @@
 	}
 
 	.department-select {
+		height: 40px;
+		width: 150px;
+		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;
 	}
@@ -243,9 +250,10 @@
 
 	.filter-bar {
 		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 10px;
+		align-items: flex-end;
+		gap: 12px;
+		margin: 10px;
+		padding: 10px 0;
 	}
 
 	.filter-bar p {
@@ -265,7 +273,6 @@
 
 	.project-box {
 		margin: 10px;
-		padding: 10px;
 		font-size: 14px;
 	}
 

@@ -307,7 +307,6 @@
 	}
 
 	#button-search {
-		width: 150px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;
@@ -332,6 +331,7 @@
 
 	.department-select {
 		height: 40px;
+		width: 150px;
 		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;
@@ -363,6 +363,10 @@
 		height: 40px;
 		padding: 0 10px;
 		font-size: 14px;
+	}
+
+	.hidden {
+		opacity: 0;
 	}
 
 	h2,

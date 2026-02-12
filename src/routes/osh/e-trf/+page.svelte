@@ -471,7 +471,6 @@
 	}
 
 	#button-search {
-		width: 150px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;

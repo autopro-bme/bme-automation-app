@@ -402,6 +402,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
+		border: 1px;
 	}
 
 	.filter-input {
@@ -538,6 +539,7 @@
 	}
 
 	.priority-select {
+		width: 150px;
 		cursor: pointer;
 	}
 

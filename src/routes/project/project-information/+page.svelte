@@ -218,32 +218,43 @@
 <h1 class="title">Project Information Management</h1>
 
 <div class="filter-bar">
-	<h2 class="status">Project Status</h2>
-	<select bind:value={selectedStatus} class="status-select">
-		<option value="All">Choose a Project Status</option>
-		<option value="Commissioning">Commissioning</option>
-		<option value="Delivery">Delivery</option>
-		<option value="Factory">Factory</option>
-		<option value="Installation">Installation</option>
-		<option value="Mechanical-completion">Mechanical Completion</option>
-		<option value="N/A">N/A</option>
-	</select>
+	<div>
+		<p>Project Status</p>
+		<select bind:value={selectedStatus} class="status-select">
+			<option value="All">Choose a Project Status</option>
+			<option value="Commissioning">Commissioning</option>
+			<option value="Delivery">Delivery</option>
+			<option value="Factory">Factory</option>
+			<option value="Installation">Installation</option>
+			<option value="Mechanical-completion">Mechanical Completion</option>
+			<option value="N/A">N/A</option>
+		</select>
+	</div>
 </div>
 
 <div class="filter-bar">
-	<select bind:value={selectedDataOption} class="option-select">
-		<option value="All">Choose a Data Option</option>
-		<option value="project-id">Project ID</option>
-		<option value="project-name">Project Name</option>
-		<option value="region">Region</option>
-	</select>
-	<input
-		type="text"
-		placeholder="Project ID/Project Name/Region"
-		bind:value={searchText}
-		class="filter-input"
-	/>
-	<button class="button-primary" id="button-search"><Search />Search Project</button>
+	<div>
+		<p>Data Option:</p>
+		<select bind:value={selectedDataOption} class="option-select">
+			<option value="All">Choose a Data Option</option>
+			<option value="project-id">Project ID</option>
+			<option value="project-name">Project Name</option>
+			<option value="region">Region</option>
+		</select>
+	</div>
+	<div>
+		<p>Project ID/Project Name/Region</p>
+		<input
+			type="text"
+			placeholder="Project ID/Project Name/Region"
+			bind:value={searchText}
+			class="filter-input"
+		/>
+	</div>
+	<div>
+		<p class="hidden">Search</p>
+		<button class="button-primary" id="button-search"><Search />Search Project</button>
+	</div>
 </div>
 
 {#if errorMsg}
@@ -495,13 +506,23 @@
 		justify-content: space-between;
 	}
 
+	.button-primary {
+		background-color: #091747;
+		font-weight: bold;
+		padding: 10px 20px;
+	}
+
+	.button-primary:hover {
+		background-color: #091747b9;
+	}
+
 	#button-search {
-		width: 150px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
+		border: 1px;
 	}
 
 	.card-grid {
@@ -512,17 +533,21 @@
 
 	.filter-bar {
 		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 10px;
+		align-items: flex-end;
+		gap: 12px;
+		margin: 10px;
+		padding: 10px 0;
 	}
 
 	.filter-input {
-		flex: 1;
-		min-width: 250px;
+		width: 350px;
 		height: 40px;
 		padding: 0 10px;
 		font-size: 14px;
+	}
+
+	.hidden {
+		opacity: 0;
 	}
 
 	h2 {
@@ -536,8 +561,10 @@
 
 	.option-select,
 	.status-select {
+		height: 40px;
+		width: 150px;
+		padding: 0 10px;
 		font-size: 14px;
-		width: 20%;
 		cursor: pointer;
 	}
 

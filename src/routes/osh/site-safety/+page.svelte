@@ -507,7 +507,6 @@
 	}
 
 	#button-search {
-		width: 150px;
 		height: 40px;
 		display: inline-flex;
 		align-items: center;
@@ -527,13 +526,13 @@
 	.project-id {
 		font-size: large;
 		font-weight: bold;
-		margin: 10px 0;
+		margin: 10px;
 	}
 
 	.date-from,
 	.date-to {
 		height: 30px;
-		margin: 0 15px;
+		margin: 10px 0;
 		font-size: 14px;
 	}
 
@@ -542,7 +541,6 @@
 		align-items: flex-end;
 		gap: 12px;
 		margin: 10px;
-		padding: 10px 0;
 	}
 
 	.filter-input {
