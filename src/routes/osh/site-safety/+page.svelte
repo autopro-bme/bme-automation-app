@@ -294,8 +294,13 @@
 	</label>
 </div>
 
-<h2 class="created-date">Created Date</h2>
 <div class="filter-bar">
+	<div>
+		<p>Project ID/Project Name</p>
+		<div>
+			<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
+		</div>
+	</div>
 	<div>
 		<p>From Date</p>
 		<input
@@ -318,19 +323,14 @@
 			onchange={loadForms}
 		/>
 	</div>
-</div>
-
-<h2 class="project-id">Project Name/Project ID</h2>
-<div class="filter-bar">
 	<div>
-		<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
-	</div>
-	<div>
+		<p class="hidden">Search</p>
 		<button class="button-primary" id="button-search" onclick={loadForms}
 			><Search />Search Project</button
 		>
 	</div>
 </div>
+
 <div class="site-safety-download">
 	<button class="button-download"><CloudDownload /><span>Excel</span></button>
 </div>
@@ -498,7 +498,6 @@
 
 	.button-primary {
 		background-color: #091747;
-		font-weight: bold;
 		padding: 10px 20px;
 	}
 
@@ -522,17 +521,10 @@
 		align-items: center;
 	}
 
-	.created-date,
-	.project-id {
-		font-size: large;
-		font-weight: bold;
-		margin: 10px;
-	}
-
 	.date-from,
 	.date-to {
-		height: 30px;
-		margin: 10px 0;
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 	}
 
@@ -541,6 +533,10 @@
 		align-items: flex-end;
 		gap: 12px;
 		margin: 10px;
+	}
+
+	.filter-bar p {
+		margin: 0 0 6px 0;
 	}
 
 	.filter-input {
@@ -657,6 +653,10 @@
 			width: 100%;
 		}
 
+		.hidden {
+			opacity: 0;
+		}
+
 		.date-from,
 		.date-to {
 			width: 100%;
@@ -731,11 +731,6 @@
 
 		.filter-input {
 			font-size: 13px;
-		}
-
-		.created-date,
-		.project-id {
-			font-size: 16px;
 		}
 
 		button,

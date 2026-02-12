@@ -316,11 +316,14 @@
 
 	.date-container {
 		display: flex;
-		gap: 10px;
-		margin: 10px 0;
-		border-radius: 4px;
+		align-items: flex-end;
+		gap: 12px;
+		margin: 10px;
 		padding: 10px 0;
-		font-size: 14px;
+	}
+
+	.date-container p {
+		margin: 0 0 6px 0;
 	}
 
 	.photo-link {

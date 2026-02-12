@@ -522,7 +522,6 @@
 		align-items: center;
 		gap: 8px;
 		background-color: #091747;
-		font-weight: bold;
 		margin: 10px 0 20px 0;
 		padding: 10px 20px;
 	}

@@ -153,10 +153,6 @@
 
 <div class="filter-bar">
 	<div>
-		<p>User</p>
-		<input type="text" placeholder="Search here..." bind:value={searchText} class="filter-input" />
-	</div>
-	<div>
 		<p>Department</p>
 		<select bind:value={selectedDepartment} class="department-select">
 			<option value="All">All Departments</option>
@@ -164,6 +160,10 @@
 			<option value="Project">Project</option>
 			<option value="OSH">OSH</option>
 		</select>
+	</div>
+	<div>
+		<p>User</p>
+		<input type="text" placeholder="Search here..." bind:value={searchText} class="filter-input" />
 	</div>
 	<div>
 		<p class="hidden">Search</p>
@@ -321,7 +321,6 @@
 
 	.button-primary {
 		background-color: #091747;
-		font-weight: bold;
 		padding: 10px 20px;
 	}
 

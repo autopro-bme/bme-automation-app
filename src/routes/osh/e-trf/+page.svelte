@@ -462,7 +462,6 @@
 
 	.button-primary {
 		background-color: #091747;
-		font-weight: bold;
 		padding: 10px 20px;
 	}
 

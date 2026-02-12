@@ -508,7 +508,6 @@
 
 	.button-primary {
 		background-color: #091747;
-		font-weight: bold;
 		padding: 10px 20px;
 	}
 
@@ -537,6 +536,10 @@
 		gap: 12px;
 		margin: 10px;
 		padding: 10px 0;
+	}
+
+	.filter-bar p {
+		margin: 0 0 6px 0;
 	}
 
 	.filter-input {

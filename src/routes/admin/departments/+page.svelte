@@ -100,25 +100,23 @@
 <h1 class="title">Departments and Employees List</h1>
 
 <div class="project-box">
-	<div class="filter-bar">
-		<div>
-			<p>Department</p>
-			<select class="department-select" bind:value={selectedDepartment}>
-				{#each departments as department}
-					<option value={department}>{department === 'All' ? 'All Departments' : department}</option
-					>
-				{/each}
-			</select>
-		</div>
-	</div>
-
 	<div class="employee-records">
 		<div class="filter-bar">
+			<div>
+				<p>Department</p>
+				<select class="department-select" bind:value={selectedDepartment}>
+					{#each departments as department}
+						<option value={department}
+							>{department === 'All' ? 'All Departments' : department}</option
+						>
+					{/each}
+				</select>
+			</div>
 			<div>
 				<p>Employee</p>
 				<input
 					type="text"
-					placeholder="Search here..."
+					placeholder="Search by employee"
 					class="filter-input"
 					bind:value={searchText}
 				/>
@@ -198,7 +196,6 @@
 
 	.button-primary {
 		background-color: #091747;
-		font-weight: bold;
 		padding: 10px 20px;
 	}
 
@@ -252,7 +249,6 @@
 		display: flex;
 		align-items: flex-end;
 		gap: 12px;
-		margin: 10px;
 		padding: 10px 0;
 	}
 
