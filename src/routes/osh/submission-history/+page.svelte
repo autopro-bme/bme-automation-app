@@ -318,7 +318,7 @@
 		display: flex;
 		align-items: flex-end;
 		gap: 12px;
-		margin: 10px;
+		margin: 10px 0;
 		padding: 10px 0;
 	}
 

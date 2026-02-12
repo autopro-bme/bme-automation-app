@@ -565,7 +565,7 @@
 	.option-select,
 	.status-select {
 		height: 40px;
-		width: 150px;
+		width: 200px;
 		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;
