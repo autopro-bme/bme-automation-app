@@ -118,7 +118,7 @@
 				class="filter-input"
 				bind:value={searchText}
 			/>
-			<button class="button-primary" id="button-search"><Search /></button>
+			<button class="button-primary" id="button-search"><Search />Search Employee</button>
 		</div>
 		<div class="records">
 			Showing <b>{paginatedEmployees.length}</b> of <b>{records.length}</b> records
@@ -199,7 +199,12 @@
 	}
 
 	#button-search {
-		vertical-align: middle;
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
 	}
 
 	.col-email {
@@ -233,12 +238,17 @@
 	}
 
 	.filter-bar {
-		padding: 10px 0;
-		width: 50%;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px;
 	}
 
 	.filter-input {
-		width: 30%;
+		flex: 1;
+		min-width: 250px;
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 	}
 

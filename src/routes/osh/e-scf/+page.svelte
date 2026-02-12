@@ -233,7 +233,7 @@
 			<label for="project-no" class="forms-label">Project ID:</label>
 			<input type="text" class="forms-input" bind:value={project_no} disabled />
 			<button type="button" class="button-primary" onclick={openProjectModal} id="button-search"
-				><Search size={16} /></button
+				><Search />Search Project</button
 			>
 		</div>
 		<div class="forms-p">
@@ -423,10 +423,12 @@
 	}
 
 	#button-search {
-		display: flex;
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
 		justify-content: center;
-		vertical-align: middle;
-		height: 30px;
+		gap: 8px;
 	}
 
 	.button-submit {
@@ -677,6 +679,28 @@
 			align-items: center;
 			justify-content: center;
 			margin: 0;
+		}
+
+		.upload-text {
+			width: fit-content;
+		}
+
+		.upload-text input[type='file'] {
+			font-size: 14px;
+		}
+
+		.upload-text input[type='file']::file-selector-button {
+			background-color: #091747;
+			color: #ffffff;
+			border: none;
+			padding: 6px 12px;
+			border-radius: 4px;
+			cursor: pointer;
+			margin-right: 10px;
+		}
+
+		.upload-text input[type='file']::file-selector-button:hover {
+			background-color: #091747b9;
 		}
 
 		.remarks {

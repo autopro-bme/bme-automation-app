@@ -159,7 +159,7 @@
 		<option value="Project">Project</option>
 		<option value="OSH">OSH</option>
 	</select>
-	<button class="button-primary" id="button-search"><Search /><span>Search</span></button>
+	<button class="button-primary" id="button-search"><Search />Search</button>
 </div>
 
 {#if errorMsg}
@@ -297,6 +297,15 @@
 		background-color: #dedede;
 	}
 
+	#button-search {
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+
 	.button-modify {
 		display: grid;
 		width: 20%;
@@ -312,17 +321,11 @@
 		background-color: #091747b9;
 	}
 
-	#button-search {
-		width: 150px;
+	.department-select {
 		height: 40px;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		gap: 8px;
-	}
-
-	#button-search span {
-		color: #ffffff;
+		padding: 0 10px;
+		font-size: 14px;
+		cursor: pointer;
 	}
 
 	.card-grid {
@@ -332,16 +335,24 @@
 	}
 
 	.department-select {
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;
 	}
 
 	.filter-bar {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 		padding: 10px;
 	}
 
 	.filter-input {
-		width: 30%;
+		flex: 1;
+		min-width: 250px;
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 	}
 

@@ -269,7 +269,7 @@
 			<label for="project-id" class="forms-label">Project ID:</label>
 			<input type="text" class="forms-input" bind:value={project_no} disabled />
 			<button type="button" class="button-primary" onclick={openProjectModal} id="button-search"
-				><Search size={16} /></button
+				><Search />Search Project</button
 			>
 		</div>
 		<div class="forms-p">
@@ -471,10 +471,12 @@
 	}
 
 	#button-search {
-		display: flex;
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
 		justify-content: center;
-		vertical-align: middle;
-		height: 30px;
+		gap: 8px;
 	}
 
 	.button-submit {

@@ -236,7 +236,7 @@
 	</div>
 	<div>
 		<p class="hidden">Search</p>
-		<button class="button-primary" id="button-search"><Search /><span>Search</span></button>
+		<button class="button-primary" id="button-search"><Search />Search Notification</button>
 	</div>
 </div>
 
@@ -403,10 +403,6 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-	}
-
-	#button-search span {
-		color: #ffffff;
 	}
 
 	.filter-input {

@@ -319,7 +319,7 @@
 	<h2 class="project-id">Project Name/Project ID</h2>
 	<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
 	<button class="button-primary" id="button-search" onclick={loadForms}
-		><Search /><span>Search</span></button
+		><Search />Search Project</button
 	>
 </div>
 <div class="site-safety-download">
@@ -506,10 +506,6 @@
 		gap: 8px;
 	}
 
-	#button-search span {
-		color: #ffffff;
-	}
-
 	.container {
 		display: flex;
 		flex-wrap: wrap;
@@ -533,11 +529,17 @@
 	}
 
 	.filter-bar {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 		padding: 10px;
 	}
 
 	.filter-input {
-		width: 350px;
+		flex: 1;
+		min-width: 250px;
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 	}
 

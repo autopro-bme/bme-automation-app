@@ -105,26 +105,28 @@
 <h1 class="title">Submission History</h1>
 
 <div class="project-box">
+	<h2 class="heading">Submission Date(s)</h2>
 	<div class="date-container">
-		<h2 class="heading">Submit Date</h2>
-		<p class="submit-dates">
-			<label for="">From</label>
+		<div>
+			<p>From Date</p>
 			<input
 				type="date"
-				class="submit-date"
+				class="date-from"
 				bind:value={fromDate}
 				onchange={loadHistory}
 				onfocus={(e) => e.target.showPicker?.()}
 			/>
-			<label for="">To</label>
+		</div>
+		<div>
+			<p>To Date</p>
 			<input
 				type="date"
-				class="submit-date"
+				class="date-to"
 				bind:value={toDate}
 				onchange={loadHistory}
 				onfocus={(e) => e.target.showPicker?.()}
 			/>
-		</p>
+		</div>
 	</div>
 
 	{#if errorMsg}
@@ -314,7 +316,12 @@
 	}
 
 	.date-container {
-		margin-bottom: 20px;
+		display: flex;
+		gap: 10px;
+		margin: 10px;
+		border-radius: 4px;
+		padding: 10px 0;
+		font-size: 14px;
 	}
 
 	.heading {
@@ -332,15 +339,6 @@
 		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
-	}
-
-	.submit-date {
-		font-size: 12px;
-		cursor: pointer;
-	}
-
-	.submit-dates {
-		margin-top: 5px;
 	}
 
 	.title {
@@ -424,15 +422,9 @@
 			padding: 10px;
 		}
 
-		.submit-dates {
-			display: flex;
-			flex-direction: column;
-			gap: 8px;
-		}
-
-		.submit-date {
+		.date-from,
+		.date-to {
 			width: 100%;
-			font-size: 14px;
 		}
 
 		.acc-header {

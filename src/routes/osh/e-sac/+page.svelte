@@ -242,7 +242,7 @@
 		{/if}
 		<br />
 		<hr />
-		<p>Safety Audit Document or Image</p>
+		<p class="upload-label">Safety Audit Document or Image</p>
 		<div class="upload">
 			<p class="upload-text">
 				<input
@@ -602,6 +602,10 @@
 		padding: 10px;
 		border: 1px solid #091747;
 		border-radius: 2px;
+	}
+
+	.upload-label {
+		margin-top: 10px;
 	}
 
 	.upload-text {

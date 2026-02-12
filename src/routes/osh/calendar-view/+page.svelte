@@ -284,13 +284,13 @@
 		</div>
 
 		<div class="weekdays">
-			<div>Monday</div>
-			<div>Tuesday</div>
-			<div>Wednesday</div>
-			<div>Thursday</div>
-			<div>Friday</div>
-			<div>Saturday</div>
-			<div>Sunday</div>
+			<div><span class="wd-full">Monday</span><span class="wd-short">Mon</span></div>
+			<div><span class="wd-full">Tuesday</span><span class="wd-short">Tue</span></div>
+			<div><span class="wd-full">Wednesday</span><span class="wd-short">Wed</span></div>
+			<div><span class="wd-full">Thursday</span><span class="wd-short">Thu</span></div>
+			<div><span class="wd-full">Friday</span><span class="wd-short">Fri</span></div>
+			<div><span class="wd-full">Saturday</span><span class="wd-short">Sat</span></div>
+			<div><span class="wd-full">Sunday</span><span class="wd-short">Sun</span></div>
 		</div>
 
 		{#each getWeeks(months[index].year, months[index].month) as week}
@@ -599,6 +599,10 @@
 		grid-template-columns: repeat(7, 1fr);
 	}
 
+	.wd-short {
+		display: none;
+	}
+
 	@media (max-width: 1024px) {
 		.title {
 			font-size: 24px;
@@ -662,6 +666,13 @@
 			font-size: 22px;
 		}
 
+		.calendar-header {
+			flex-wrap: nowrap;
+			justify-content: space-between;
+			gap: 8px;
+			padding: 10px 12px;
+		}
+
 		.weekdays > div {
 			padding: 6px 2px;
 			font-size: 11px;
@@ -671,14 +682,23 @@
 			grid-template-columns: repeat(7, minmax(44px, 1fr));
 		}
 
+		.wd-full {
+			display: none;
+		}
+
+		.wd-short {
+			display: inline;
+		}
+
 		.cell {
 			min-height: 60px;
 			padding: 4px;
 		}
 
 		.cell-status {
-			font-size: 11px;
-			line-height: 1.2;
+			font-size: 10px;
+			line-height: 1.1;
+			padding: 2px 0;
 		}
 
 		.day-num {
@@ -690,6 +710,10 @@
 		.nav {
 			font-size: 16px;
 			padding: 4px 8px;
+		}
+
+		.no-working {
+			margin-top: 2px;
 		}
 
 		.modal {

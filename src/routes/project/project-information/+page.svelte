@@ -242,6 +242,7 @@
 		bind:value={searchText}
 		class="filter-input"
 	/>
+	<button class="button-primary" id="button-search"><Search />Search Project</button>
 </div>
 
 {#if errorMsg}
@@ -493,6 +494,15 @@
 		justify-content: space-between;
 	}
 
+	#button-search {
+		width: 150px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+	}
+
 	.card-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -500,11 +510,17 @@
 	}
 
 	.filter-bar {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 		padding: 10px;
 	}
 
 	.filter-input {
-		width: 20%;
+		flex: 1;
+		min-width: 250px;
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
 	}
 
