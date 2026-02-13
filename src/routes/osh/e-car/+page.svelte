@@ -3,6 +3,7 @@
 	import FileText from '@lucide/svelte/icons/file-text';
 	import Check from '@lucide/svelte/icons/check';
 	import { supabase } from '$lib/supabase';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
 	let showProjectModal = false;
