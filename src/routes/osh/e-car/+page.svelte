@@ -286,6 +286,7 @@
 					id="description"
 					cols="30"
 					rows="10"
+					class="issue"
 					placeholder="Issue"
 					bind:value={form_description}
 					required
@@ -300,6 +301,7 @@
 					id="action"
 					cols="30"
 					rows="10"
+					class="action"
 					placeholder="Action Taken"
 					bind:value={action_taken}
 					required
@@ -608,6 +610,8 @@
 		font-size: 14px;
 	}
 
+	.issue,
+	.action,
 	.remarks {
 		width: 100%;
 		height: 200px;

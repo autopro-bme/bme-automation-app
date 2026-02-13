@@ -113,7 +113,7 @@
 		const { data, error } = await supabase
 			.from('profiles')
 			.select('id, first_name, last_name, email, menu_access, created_at')
-			.order('created_at', { ascending: false });
+			.order('first_name');
 
 		if (error) {
 			errorMsg = error.message;

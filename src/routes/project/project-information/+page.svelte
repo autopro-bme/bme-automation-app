@@ -785,7 +785,7 @@
 
 		.project-card {
 			padding: 12px;
-			margin: 8px 0;
+			margin: 8px;
 		}
 
 		.project-info h3 {

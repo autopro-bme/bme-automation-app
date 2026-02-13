@@ -335,126 +335,124 @@
 	<button class="button-download"><CloudDownload /><span>Excel</span></button>
 </div>
 
-<div class="project-box">
-	{#if !formType}
-		<p class="hint">Please choose an eForm data.</p>
-	{:else if loading}
-		<p>Loading...</p>
-	{:else if errorMsg}
-		<p class="error">{errorMsg}</p>
-	{:else if rows.length === 0}
-		<p>No records found.</p>
-	{:else}
-		{#each rows as r (r.id)}
-			<div class="project-box">
-				<div class="project-box-top">
-					<p class="project-name"><b>{r.project_no ?? '-'} {formType}</b></p>
-					<button class="button-primary" type="button" onclick={() => openDetailsModal(r)}>
-						View Details
-					</button>
-				</div>
-				<p><b>Project Name:&nbsp;</b>{r.project_name ?? '-'}</p>
-				<p><b>Project ID:&nbsp;</b>{r.project_no ?? '-'}</p>
-				<p><b>Submitted By:&nbsp;</b>{r.created_by_name ?? '-'}</p>
-				<p><b>Created Date:&nbsp;</b>{fmtDateTime(r.created_at)}</p>
-				{#if formType === 'eTBM'}
-					<p><b>Meeting Date:&nbsp;</b>{fmtDateOnly(r.meeting_date)}</p>
-
-					<p class="doc-line">
-						<b>TBM Form:&nbsp;</b>
-						{#if r.tbm_form_path}
-							<a href={fileUrlFor('eTBM', 'tbm_form_path', r.tbm_form_path)} target="_blank">
-								{fileName(r.tbm_form_path)}
-							</a>
-						{:else}
-							-
-						{/if}
-					</p>
-					<p class="doc-line">
-						<b>TBM Photo:&nbsp;</b>
-						{#if r.tbm_photo_path}
-							<a href={fileUrlFor('eTBM', 'tbm_photo_path', r.tbm_photo_path)} target="_blank">
-								{fileName(r.tbm_photo_path)}
-							</a>
-						{:else}
-							-
-						{/if}
-					</p>
-					<p class="doc-line">
-						<b>PTW Form:&nbsp;</b>
-						{#if r.ptw_form_path}
-							<a href={fileUrlFor('eTBM', 'ptw_form_path', r.ptw_form_path)} target="_blank">
-								{fileName(r.ptw_form_path)}
-							</a>
-						{:else}
-							-
-						{/if}
-					</p>
-				{:else if formType === 'ePPE'}
-					<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
-					<p class="doc-line">
-						<b>PPE Photo:&nbsp;</b>
-						{#if r.ppe_photo_path}
-							<a href={fileUrlFor('ePPE', 'ppe_photo_path', r.ppe_photo_path)} target="_blank">
-								{fileName(r.ppe_photo_path)}
-							</a>
-						{:else}
-							-
-						{/if}
-					</p>
-				{:else if formType === 'eHKP'}
-					<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
-					<p class="doc-line">
-						<b>HKP Photo:&nbsp;</b>
-						{#if r.hkp_photo_path}
-							<a href={fileUrlFor('eHKP', 'hkp_photo_path', r.hkp_photo_path)} target="_blank">
-								{fileName(r.hkp_photo_path)}
-							</a>
-						{:else}
-							-
-						{/if}
-					</p>
-				{:else if formType === 'eZCA'}
-					<p><b>Audit Date:&nbsp;</b>{fmtDateOnly(r.audit_date)}</p>
-				{/if}
+{#if !formType}
+	<p class="hint">Please choose an eForm data.</p>
+{:else if loading}
+	<p>Loading...</p>
+{:else if errorMsg}
+	<p class="error">{errorMsg}</p>
+{:else if rows.length === 0}
+	<p>No records found.</p>
+{:else}
+	{#each rows as r (r.id)}
+		<div class="project-box">
+			<div class="project-box-top">
+				<p class="project-name"><b>{r.project_no ?? '-'} {formType}</b></p>
+				<button class="button-primary" type="button" onclick={() => openDetailsModal(r)}>
+					View Details
+				</button>
 			</div>
-		{/each}
-		{#if showDetailsModal}
-			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select details">
-				<div class="modal">
-					<h3 class="form-heading">eForm Details</h3>
-					{#if modalLoading}
-						<p>Loading...</p>
-					{:else if modalError}
-						<p class="error">{modalError}</p>
-					{:else if formType === 'eTBM'}
-						<p><b>Meeting Topics:</b></p>
-						<p class="form-details">{formatArray(details?.meeting_topics ?? '-')}</p>
-						<p><b>Competency:</b></p>
-						<p class="form-details">{formatCompetency(details?.competency ?? '-')}</p>
-						<p><b>Attendance:</b></p>
-						<p class="form-details">{formatAttendance(details?.attendance ?? '-')}</p>
-					{:else if formType === 'ePPE'}
-						<p><b>Attendance:</b></p>
-						<p class="form-details">{formatAttendance(details?.attendance ?? '-')}</p>
-					{:else if formType === 'eHKP'}
-						<p><b>Report Day:</b></p>
-						<p class="form-details">{formatReportDay(details?.report_day ?? '-')}</p>
-					{:else if formType === 'eZCA'}
-						<p><b>Subsections:</b></p>
-						<p class="form-details subsections-text">
-							{formatSubsections(details?.subsections ?? '-')}
-						</p>
+			<p><b>Project Name:&nbsp;</b>{r.project_name ?? '-'}</p>
+			<p><b>Project ID:&nbsp;</b>{r.project_no ?? '-'}</p>
+			<p><b>Submitted By:&nbsp;</b>{r.created_by_name ?? '-'}</p>
+			<p><b>Created Date:&nbsp;</b>{fmtDateTime(r.created_at)}</p>
+			{#if formType === 'eTBM'}
+				<p><b>Meeting Date:&nbsp;</b>{fmtDateOnly(r.meeting_date)}</p>
+
+				<p class="doc-line">
+					<b>TBM Form:&nbsp;</b>
+					{#if r.tbm_form_path}
+						<a href={fileUrlFor('eTBM', 'tbm_form_path', r.tbm_form_path)} target="_blank">
+							{fileName(r.tbm_form_path)}
+						</a>
+					{:else}
+						-
 					{/if}
+				</p>
+				<p class="doc-line">
+					<b>TBM Photo:&nbsp;</b>
+					{#if r.tbm_photo_path}
+						<a href={fileUrlFor('eTBM', 'tbm_photo_path', r.tbm_photo_path)} target="_blank">
+							{fileName(r.tbm_photo_path)}
+						</a>
+					{:else}
+						-
+					{/if}
+				</p>
+				<p class="doc-line">
+					<b>PTW Form:&nbsp;</b>
+					{#if r.ptw_form_path}
+						<a href={fileUrlFor('eTBM', 'ptw_form_path', r.ptw_form_path)} target="_blank">
+							{fileName(r.ptw_form_path)}
+						</a>
+					{:else}
+						-
+					{/if}
+				</p>
+			{:else if formType === 'ePPE'}
+				<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
+				<p class="doc-line">
+					<b>PPE Photo:&nbsp;</b>
+					{#if r.ppe_photo_path}
+						<a href={fileUrlFor('ePPE', 'ppe_photo_path', r.ppe_photo_path)} target="_blank">
+							{fileName(r.ppe_photo_path)}
+						</a>
+					{:else}
+						-
+					{/if}
+				</p>
+			{:else if formType === 'eHKP'}
+				<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
+				<p class="doc-line">
+					<b>HKP Photo:&nbsp;</b>
+					{#if r.hkp_photo_path}
+						<a href={fileUrlFor('eHKP', 'hkp_photo_path', r.hkp_photo_path)} target="_blank">
+							{fileName(r.hkp_photo_path)}
+						</a>
+					{:else}
+						-
+					{/if}
+				</p>
+			{:else if formType === 'eZCA'}
+				<p><b>Audit Date:&nbsp;</b>{fmtDateOnly(r.audit_date)}</p>
+			{/if}
+		</div>
+	{/each}
+	{#if showDetailsModal}
+		<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select details">
+			<div class="modal">
+				<h3 class="form-heading">eForm Details</h3>
+				{#if modalLoading}
+					<p>Loading...</p>
+				{:else if modalError}
+					<p class="error">{modalError}</p>
+				{:else if formType === 'eTBM'}
+					<p><b>Meeting Topics:</b></p>
+					<p class="form-details">{formatArray(details?.meeting_topics ?? '-')}</p>
+					<p><b>Competency:</b></p>
+					<p class="form-details">{formatCompetency(details?.competency ?? '-')}</p>
+					<p><b>Attendance:</b></p>
+					<p class="form-details">{formatAttendance(details?.attendance ?? '-')}</p>
+				{:else if formType === 'ePPE'}
+					<p><b>Attendance:</b></p>
+					<p class="form-details">{formatAttendance(details?.attendance ?? '-')}</p>
+				{:else if formType === 'eHKP'}
+					<p><b>Report Day:</b></p>
+					<p class="form-details">{formatReportDay(details?.report_day ?? '-')}</p>
+				{:else if formType === 'eZCA'}
+					<p><b>Subsections:</b></p>
+					<p class="form-details subsections-text">
+						{formatSubsections(details?.subsections ?? '-')}
+					</p>
+				{/if}
 
-					<div class="modal-actions">
-						<button type="button" class="button-primary" onclick={closeDetailsModal}>Close</button>
-					</div>
+				<div class="modal-actions">
+					<button type="button" class="button-primary" onclick={closeDetailsModal}>Close</button>
 				</div>
 			</div>
-		{/if}
+		</div>
 	{/if}
-</div>
+{/if}
 
 <style>
 	* {
@@ -564,6 +562,10 @@
 		cursor: pointer;
 	}
 
+	.hint {
+		margin: 10px;
+	}
+
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
@@ -592,7 +594,7 @@
 
 	.project-box {
 		margin: 10px;
-		border: 1px solid #091747;
+		border: 1px solid #dcdcdc;
 		border-radius: 4px;
 		padding: 10px;
 		font-size: 14px;
