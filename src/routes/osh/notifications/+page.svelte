@@ -228,11 +228,25 @@
 	</div>
 	<div>
 		<p>From Date</p>
-		<input type="date" name="created-date" id="date-from" class="date-from" bind:value={fromDate} />
+		<input
+			type="date"
+			name="created-date"
+			id="date-from"
+			class="date-from forms-date"
+			bind:value={fromDate}
+			on:focus={(e) => e.target.showPicker?.()}
+		/>
 	</div>
 	<div>
 		<p>To Date</p>
-		<input type="date" name="created-date" id="date-to" class="date-to" bind:value={toDate} />
+		<input
+			type="date"
+			name="created-date"
+			id="date-to"
+			class="date-to forms-date"
+			bind:value={toDate}
+			on:focus={(e) => e.target.showPicker?.()}
+		/>
 	</div>
 	<div>
 		<p class="hidden">Search</p>
@@ -407,6 +421,14 @@
 	.filter-input {
 		width: 350px;
 		font-size: 14px;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	h2 {

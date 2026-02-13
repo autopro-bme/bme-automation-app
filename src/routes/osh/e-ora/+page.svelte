@@ -129,7 +129,7 @@
 		</div>
 		<div class="forms-p">
 			<label for="overtime-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" bind:value={overtime_date} required />
+			<input type="date" class="forms-input forms-date" bind:value={overtime_date} required />
 		</div>
 		<div class="forms-p">
 			<label for="overtime-day" class="forms-label">Day:</label>
@@ -144,7 +144,13 @@
 		<h2 class="heading">Actual Day of Overtime Work</h2>
 		<div class="forms-p">
 			<label for="actual-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" bind:value={actual_date} required />
+			<input
+				type="date"
+				class="forms-input"
+				bind:value={actual_date}
+				onfocus={(e) => e.target.showPicker?.()}
+				required
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="actual-day" class="forms-label">Day:</label>
@@ -278,6 +284,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {

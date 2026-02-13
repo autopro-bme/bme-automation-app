@@ -201,7 +201,12 @@
 		</div>
 		<div class="forms-p">
 			<label for="kickoff-date" class="forms-label">Kick-off Date:</label>
-			<input type="date" class="forms-input" bind:value={kickoff_date} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={kickoff_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
@@ -216,11 +221,21 @@
 		</div>
 		<div class="forms-p">
 			<label for="start-date" class="forms-label">Start Date:</label>
-			<input type="date" class="forms-input" bind:value={start_date} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={start_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="end-date" class="forms-label">End Date:</label>
-			<input type="date" class="forms-input" bind:value={end_date} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={end_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<br />
 		<hr />
@@ -232,7 +247,12 @@
 		</div>
 		<div class="forms-p">
 			<label for="workday-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" bind:value={workday_date} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={workday_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="hours-worked" class="forms-label">Hours Worked:</label>
@@ -250,7 +270,12 @@
 		<h3 class="subheading">Travel Details</h3>
 		<div class="forms-p">
 			<label for="travel-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" bind:value={travel_date} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={travel_date}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="travel-origin" class="forms-label">Origin:</label>
@@ -285,7 +310,12 @@
 		</div>
 		<div class="forms-p">
 			<label for="contractor-certification" class="forms-label">Certification Expiry Date:</label>
-			<input type="date" class="forms-input" bind:value={contractor_certification} />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={contractor_certification}
+				onfocus={(e) => e.target.showPicker?.()}
+			/>
 		</div>
 		<hr />
 		<h2 class="heading">Remarks</h2>
@@ -404,6 +434,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {

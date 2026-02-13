@@ -227,7 +227,13 @@
 		<h2 class="heading">Claim Information</h2>
 		<div class="forms-p">
 			<label for="claim-date" class="forms-label">Date:</label>
-			<input type="date" class="forms-input" bind:value={claim_date} required />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={claim_date}
+				onfocus={(e) => e.target.showPicker?.()}
+				required
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-no" class="forms-label">Project ID:</label>
@@ -466,6 +472,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {

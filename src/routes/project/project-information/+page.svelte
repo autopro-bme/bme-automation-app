@@ -319,11 +319,21 @@
 				</label>
 				<label>
 					Start Date:
-					<input type="date" bind:value={createForm.start_date} />
+					<input
+						type="date"
+						class="forms-date"
+						bind:value={createForm.start_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 				<label>
 					End Date:
-					<input type="date" bind:value={createForm.end_date} />
+					<input
+						type="date"
+						class="forms-date"
+						bind:value={createForm.end_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 			</div>
 			<br />
@@ -339,11 +349,21 @@
 				</label>
 				<label>
 					Start Date:
-					<input type="date" bind:value={createForm.pic_start_date} />
+					<input
+						type="date"
+						class="forms-date"
+						bind:value={createForm.pic_start_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 				<label>
 					End Date:
-					<input type="date" bind:value={createForm.pic_end_date} />
+					<input
+						type="date"
+						class="forms-date"
+						bind:value={createForm.pic_end_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 			</div>
 			<div class="modal-actions">
@@ -385,11 +405,21 @@
 				</label>
 				<label>
 					Start Date:
-					<input type="date" bind:value={editForm.start_date} />
+					<input
+						type="date"
+						class="forms-date"
+						bind:value={editForm.start_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 				<label>
 					End Date:
-					<input type="date" bind:value={editForm.end_date} />
+					<input
+						type="date"
+						class="forms-date"
+						bind:value={editForm.end_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 			</div>
 			<br />
@@ -405,11 +435,21 @@
 				</label>
 				<label>
 					Start Date:
-					<input type="date" bind:value={editForm.pic_start_date} />
+					<input
+						type="date"
+						class="forms-input"
+						bind:value={editForm.pic_start_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 				<label>
 					End Date:
-					<input type="date" bind:value={editForm.pic_end_date} />
+					<input
+						type="date"
+						class="forms-input"
+						bind:value={editForm.pic_end_date}
+						on:focus={(e) => e.target.showPicker?.()}
+					/>
 				</label>
 			</div>
 			<div class="modal-actions">
@@ -547,6 +587,14 @@
 		height: 40px;
 		padding: 0 10px;
 		font-size: 14px;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.hidden {
@@ -717,6 +765,7 @@
 		.filter-bar {
 			flex-wrap: wrap;
 			gap: 12px;
+			padding: 0;
 		}
 
 		.filter-bar > div {

@@ -305,9 +305,10 @@
 			type="date"
 			name="created-date"
 			id="date-from"
-			class="date-from"
+			class="date-from forms-date"
 			bind:value={fromDate}
 			onchange={loadForms}
+			onfocus={(e) => e.target.showPicker?.()}
 		/>
 	</div>
 	<div>
@@ -316,9 +317,10 @@
 			type="date"
 			name="created-date"
 			id="date-to"
-			class="date-to"
+			class="date-to forms-date"
 			bind:value={toDate}
 			onchange={loadForms}
+			onfocus={(e) => e.target.showPicker?.()}
 		/>
 	</div>
 	<div>
@@ -554,6 +556,14 @@
 		margin-bottom: 10px;
 	}
 
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
+	}
+
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
@@ -639,7 +649,6 @@
 
 		.filter-bar > div {
 			min-width: 220px;
-			flex: 1 1 220px;
 		}
 
 		.filter-input,

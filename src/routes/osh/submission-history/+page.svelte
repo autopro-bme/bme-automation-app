@@ -110,7 +110,7 @@
 			<p>From Date</p>
 			<input
 				type="date"
-				class="date-from"
+				class="date-from forms-date"
 				bind:value={fromDate}
 				onchange={loadHistory}
 				onfocus={(e) => e.target.showPicker?.()}
@@ -120,7 +120,7 @@
 			<p>To Date</p>
 			<input
 				type="date"
-				class="date-to"
+				class="date-to forms-date"
 				bind:value={toDate}
 				onchange={loadHistory}
 				onfocus={(e) => e.target.showPicker?.()}
@@ -324,6 +324,14 @@
 
 	.date-container p {
 		margin: 0 0 6px 0;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.photo-link {

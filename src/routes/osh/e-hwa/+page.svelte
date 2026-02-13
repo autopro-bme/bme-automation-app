@@ -134,7 +134,13 @@
 		<h2 class="heading">General Information</h2>
 		<div class="forms-p">
 			<label for="permit-date" class="forms-label">Permit Validity Date:</label>
-			<input type="date" class="forms-input" bind:value={permit_date} required />
+			<input
+				type="date"
+				class="forms-input forms-date"
+				bind:value={permit_date}
+				onfocus={(e) => e.target.showPicker?.()}
+				required
+			/>
 		</div>
 		<div class="forms-p">
 			<label for="hotwork-location" class="forms-label">Hot Work Location Allowed:</label>
@@ -335,6 +341,14 @@
 	.forms {
 		margin: 0;
 		position: relative;
+	}
+
+	.forms-date {
+		cursor: pointer;
+	}
+
+	.forms-date::-webkit-calendar-picker-indicator {
+		cursor: pointer;
 	}
 
 	.forms-input {
