@@ -1,6 +1,7 @@
 <script>
 	import Search from '@lucide/svelte/icons/search';
 	import FileText from '@lucide/svelte/icons/file-text';
+	import FileClock from '@lucide/svelte/icons/file-clock';
 	import Check from '@lucide/svelte/icons/check';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
@@ -186,7 +187,7 @@
 
 <div class="history">
 	<button class="button-primary" id="button-history" onclick={() => goto('/osh/e-car-history')}
-		>View History</button
+		><FileClock /><span>History</span></button
 	>
 </div>
 
@@ -390,16 +391,21 @@
 	#button-history {
 		background-color: #064c6dd7;
 		color: #ffffff;
-		border: none;
-		font-size: small;
-		padding: 6px 14px;
-		border: 2px solid #ffffff;
-		border-radius: 4px;
-		cursor: pointer;
+		width: 200px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		margin-right: auto;
 	}
 
 	#button-history:hover {
 		background-color: #064c6da4;
+	}
+
+	#button-history span {
+		color: #ffffff;
 	}
 
 	.button-primary {
@@ -482,7 +488,7 @@
 
 	.history {
 		display: flex;
-		align-items: flex-end;
+		margin: 10px;
 	}
 
 	.modal-overlay {
@@ -631,10 +637,6 @@
 			margin-bottom: 15px;
 		}
 
-		#button-history {
-			margin: 0 10px 12px auto;
-		}
-
 		.project-box {
 			margin: 8px;
 			padding: 10px;
@@ -656,10 +658,6 @@
 		.forms-input {
 			width: 100%;
 			max-width: 520px;
-		}
-
-		.history {
-			justify-content: flex-start;
 		}
 
 		#button-history {
@@ -724,6 +722,15 @@
 		.forms-input {
 			width: 100%;
 			max-width: 100%;
+		}
+
+		.history {
+			margin: 8px;
+		}
+
+		#button-history {
+			width: 100%;
+			margin-right: 0;
 		}
 
 		textarea {
