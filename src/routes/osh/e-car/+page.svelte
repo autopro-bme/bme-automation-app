@@ -184,9 +184,12 @@
 
 <h1 class="title">Corrective Action Report (e-CAR) Submission</h1>
 
-<button class="button-primary" id="button-history" onclick={() => goto('/osh/e-car-history')}
-	>View History</button
->
+<div class="history">
+	<button class="button-primary" id="button-history" onclick={() => goto('/osh/e-car-history')}
+		>View History</button
+	>
+</div>
+
 <div class="project-box">
 	<form class="forms" onsubmit={handleSubmit}>
 		<h2 class="heading">General Information</h2>
@@ -385,8 +388,18 @@
 	}
 
 	#button-history {
-		display: block;
-		margin: 0 10px 10px auto;
+		background-color: #064c6dd7;
+		color: #ffffff;
+		border: none;
+		font-size: small;
+		padding: 6px 14px;
+		border: 2px solid #ffffff;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+
+	#button-history:hover {
+		background-color: #064c6da4;
 	}
 
 	.button-primary {
@@ -465,6 +478,11 @@
 		margin: 10px 0;
 		font-size: 20px;
 		font-weight: bold;
+	}
+
+	.history {
+		display: flex;
+		align-items: flex-end;
 	}
 
 	.modal-overlay {
@@ -640,6 +658,15 @@
 			max-width: 520px;
 		}
 
+		.history {
+			justify-content: flex-start;
+		}
+
+		#button-history {
+			margin-left: 0;
+			width: 100%;
+		}
+
 		textarea {
 			width: 100%;
 			max-width: 100%;
@@ -702,11 +729,6 @@
 		textarea {
 			width: 100%;
 			min-height: 160px;
-		}
-
-		#button-history {
-			width: 100%;
-			margin: 0 0 12px 0;
 		}
 
 		.button-primary,
