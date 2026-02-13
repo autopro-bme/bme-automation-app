@@ -371,7 +371,6 @@
 
 		.filter-bar > div {
 			min-width: 220px;
-			flex: 1 1 220px;
 		}
 
 		.department-select,
