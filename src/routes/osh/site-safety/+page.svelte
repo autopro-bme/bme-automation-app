@@ -297,9 +297,7 @@
 <div class="filter-bar">
 	<div>
 		<p>Project ID/Project Name</p>
-		<div>
-			<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
-		</div>
+		<input type="text" placeholder="MP1234" class="filter-input" bind:value={searchText} />
 	</div>
 	<div>
 		<p>From Date</p>
@@ -634,6 +632,22 @@
 			margin-bottom: 15px;
 		}
 
+		.filter-bar {
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.filter-bar > div {
+			min-width: 220px;
+			flex: 1 1 220px;
+		}
+
+		.filter-input,
+		.date-from,
+		.date-to {
+			width: 100%;
+		}
+
 		.container {
 			flex-wrap: wrap;
 			gap: 8px 12px;
@@ -707,6 +721,28 @@
 		.title {
 			font-size: 22px;
 			margin-bottom: 14px;
+		}
+
+		.filter-bar {
+			flex-direction: column;
+			align-items: stretch;
+			margin: 8px;
+			padding: 8px 0;
+			gap: 12px;
+		}
+
+		.filter-bar > div {
+			width: 100%;
+		}
+
+		.filter-input,
+		.date-from,
+		.date-to {
+			width: 100%;
+		}
+
+		#button-search {
+			width: 100%;
 		}
 
 		.container {

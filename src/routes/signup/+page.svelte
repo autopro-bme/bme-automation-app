@@ -264,6 +264,11 @@
 		margin-bottom: 5px;
 	}
 
+	.error {
+		font-size: 12px;
+		color: #ff0000;
+	}
+
 	.form {
 		background-color: #ffffff;
 		border: 1px solid #091747b7;

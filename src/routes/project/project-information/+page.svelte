@@ -657,9 +657,13 @@
 		}
 
 		.filter-bar {
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.filter-bar > div {
+			flex: 1 1 220px;
+			min-width: 220px;
 		}
 
 		.status-select,
@@ -708,6 +712,22 @@
 		.title {
 			font-size: 22px;
 			margin-bottom: 14px;
+		}
+
+		.filter-bar {
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.filter-bar > div {
+			flex: 1 1 220px;
+			min-width: 220px;
+		}
+
+		.status-select,
+		.option-select,
+		.filter-input {
+			width: 100%;
 		}
 
 		.card-grid {

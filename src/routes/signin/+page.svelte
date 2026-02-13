@@ -148,6 +148,11 @@
 		background-color: #091747b9;
 	}
 
+	.error {
+		font-size: 12px;
+		color: #ff0000;
+	}
+
 	.forgotpw {
 		font-size: 14px;
 		text-align: right;

@@ -136,7 +136,7 @@
 <h1 class="title">User Access Management</h1>
 
 <div class="filter-bar">
-	<h2 class="user">User</h2>
+	<p>User</p>
 	<select bind:value={selectedUser} class="user-select">
 		<option value="" disabled selected>Select User</option>
 		{#each users as item}
@@ -310,12 +310,6 @@
 		padding: 0 10px 10px;
 	}
 
-	.user {
-		font-size: large;
-		font-weight: bold;
-		margin: 10px 0;
-	}
-
 	.user-select {
 		font-size: 14px;
 		width: 40%;
@@ -426,7 +420,6 @@
 		}
 
 		.menu-access {
-			flex-direction: column;
 			align-items: flex-start;
 			gap: 10px;
 		}
@@ -442,7 +435,7 @@
 		}
 
 		.access-check {
-			align-self: flex-end;
+			align-self: center;
 		}
 
 		.button-modify {
@@ -460,10 +453,6 @@
 	@media (max-width: 600px) {
 		.title {
 			font-size: 22px;
-		}
-
-		.user {
-			font-size: 16px;
 		}
 
 		.menu-card {

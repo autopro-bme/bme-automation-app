@@ -518,6 +518,30 @@
 			font-size: 22px;
 		}
 
+		.filter-bar {
+			flex-direction: column;
+			align-items: stretch;
+			margin: 8px;
+			padding: 8px 0;
+			gap: 12px; /* reduce gaps */
+		}
+
+		.filter-bar > div {
+			width: 100%;
+		}
+
+		.department-select,
+		.filter-input {
+			width: 100%;
+			box-sizing: border-box;
+		}
+
+		#button-search {
+			width: 100%;
+			justify-content: center;
+			margin-top: 6px;
+		}
+
 		.card-grid {
 			grid-template-columns: 1fr;
 		}
@@ -526,7 +550,6 @@
 			padding: 12px;
 		}
 
-		/* Modal */
 		.modal {
 			width: 100%;
 			padding: 16px;
