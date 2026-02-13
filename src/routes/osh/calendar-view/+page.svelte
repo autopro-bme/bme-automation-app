@@ -2,7 +2,7 @@
 	import ChevronsLeft from '@lucide/svelte/icons/chevrons-left';
 	import ChevronsRight from '@lucide/svelte/icons/chevrons-right';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
-	import X from '@lucide/svelte/icons/x';
+	import Close from '@lucide/svelte/icons/x';
 	import { supabase } from '$lib/supabase';
 
 	const startYear = 2026;
@@ -345,7 +345,7 @@
 			<div class="modal" role="dialog" aria-modal="true" aria-label="Submissions Summary">
 				<div class="modal-actions">
 					<h3>{formatSelectedDate(selectedDay, months[index].year, months[index].month)}</h3>
-					<button class="button-close" onclick={closeSubmissionsModal}><X size={16} /></button>
+					<button class="modal-close" onclick={closeSubmissionsModal}><Close size={18} /></button>
 				</div>
 				<div class="modal-body">
 					{#if submissionsError}
@@ -393,20 +393,6 @@
 		padding: 6px 14px;
 		border-radius: 4px;
 		cursor: pointer;
-	}
-
-	.button-close {
-		width: 24px;
-		height: 24px;
-		padding: 0;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		line-height: 1;
-	}
-
-	.button-close:hover {
-		background-color: #064c6da4;
 	}
 
 	.button-download {
@@ -507,6 +493,7 @@
 	}
 
 	.modal {
+		position: relative;
 		width: min(400px, 100%);
 		height: 200px;
 		overflow: auto;
@@ -515,6 +502,25 @@
 		margin: auto;
 		padding: 20px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal-close {
+		position: absolute;
+		top: 20px;
+		right: 12px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 4px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #091747;
+	}
+
+	.modal-close:hover {
+		background: rgba(0, 0, 0, 0.05);
+		border-radius: 50%;
 	}
 
 	.modal h3 {

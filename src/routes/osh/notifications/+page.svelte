@@ -473,7 +473,7 @@
 
 	.modal-close {
 		position: absolute;
-		top: 12px;
+		top: 20px;
 		right: 12px;
 		background: transparent;
 		border: none;

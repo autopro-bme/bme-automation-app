@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import Search from '@lucide/svelte/icons/search';
+	import Close from '@lucide/svelte/icons/x';
 	import { supabase } from '$lib/supabase';
 
 	let users = [];
@@ -197,6 +198,9 @@
 {#if showEditModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Edit user information">
+			<button class="modal-close" onclick={closeCreateModal} disabled={isSaving}>
+				<Close size={18} />
+			</button>
 			<h2>Edit User Information</h2>
 			<div class="modal-body">
 				<label>
@@ -252,6 +256,9 @@
 {#if showDeleteModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Delete user">
+			<button class="modal-close" onclick={closeCreateModal} disabled={isSaving}>
+				<Close size={18} />
+			</button>
 			<h2>Delete User</h2>
 			<p>Are you sure you want to delete this user?</p>
 			<div class="modal-actions">
@@ -416,6 +423,7 @@
 	}
 
 	.modal {
+		position: relative;
 		width: min(560px, 100%);
 		max-height: calc(100vh - 64px);
 		overflow: auto;
@@ -423,6 +431,25 @@
 		border-radius: 8px;
 		padding: 20px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal-close {
+		position: absolute;
+		top: 20px;
+		right: 12px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 4px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #091747;
+	}
+
+	.modal-close:hover {
+		background: rgba(0, 0, 0, 0.05);
+		border-radius: 50%;
 	}
 
 	.modal h2 {

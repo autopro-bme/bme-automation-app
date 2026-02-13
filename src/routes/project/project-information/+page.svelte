@@ -3,6 +3,7 @@
 	import ListPlus from '@lucide/svelte/icons/list-plus';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
 	import Search from '@lucide/svelte/icons/search';
+	import Close from '@lucide/svelte/icons/x';
 	import { supabase } from '$lib/supabase';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
@@ -295,6 +296,9 @@
 {#if showCreateModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Create project">
+			<button class="modal-close" on:click={closeCreateModal} disabled={isSaving}>
+				<Close size={18} />
+			</button>
 			<h2>New Project</h2>
 			<div class="modal-body">
 				<label>
@@ -381,6 +385,9 @@
 {#if showEditModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Edit project information">
+			<button class="modal-close" on:click={closeCreateModal} disabled={isSaving}>
+				<Close size={18} />
+			</button>
 			<h2>Edit Project Information</h2>
 			<div class="modal-body">
 				<label>
@@ -651,6 +658,7 @@
 	}
 
 	.modal {
+		position: relative;
 		width: min(560px, 100%);
 		max-height: calc(100vh - 64px);
 		overflow: auto;
@@ -658,6 +666,25 @@
 		border-radius: 8px;
 		padding: 20px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal-close {
+		position: absolute;
+		top: 20px;
+		right: 12px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 4px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #091747;
+	}
+
+	.modal-close:hover {
+		background: rgba(0, 0, 0, 0.05);
+		border-radius: 50%;
 	}
 
 	.modal h2 {
