@@ -198,7 +198,7 @@
 {#if showEditModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Edit user information">
-			<button class="modal-close" onclick={closeCreateModal} disabled={isSaving}>
+			<button class="modal-close" onclick={closeEditModal} disabled={isSaving}>
 				<Close size={18} />
 			</button>
 			<h2>Edit User Information</h2>
@@ -256,7 +256,7 @@
 {#if showDeleteModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Delete user">
-			<button class="modal-close" onclick={closeCreateModal} disabled={isSaving}>
+			<button class="modal-close" onclick={closeDeleteModal} disabled={isSaving}>
 				<Close size={18} />
 			</button>
 			<h2>Delete User</h2>

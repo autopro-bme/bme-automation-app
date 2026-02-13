@@ -79,7 +79,6 @@
 
 	function fmtDateOnly(d) {
 		if (!d) return '-';
-		// if it’s already yyyy-mm-dd, display it nicer
 		if (typeof d === 'string' && d.includes('-')) {
 			const [y, m, day] = d.split('-');
 			if (y && m && day) return `${day}/${m}/${y}`;

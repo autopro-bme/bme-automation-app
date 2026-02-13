@@ -344,4 +344,131 @@
 		background: #091747b9;
 		color: white;
 	}
+
+	@media (max-width: 1024px) {
+		.title {
+			font-size: 24px;
+			margin-bottom: 15px;
+			padding: 0 8px;
+		}
+
+		.project-box {
+			margin: 8px;
+		}
+
+		.employee-records {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 10px;
+		}
+
+		.filter-bar {
+			flex-wrap: wrap;
+			align-items: flex-end;
+			gap: 12px;
+			padding: 8px 0;
+		}
+
+		.filter-bar > div {
+			min-width: 220px;
+			flex: 1 1 220px;
+		}
+
+		.department-select,
+		.filter-input {
+			width: 100%;
+		}
+
+		#button-search {
+			width: 100%;
+		}
+
+		.records {
+			align-self: flex-start;
+		}
+
+		.table-container {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.dept-table {
+			min-width: 760px;
+		}
+
+		.dept-table th,
+		.dept-table td {
+			padding: 10px 12px;
+			white-space: nowrap;
+		}
+
+		.pagination {
+			justify-content: flex-start;
+			flex-wrap: wrap;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.title {
+			font-size: 22px;
+			margin-bottom: 14px;
+			padding: 0 6px;
+		}
+
+		.project-box {
+			margin: 6px;
+		}
+
+		.filter-bar {
+			flex-direction: column;
+			align-items: stretch;
+			gap: 8px;
+		}
+
+		.filter-bar > div {
+			width: 100%;
+			min-width: 0;
+		}
+
+		.department-select,
+		.filter-input,
+		#button-search {
+			width: 100%;
+		}
+
+		.filter-input,
+		.department-select,
+		#button-search {
+			height: 40px;
+		}
+
+		#button-search {
+			justify-content: center;
+		}
+
+		.records {
+			font-size: 12px;
+		}
+
+		.table-container {
+			margin-top: 10px;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+
+		.dept-table {
+			min-width: 700px;
+		}
+
+		.pagination {
+			justify-content: flex-start;
+			flex-wrap: wrap;
+			gap: 8px;
+		}
+
+		.pagination button {
+			min-width: 34px;
+			height: 34px;
+		}
+	}
 </style>

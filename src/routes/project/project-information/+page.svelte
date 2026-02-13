@@ -385,7 +385,7 @@
 {#if showEditModal}
 	<div class="modal-backdrop" role="presentation">
 		<div class="modal" role="dialog" aria-modal="true" aria-label="Edit project information">
-			<button class="modal-close" on:click={closeCreateModal} disabled={isSaving}>
+			<button class="modal-close" on:click={closeEditModal} disabled={isSaving}>
 				<Close size={18} />
 			</button>
 			<h2>Edit Project Information</h2>
