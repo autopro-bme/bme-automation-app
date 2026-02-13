@@ -357,6 +357,10 @@
 		padding: 10px 0;
 	}
 
+	.filter-bar p {
+		margin: 0 0 6px 0;
+	}
+
 	.filter-input {
 		width: 350px;
 		height: 40px;

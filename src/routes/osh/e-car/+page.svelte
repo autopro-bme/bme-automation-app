@@ -397,7 +397,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		margin-right: auto;
+		margin: 0 0 0 auto;
 	}
 
 	#button-history:hover {

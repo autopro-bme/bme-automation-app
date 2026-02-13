@@ -379,7 +379,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
-		margin-right: auto;
+		margin-left: auto;
 	}
 
 	.button-create span {

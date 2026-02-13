@@ -317,7 +317,12 @@
 	}
 
 	.filter-bar {
-		padding: 10px;
+		margin: 10px;
+		padding: 10px 0;
+	}
+
+	.filter-bar p {
+		margin: 0 0 6px 0;
 	}
 
 	.menu-access {
