@@ -21,6 +21,7 @@
 	let form_no = '';
 	let form_description = '';
 	let action_taken = '';
+	let users = [];
 	let assigned_to = '';
 	let remarks = '';
 	let acknowledged = false;
@@ -38,6 +39,11 @@
 
 	let showSuccess = false;
 	let successTimer;
+
+	const getUserName = (user) => {
+		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
+		return name || user.email || 'Unknown';
+	};
 
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -149,12 +155,36 @@
 		location = project.location ?? '';
 		closeProjectModal();
 	}
+
+	onMount(async () => {
+		const {
+			data: { user }
+		} = await supabase.auth.getUser();
+		if (!user) {
+			goto('/auth/signin');
+			return;
+		}
+
+		const { data, error } = await supabase
+			.from('profiles')
+			.select('id, first_name, last_name, email, menu_access, created_at')
+			.order('created_at', { ascending: false });
+
+		if (error) {
+			errorMsg = error.message;
+			users = [];
+			return;
+		}
+
+		users = data ?? [];
+		syncSelectedMenuAccess();
+	});
 </script>
 
 <h1 class="title">Corrective Action Report (e-CAR) Submission</h1>
 
-<a href="/osh/e-car-history"
-	><button class="button-primary" id="button-history">View History</button></a
+<button class="button-primary" id="button-history" onclick={() => goto('/osh/e-car-history')}
+	>View History</button
 >
 <div class="project-box">
 	<form class="forms" onsubmit={handleSubmit}>
@@ -244,12 +274,12 @@
 			<input type="text" class="forms-input" bind:value={form_no} required />
 		</div>
 		<div>
-			<label for="form-description" class="forms-label">Form Description:</label>
+			<label for="issue-description" class="forms-label">Issue Description:</label>
 			<p>
 				<textarea
-					name=""
-					id=""
-					cols="77"
+					name="description"
+					id="description"
+					cols="30"
 					rows="10"
 					placeholder="Issue"
 					bind:value={form_description}
@@ -261,9 +291,9 @@
 			<label for="action-taken" class="forms-label">Action Taken:</label>
 			<p>
 				<textarea
-					name=""
-					id=""
-					cols="77"
+					name="action"
+					id="action"
+					cols="30"
 					rows="10"
 					placeholder="Action Taken"
 					bind:value={action_taken}
@@ -272,9 +302,13 @@
 			</p>
 		</div>
 		<div class="forms-p">
-			<label for="assigned-to" class="forms-label">Assigned To:</label>
-			<input type="text" class="forms-input" disabled bind:value={assigned_to} required />
-			<button class="button-primary" id="button-select-user">Select User</button>
+			<p>Assigned To</p>
+			<select bind:value={assigned_to} class="user-select">
+				<option value="" disabled selected>Select User</option>
+				{#each users as item}
+					<option value={item.id}>{getUserName(item)}</option>
+				{/each}
+			</select>
 		</div>
 		<hr />
 		<h2 class="heading">Remarks</h2>
@@ -365,11 +399,6 @@
 
 	.button-primary:hover {
 		background-color: #091747b9;
-	}
-
-	#button-select-user {
-		height: 30px;
-		margin: 10px 0;
 	}
 
 	.button-submit {
@@ -571,6 +600,12 @@
 		padding: 0 10px;
 	}
 
+	.user-select {
+		font-size: 14px;
+		width: 40%;
+		cursor: pointer;
+	}
+
 	@media (max-width: 1024px) {
 		.title {
 			font-size: 24px;
@@ -627,6 +662,10 @@
 		.submit {
 			justify-content: flex-end;
 		}
+
+		.user-select {
+			width: 100%;
+		}
 	}
 
 	@media (max-width: 600px) {
@@ -673,11 +712,6 @@
 		.button-submit {
 			width: 100%;
 			justify-content: center;
-		}
-
-		#button-select-user {
-			width: 100%;
-			margin: 6px 0 0 0;
 		}
 
 		.container {
