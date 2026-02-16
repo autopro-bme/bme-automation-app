@@ -677,12 +677,19 @@
 		}
 
 		.modal {
-			width: min(600px, 92vw);
-			max-height: 85vh;
-			overflow: auto;
+			width: min(520px, 95vw);
+			padding: 16px;
 		}
 
-		.project-row span {
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1.4fr 1fr;
+		}
+
+		p,
+		label,
+		.declaration p {
+			white-space: normal;
 			word-break: break-word;
 			overflow-wrap: anywhere;
 		}
@@ -745,11 +752,6 @@
 			font-size: 13px;
 		}
 
-		.remarks {
-			height: 160px;
-			font-size: 13px;
-		}
-
 		.container {
 			flex-direction: column;
 			align-items: flex-start;
@@ -766,38 +768,12 @@
 		}
 
 		.submit {
-			justify-content: center;
+			justify-content: stretch;
 		}
 
 		.button-submit {
 			width: 100%;
 			justify-content: center;
-		}
-
-		.modal {
-			width: 94vw;
-			padding: 16px;
-			max-height: 85vh;
-			overflow: auto;
-		}
-
-		.project-search {
-			gap: 8px;
-		}
-
-		.project-search-button {
-			width: 44px;
-			min-width: 44px;
-		}
-
-		.project-list-header,
-		.project-row {
-			grid-template-columns: 1fr;
-		}
-
-		.project-row-id {
-			text-align: left;
-			opacity: 0.9;
 		}
 	}
 </style>

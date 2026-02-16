@@ -53,7 +53,7 @@
 <h1 class="title">Main Menu</h1>
 
 {#each visibleSections as section}
-	<h2 class="department">Department: <span class="section">{section.department}</span></h2>
+	<h2 class="department">Department: <span class="item">{section.department}</span></h2>
 
 	{#each section.items as item}
 		<div class="menu-card">
@@ -113,7 +113,7 @@
 		font-size: 16px;
 	}
 
-	.section {
+	.item {
 		font-size: large;
 		color: #064c6dd7;
 	}

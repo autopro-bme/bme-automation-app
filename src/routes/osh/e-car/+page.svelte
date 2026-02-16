@@ -278,7 +278,7 @@
 			<label for="iso-no" class="forms-label">ISO Form No.:</label>
 			<input type="text" class="forms-input" bind:value={form_no} required />
 		</div>
-		<div>
+		<div class="section">
 			<label for="issue-description" class="forms-label">Issue Description:</label>
 			<p>
 				<textarea
@@ -293,7 +293,7 @@
 				></textarea>
 			</p>
 		</div>
-		<div>
+		<div class="section">
 			<label for="action-taken" class="forms-label">Action Taken:</label>
 			<p>
 				<textarea
@@ -309,7 +309,7 @@
 			</p>
 		</div>
 		<div class="forms-p">
-			<p>Assigned To</p>
+			<label for="iso-no" class="forms-label">Assigned To:</label>
 			<select bind:value={assigned_to} class="user-select">
 				<option value="" disabled selected>Select User</option>
 				{#each users as item}
@@ -615,6 +615,10 @@
 	.remarks {
 		width: 100%;
 		height: 200px;
+	}
+
+	.section {
+		margin-bottom: 10px;
 	}
 
 	.submit {

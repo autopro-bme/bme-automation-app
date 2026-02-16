@@ -182,7 +182,9 @@
 <div class="project-box">
 	<form class="forms" onsubmit={handleSubmit}>
 		<h2 class="heading">General Information</h2>
-		<button type="button" class="button-primary"><Search />Search Project</button>
+		<button type="button" class="button-primary" onclick={openProjectModal}
+			><Search />Search Project</button
+		>
 		<div class="forms-p">
 			<label for="project-name" class="forms-label">Project Name:</label>
 			<input type="text" class="forms-input" bind:value={project_name} />
@@ -206,12 +208,57 @@
 				class="forms-input forms-date"
 				bind:value={kickoff_date}
 				onfocus={(e) => e.target.showPicker?.()}
+				required
 			/>
 		</div>
 		<div class="forms-p">
 			<label for="project-weather" class="forms-label">Weather:</label>
-			<input type="text" class="forms-input" bind:value={weather} />
+			<input type="text" class="forms-input" bind:value={weather} required />
 		</div>
+		{#if showProjectModal}
+			<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select project">
+				<div class="modal">
+					<h3>Select a Project</h3>
+					<div class="project-search">
+						<input
+							type="text"
+							placeholder="Project Name/Project ID"
+							class="project-search-input"
+							bind:value={projectSearch}
+							oninput={filterProjects}
+						/>
+						<button type="button" class="project-search-button" onclick={filterProjects}>
+							<Search />
+						</button>
+					</div>
+					<div class="project-list">
+						<div class="project-list-header">
+							<span>Project Name</span>
+							<span>Project ID</span>
+						</div>
+						{#if projectLoading}
+							<p class="project-status">Loading projects...</p>
+						{:else if projectError}
+							<p class="project-status error">{projectError}</p>
+						{:else if filteredProjects.length === 0}
+							<p class="project-status">No projects found.</p>
+						{:else}
+							{#each filteredProjects as project}
+								<button type="button" class="project-row" onclick={() => selectProject(project)}>
+									<span>{project.project_name ?? '-'}</span>
+									<span class="project-row-id">{project.project_id ?? '-'}</span>
+								</button>
+							{/each}
+						{/if}
+					</div>
+					<div class="modal-actions">
+						<button type="button" class="button-secondary" onclick={closeProjectModal}>
+							Cancel
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 		<br />
 		<hr />
 		<h2 class="heading">Site Safety Supervisor Allocation</h2>

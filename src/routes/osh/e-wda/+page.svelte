@@ -138,7 +138,7 @@
 
 <div class="project-box">
 	<div class="date-records">
-		<div>
+		<div class="forms-date">
 			<p>Filter by Date</p>
 			<input
 				type="date"
@@ -358,6 +358,10 @@
 			font-size: 13px;
 		}
 
+		.forms-date {
+			width: 100%;
+		}
+
 		.records {
 			font-size: 12px;
 		}
@@ -379,7 +383,6 @@
 		}
 
 		.pagination {
-			justify-content: center;
 			flex-wrap: wrap;
 		}
 

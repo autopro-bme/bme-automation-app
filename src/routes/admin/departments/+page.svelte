@@ -402,8 +402,8 @@
 		}
 
 		.pagination {
-			justify-content: flex-start;
 			flex-wrap: wrap;
+			gap: 6px;
 		}
 	}
 
@@ -460,14 +460,12 @@
 		}
 
 		.pagination {
-			justify-content: flex-start;
 			flex-wrap: wrap;
-			gap: 8px;
 		}
 
 		.pagination button {
-			min-width: 34px;
-			height: 34px;
+			min-width: 36px;
+			height: 36px;
 		}
 	}
 </style>

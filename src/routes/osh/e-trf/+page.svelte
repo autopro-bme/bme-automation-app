@@ -708,17 +708,19 @@
 		}
 
 		.modal {
-			width: min(600px, 92vw);
-			max-height: 85vh;
-			overflow: auto;
+			width: min(520px, 95vw);
+			padding: 16px;
 		}
 
-		.project-row span {
-			word-break: break-word;
-			overflow-wrap: anywhere;
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1.4fr 1fr;
 		}
 
+		p,
+		label,
 		.declaration p {
+			white-space: normal;
 			word-break: break-word;
 			overflow-wrap: anywhere;
 		}
@@ -812,31 +814,13 @@
 			font-size: 13px;
 		}
 
-		.modal {
-			width: 94vw;
-			padding: 16px;
-			max-height: 85vh;
-			overflow: auto;
+		.submit {
+			justify-content: center;
 		}
 
-		.project-search {
-			flex-direction: column;
-			gap: 8px;
-		}
-
-		.project-search-button {
+		.button-submit {
 			width: 100%;
-			height: 38px;
-		}
-
-		.project-list-header,
-		.project-row {
-			grid-template-columns: 1fr;
-		}
-
-		.project-row-id {
-			text-align: left;
-			opacity: 0.85;
+			justify-content: center;
 		}
 	}
 </style>

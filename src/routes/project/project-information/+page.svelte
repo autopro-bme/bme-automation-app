@@ -827,12 +827,21 @@
 			width: 100%;
 		}
 
-		button {
+		.modal {
+			padding: 16px;
+		}
+
+		.modal-actions {
+			flex-direction: column;
+			gap: 8px;
+		}
+
+		.modal-actions button {
 			width: 100%;
 		}
 
-		.modal {
-			padding: 16px;
+		.modal-backdrop {
+			padding: 16px 12px;
 		}
 
 		.modal-body {
