@@ -163,7 +163,7 @@
 			<div class="checklist-grid">
 				{#each subsection.items as item, iIndex}
 					<p class="index">{iIndex + 1}</p>
-					<p>{item.label}</p>
+					<p class="item-label">{item.label}</p>
 					<p class="checklist-radio">
 						<input
 							type="radio"
@@ -489,27 +489,48 @@
 		}
 
 		.checklist-grid {
-			grid-template-columns: 1fr;
-			gap: 6px;
-			padding: 8px 0;
-			border-bottom: 1px solid #09174733;
+			display: block; /* override grid */
 		}
 
-		.index {
-			text-align: left;
+		.checklist-grid > .index,
+		.checklist-grid > .item-label,
+		.checklist-grid > .checklist-radio,
+		.checklist-grid > .checklist-remarks {
+			display: block;
+			width: 100%;
+		}
+
+		/* Create visual card grouping */
+		.checklist-grid > .index {
+			margin-top: 14px;
 			font-weight: bold;
 		}
 
+		.checklist-grid > .item-label {
+			margin-bottom: 8px;
+			font-weight: 600;
+		}
+
 		.checklist-radio {
-			justify-content: flex-start;
+			display: flex;
+			gap: 20px;
+			margin-bottom: 8px;
+		}
+
+		.checklist-radio input {
+			transform: scale(1.2);
+			margin-right: 6px;
 		}
 
 		.checklist-remarks {
-			height: 36px;
-			font-size: 13px;
+			width: 100%;
+			height: 40px;
+			padding: 8px;
+			border-radius: 6px;
+			border: 1px solid #ccc;
+			margin-bottom: 12px;
 		}
 
-		/* Declaration section stacks nicely */
 		.container {
 			flex-direction: column;
 			align-items: flex-start;
