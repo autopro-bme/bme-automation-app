@@ -104,30 +104,30 @@
 
 <h1 class="title">Submission History</h1>
 
-<div class="project-box">
-	<div class="date-container">
-		<div>
-			<p>From Date</p>
-			<input
-				type="date"
-				class="date-from forms-date"
-				bind:value={fromDate}
-				onchange={loadHistory}
-				onfocus={(e) => e.target.showPicker?.()}
-			/>
-		</div>
-		<div>
-			<p>To Date</p>
-			<input
-				type="date"
-				class="date-to forms-date"
-				bind:value={toDate}
-				onchange={loadHistory}
-				onfocus={(e) => e.target.showPicker?.()}
-			/>
-		</div>
+<div class="submissions-filter">
+	<div>
+		<p>From Date</p>
+		<input
+			type="date"
+			class="date-from forms-date"
+			bind:value={fromDate}
+			onchange={loadHistory}
+			onfocus={(e) => e.target.showPicker?.()}
+		/>
 	</div>
+	<div>
+		<p>To Date</p>
+		<input
+			type="date"
+			class="date-to forms-date"
+			bind:value={toDate}
+			onchange={loadHistory}
+			onfocus={(e) => e.target.showPicker?.()}
+		/>
+	</div>
+</div>
 
+<div class="project-box">
 	{#if errorMsg}
 		<p class="error">{errorMsg}</p>
 	{/if}
@@ -314,15 +314,15 @@
 		cursor: pointer;
 	}
 
-	.date-container {
+	.submissions-filter {
 		display: flex;
 		align-items: flex-end;
 		gap: 12px;
-		margin: 10px 0;
+		margin: 10px;
 		padding: 10px 0;
 	}
 
-	.date-container p {
+	.submissions-filter p {
 		margin: 0 0 6px 0;
 	}
 
@@ -414,9 +414,22 @@
 
 	@media (max-width: 768px) {
 		.title {
-			font-size: 24px;
-			margin-bottom: 15px;
-			padding: 0 6px;
+			font-size: 22px;
+			margin-bottom: 14px;
+		}
+
+		.submissions-filter {
+			gap: 8px;
+		}
+
+		.submissions-filter p {
+			margin: 0 0 4px 0;
+			line-height: 1.2;
+		}
+
+		.submissions-filter > div {
+			margin: 0;
+			padding: 0;
 		}
 
 		.project-box {
