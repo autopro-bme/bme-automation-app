@@ -17,13 +17,20 @@
 
 	const getUserName = (user) => {
 		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-		const haystack = `${name} ${u.email ?? ''} ${u.department ?? ''}`.toLowerCase();
-
-		const matchesDepartment =
-			selectedDepartment === 'All' || (u.department ?? []).includes(selectedDepartment);
-
-		return name && matchesDepartment;
 	};
+
+	$: filteredUsers =
+		selectedDepartment === 'All'
+			? users
+			: users.filter((u) => {
+					Array.isArray(u.department)
+						? u.department.include(selectedDepartment)
+						: u.department === selectedDepartment;
+				});
+
+	$: if (selectedDepartment) {
+		selectedUser = '';
+	}
 
 	const allMenuItems = menuSections.flatMap((section) =>
 		(section.items ?? []).map((item) => ({
@@ -155,7 +162,7 @@
 		<p>User</p>
 		<select bind:value={selectedUser} class="user-select">
 			<option value="" disabled selected>Select User</option>
-			{#each users as item}
+			{#each filteredUsers as item}
 				<option value={item.id}>{getUserName(item)}</option>
 			{/each}
 		</select>
@@ -337,6 +344,7 @@
 	.department-select,
 	.user-select {
 		height: 40px;
+		width: 150px;
 		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;

@@ -349,13 +349,6 @@
 		gap: 20px;
 	}
 
-	.department-select {
-		height: 40px;
-		padding: 0 10px;
-		font-size: 14px;
-		cursor: pointer;
-	}
-
 	.filter-bar {
 		display: flex;
 		align-items: flex-end;
