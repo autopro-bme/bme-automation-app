@@ -1275,28 +1275,57 @@
 			font-size: 13px;
 		}
 
+		.categories {
+			display: none;
+		}
+
 		.audit-grid {
-			grid-template-columns: auto 1fr 1fr;
+			grid-template-columns: auto 1fr;
+			gap: 8px 10px;
+			align-items: start;
 		}
 
 		.index {
 			grid-column: 1;
+			font-weight: bold;
+			margin-top: 4px;
 		}
 
 		.audit-label {
-			grid-column: 2 / 4;
+			grid-column: 2;
+			font-weight: 600;
+
+			word-wrap: break-word;
+			overflow-wrap: break-word;
+			white-space: normal;
 		}
 
 		.info-wrapper {
 			grid-column: 1;
+			display: flex;
+			align-items: center;
 		}
 
 		.audit-select:not(.info-wrapper) {
 			grid-column: 2;
+			display: flex;
+			align-items: center;
+		}
+
+		.audit-count {
+			width: 100%;
+			max-width: 100%;
 		}
 
 		.audit-remarks {
-			grid-column: 3;
+			grid-column: 1 / -1;
+			width: 100%;
+			max-width: 100%;
+			box-sizing: border-box;
+			height: 38px;
+			padding: 6px 10px;
+			border-radius: 6px;
+			border: 1px solid #ccc;
 		}
 
 		.categories,
