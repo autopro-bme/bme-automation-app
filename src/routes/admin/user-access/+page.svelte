@@ -341,13 +341,27 @@
 		padding: 0 10px 10px;
 	}
 
-	.department-select,
-	.user-select {
+	.department-select {
 		height: 40px;
 		width: 150px;
 		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;
+	}
+
+	.user-select {
+		height: 40px;
+		width: 350px;
+		padding: 0 10px;
+		font-size: 14px;
+		cursor: pointer;
+		background-color: #ffffff;
+		color: #091747;
+	}
+
+	.user-select option {
+		background-color: #ffffff;
+		color: #091747;
 	}
 
 	.filter-bar {
