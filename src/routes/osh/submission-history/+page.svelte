@@ -445,8 +445,7 @@
 		}
 
 		.project-box {
-			margin: 6px;
-			padding: 10px;
+			margin: 8px;
 		}
 
 		.date-from,
