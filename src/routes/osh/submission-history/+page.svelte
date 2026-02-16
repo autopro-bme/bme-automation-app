@@ -412,6 +412,18 @@
 		margin: 8px 0;
 	}
 
+	@media (max-width: 1024px) {
+		.submissions-filter {
+			flex-wrap: wrap;
+			gap: 12px;
+		}
+
+		.submissions-filter > div {
+			min-width: 220px;
+			flex: 1 1 220px;
+		}
+	}
+
 	@media (max-width: 768px) {
 		.title {
 			font-size: 22px;
