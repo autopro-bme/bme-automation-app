@@ -554,7 +554,7 @@
 			align-items: stretch;
 			margin: 8px;
 			padding: 8px 0;
-			gap: 12px; /* reduce gaps */
+			gap: 12px;
 		}
 
 		.filter-bar > div {

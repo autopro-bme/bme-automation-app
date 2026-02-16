@@ -9,6 +9,7 @@
 	let errorMsg = '';
 	let isSaving = false;
 
+	let selectedDepartment = 'All';
 	let selectedUser = '';
 	let selectedMenuAccess = [];
 
@@ -16,7 +17,12 @@
 
 	const getUserName = (user) => {
 		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
-		return name || user.email || 'Unknown';
+		const haystack = `${name} ${u.email ?? ''} ${u.department ?? ''}`.toLowerCase();
+
+		const matchesDepartment =
+			selectedDepartment === 'All' || (u.department ?? []).includes(selectedDepartment);
+
+		return name && matchesDepartment;
 	};
 
 	const allMenuItems = menuSections.flatMap((section) =>
@@ -112,7 +118,7 @@
 
 		const { data, error } = await supabase
 			.from('profiles')
-			.select('id, first_name, last_name, email, menu_access, created_at')
+			.select('id, first_name, last_name, email, department, menu_access, created_at')
 			.order('first_name');
 
 		if (error) {
@@ -136,14 +142,27 @@
 <h1 class="title">User Access Management</h1>
 
 <div class="filter-bar">
-	<p>User</p>
-	<select bind:value={selectedUser} class="user-select">
-		<option value="" disabled selected>Select User</option>
-		{#each users as item}
-			<option value={item.id}>{getUserName(item)}</option>
-		{/each}
-	</select>
+	<div>
+		<p>Department</p>
+		<select bind:value={selectedDepartment} class="department-select">
+			<option value="All">All Departments</option>
+			<option value="Admin">Admin</option>
+			<option value="Project">Project</option>
+			<option value="OSH">OSH</option>
+		</select>
+	</div>
+	<div>
+		<p>User</p>
+		<select bind:value={selectedUser} class="user-select">
+			<option value="" disabled selected>Select User</option>
+			{#each users as item}
+				<option value={item.id}>{getUserName(item)}</option>
+			{/each}
+		</select>
+	</div>
+</div>
 
+<div class="access-grid">
 	{#each allMenuItems as item (item.route)}
 		<div class="menu-card">
 			<div class="menu-access">
@@ -202,6 +221,11 @@
 		align-items: center;
 		justify-content: center;
 		gap: 5px;
+	}
+
+	.access-grid {
+		margin: 10px;
+		padding: 10px 0;
 	}
 
 	button {
@@ -310,13 +334,18 @@
 		padding: 0 10px 10px;
 	}
 
+	.department-select,
 	.user-select {
+		height: 40px;
+		padding: 0 10px;
 		font-size: 14px;
-		width: 40%;
 		cursor: pointer;
 	}
 
 	.filter-bar {
+		display: flex;
+		align-items: flex-end;
+		gap: 12px;
 		margin: 10px;
 		padding: 10px 0;
 	}
@@ -416,10 +445,17 @@
 
 		.filter-bar {
 			display: flex;
+			flex-wrap: wrap;
+			gap: 10px;
+		}
+
+		.access-grid {
+			display: flex;
 			flex-direction: column;
 			gap: 10px;
 		}
 
+		.department-select,
 		.user-select {
 			width: 100%;
 		}
@@ -458,6 +494,24 @@
 	@media (max-width: 600px) {
 		.title {
 			font-size: 22px;
+		}
+
+		.filter-bar {
+			flex-direction: column;
+			align-items: stretch;
+			margin: 8px;
+			padding: 8px 0;
+			gap: 12px;
+		}
+
+		.filter-bar > div {
+			width: 100%;
+		}
+
+		.department-select,
+		.user-select {
+			width: 100%;
+			box-sizing: border-box;
 		}
 
 		.menu-card {
