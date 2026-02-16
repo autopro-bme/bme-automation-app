@@ -338,7 +338,7 @@
 			<div class="audit-grid">
 				{#each processedSubsections[sIndex].items as item, iIndex}
 					<p class="index">{subsectionOffsets[sIndex] + iIndex + 1}</p>
-					<div>
+					<div class="audit-label">
 						<p>{item.label}</p>
 						{#if item.note}
 							<p class="item-note">{item.note}</p>
@@ -851,25 +851,32 @@
 		}
 
 		.audit-grid {
-			grid-template-columns: 1fr;
-			gap: 8px;
-			padding: 10px 0;
-			border-bottom: 1px solid #e3e8f0;
+			grid-template-columns: auto 1fr; /* 2 columns */
+			gap: 6px 8px;
 		}
 
 		.index {
+			grid-column: 1;
 			font-weight: bold;
-			text-align: left;
+		}
+
+		.audit-label {
+			grid-column: 2;
 		}
 
 		.audit-check {
-			justify-content: flex-start;
+			grid-column: 1;
+			display: flex;
+			align-items: center;
 		}
 
 		.audit-remarks {
+			grid-column: 2;
 			width: 100%;
 			height: 36px;
-			font-size: 13px;
+			padding: 6px 8px;
+			border-radius: 6px;
+			border: 1px solid #ccc;
 		}
 
 		.circle-checkbox {

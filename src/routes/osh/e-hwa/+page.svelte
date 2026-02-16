@@ -495,12 +495,10 @@
 
 		.index {
 			grid-column: 1;
-			font-weight: bold;
 		}
 
 		.item-label {
 			grid-column: 2;
-			font-weight: 600;
 		}
 
 		.checklist-radio {
