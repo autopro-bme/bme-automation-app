@@ -515,6 +515,115 @@
 		font-weight: bold;
 	}
 
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(9, 23, 71, 0.35);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+		z-index: 50;
+	}
+
+	.modal {
+		background: #ffffff;
+		border-radius: 10px;
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+		padding: 20px;
+		width: min(600px, 95vw);
+	}
+
+	.modal h3 {
+		margin: 0 0 16px 0;
+		font-size: 20px;
+	}
+
+	.project-search {
+		display: flex;
+		gap: 10px;
+		margin-bottom: 16px;
+	}
+
+	.project-search-input {
+		flex: 1;
+		height: 36px;
+		padding: 0 10px;
+		border: 1px solid #cfd6e4;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+
+	.project-search-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 40px;
+		height: 36px;
+		padding: 0;
+		background-color: #091747;
+		border-radius: 6px;
+	}
+
+	.project-search-button:hover {
+		background-color: #091747b9;
+	}
+
+	.project-list {
+		border: 1px solid #cfd6e4;
+		border-radius: 8px;
+		overflow: hidden;
+		max-height: 320px;
+		overflow-y: auto;
+	}
+
+	.project-list-header,
+	.project-row {
+		display: grid;
+		grid-template-columns: 1.5fr 1fr;
+		gap: 10px;
+		padding: 10px 12px;
+	}
+
+	.project-list-header {
+		background-color: #f2f4f9;
+		font-weight: bold;
+		border-bottom: 1px solid #cfd6e4;
+		text-align: center;
+	}
+
+	.project-row {
+		width: 100%;
+		text-align: left;
+		background: #ffffff;
+		border: none;
+		border-bottom: 1px solid #e3e8f0;
+		cursor: pointer;
+	}
+
+	.project-row:last-child {
+		border-bottom: none;
+	}
+
+	.project-row:hover {
+		background-color: #dedede;
+	}
+
+	.project-row-id {
+		text-align: center;
+	}
+
+	.project-status {
+		padding: 12px;
+		margin: 0;
+	}
+
+	.modal-actions {
+		display: flex;
+		justify-content: flex-start;
+		margin-top: 16px;
+	}
+
 	.project-box {
 		margin: 10px;
 		border: 1px solid #091747;
@@ -580,15 +689,6 @@
 			gap: 8px;
 		}
 
-		.declaration {
-			padding: 0;
-		}
-
-		.declaration p {
-			word-break: break-word;
-			overflow-wrap: anywhere;
-		}
-
 		.button-primary,
 		.button-submit {
 			width: fit-content;
@@ -596,6 +696,24 @@
 
 		.remarks {
 			height: 180px;
+		}
+
+		.modal {
+			width: min(520px, 95vw);
+			padding: 16px;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1.4fr 1fr;
+		}
+
+		p,
+		label,
+		.declaration p {
+			white-space: normal;
+			word-break: break-word;
+			overflow-wrap: anywhere;
 		}
 	}
 
