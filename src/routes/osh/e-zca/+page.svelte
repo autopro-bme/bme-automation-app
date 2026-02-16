@@ -623,7 +623,7 @@
 			<div class="audit-grid">
 				{#each subsection.items as item, iIndex}
 					<p class="index">{iIndex + 1}</p>
-					<p>{item.label}</p>
+					<p class="audit-label">{item.label}</p>
 					<div class="audit-select info-wrapper">
 						<button type="button" class="info-button"><Info /></button>
 						<div class="info-popup" role="dialog" aria-label="Score guidance">
@@ -1226,7 +1226,6 @@
 			white-space: normal;
 		}
 
-		/* Modal */
 		.modal {
 			width: min(600px, 92vw);
 			max-height: 85vh;
@@ -1276,6 +1275,30 @@
 			font-size: 13px;
 		}
 
+		.audit-grid {
+			grid-template-columns: auto 1fr 1fr;
+		}
+
+		.index {
+			grid-column: 1;
+		}
+
+		.audit-label {
+			grid-column: 2 / 4;
+		}
+
+		.info-wrapper {
+			grid-column: 1;
+		}
+
+		.audit-select:not(.info-wrapper) {
+			grid-column: 2;
+		}
+
+		.audit-remarks {
+			grid-column: 3;
+		}
+
 		.categories,
 		.audit-grid {
 			min-width: 820px;
@@ -1283,7 +1306,6 @@
 
 		.subsection-type,
 		.overall-summary {
-			justify-content: flex-start;
 			margin: 14px 0;
 		}
 

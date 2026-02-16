@@ -851,11 +851,12 @@
 		}
 
 		.audit-grid {
-			grid-template-columns: auto 1fr; /* 2 columns */
+			grid-template-columns: auto 1fr;
 			gap: 6px 8px;
 		}
 
 		.index {
+			align-self: start;
 			grid-column: 1;
 			font-weight: bold;
 		}
