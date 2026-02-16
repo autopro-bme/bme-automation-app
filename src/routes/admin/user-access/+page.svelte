@@ -16,7 +16,7 @@
 	let showSuccess = false;
 
 	const getUserName = (user) => {
-		const name = `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
+		return `${user.first_name ?? ''} ${user.last_name ?? ''}`.trim();
 	};
 
 	$: filteredUsers =
