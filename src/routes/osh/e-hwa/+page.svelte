@@ -489,37 +489,32 @@
 		}
 
 		.checklist-grid {
-			display: block; /* override grid */
+			grid-template-columns: 1fr; /* single column */
+			gap: 6px;
 		}
 
-		.checklist-grid > .index,
-		.checklist-grid > .item-label,
-		.checklist-grid > .checklist-radio,
-		.checklist-grid > .checklist-remarks {
-			display: block;
-			width: 100%;
-		}
-
-		/* Create visual card grouping */
-		.checklist-grid > .index {
-			margin-top: 14px;
+		/* Combine index + label visually */
+		.index {
+			display: inline;
 			font-weight: bold;
+			margin-right: 6px;
 		}
 
-		.checklist-grid > .item-label {
-			margin-bottom: 8px;
+		.item-label {
+			display: inline;
 			font-weight: 600;
 		}
 
+		/* Make radio buttons horizontal */
 		.checklist-radio {
 			display: flex;
 			gap: 20px;
-			margin-bottom: 8px;
+			margin: 6px 0;
 		}
 
 		.checklist-radio input {
 			transform: scale(1.2);
-			margin-right: 6px;
+			margin-right: 4px;
 		}
 
 		.checklist-remarks {
@@ -528,7 +523,6 @@
 			padding: 8px;
 			border-radius: 6px;
 			border: 1px solid #ccc;
-			margin-bottom: 12px;
 		}
 
 		.container {
