@@ -489,35 +489,29 @@
 		}
 
 		.checklist-grid {
-			grid-template-columns: 1fr; /* single column */
-			gap: 6px;
+			grid-template-columns: auto 1fr;
+			gap: 6px 8px;
 		}
 
-		/* Combine index + label visually */
 		.index {
-			display: inline;
+			grid-column: 1;
 			font-weight: bold;
-			margin-right: 6px;
 		}
 
 		.item-label {
-			display: inline;
+			grid-column: 2;
 			font-weight: 600;
 		}
 
-		/* Make radio buttons horizontal */
 		.checklist-radio {
+			grid-column: 1 / -1;
 			display: flex;
 			gap: 20px;
 			margin: 6px 0;
 		}
 
-		.checklist-radio input {
-			transform: scale(1.2);
-			margin-right: 4px;
-		}
-
 		.checklist-remarks {
+			grid-column: 1 / -1;
 			width: 100%;
 			height: 40px;
 			padding: 8px;
