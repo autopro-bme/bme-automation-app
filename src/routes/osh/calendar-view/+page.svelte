@@ -560,18 +560,17 @@
 	.submissions-info {
 		display: flex;
 		justify-content: space-between;
+		margin-bottom: 5px;
 	}
 
 	.status-ok {
 		color: #0f8f2f;
 		font-weight: bold;
-		margin-top: 6px;
 	}
 
 	.status-bad {
 		color: #c62828;
 		font-weight: bold;
-		margin-top: 6px;
 	}
 
 	.status-error {
@@ -733,8 +732,7 @@
 		}
 
 		.submissions-info {
-			flex-direction: column;
-			align-items: flex-start;
+			align-items: center;
 		}
 
 		.submissions-info p {

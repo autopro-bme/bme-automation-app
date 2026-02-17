@@ -1221,23 +1221,20 @@
 			overflow-x: auto;
 		}
 
-		.info-popup {
-			max-width: 90vw;
-			white-space: normal;
-		}
-
 		.modal {
-			width: min(600px, 92vw);
-			max-height: 85vh;
-			overflow: auto;
+			width: min(520px, 95vw);
+			padding: 16px;
 		}
 
-		.project-row span {
-			word-break: break-word;
-			overflow-wrap: anywhere;
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1.4fr 1fr;
 		}
 
+		p,
+		label,
 		.declaration p {
+			white-space: normal;
 			word-break: break-word;
 			overflow-wrap: anywhere;
 		}
@@ -1288,7 +1285,6 @@
 		.index {
 			grid-column: 1;
 			font-weight: bold;
-			margin-top: 4px;
 		}
 
 		.audit-label {
@@ -1306,21 +1302,30 @@
 			align-items: center;
 		}
 
+		.info-popup {
+			position: fixed;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			width: 90vw;
+			max-height: 70vh;
+			overflow-y: auto;
+			padding: 16px;
+			border-radius: 10px;
+			background: white;
+			box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+			z-index: 2000;
+		}
+
 		.audit-select:not(.info-wrapper) {
-			grid-column: 2;
+			width: 50px;
 			display: flex;
 			align-items: center;
 		}
 
-		.audit-count {
-			width: 100%;
-			max-width: 100%;
-		}
-
 		.audit-remarks {
 			grid-column: 1 / -1;
-			width: 100%;
-			max-width: 100%;
+			width: 200px;
 			box-sizing: border-box;
 			height: 38px;
 			padding: 6px 10px;
@@ -1367,13 +1372,6 @@
 			font-size: 13px;
 		}
 
-		.modal {
-			width: 94vw;
-			padding: 16px;
-			max-height: 85vh;
-			overflow: auto;
-		}
-
 		.project-search {
 			flex-direction: column;
 			gap: 8px;
@@ -1382,16 +1380,6 @@
 		.project-search-button {
 			width: 100%;
 			height: 38px;
-		}
-
-		.project-list-header,
-		.project-row {
-			grid-template-columns: 1fr;
-		}
-
-		.project-row-id {
-			text-align: left;
-			opacity: 0.85;
 		}
 	}
 </style>

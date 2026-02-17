@@ -808,7 +808,20 @@
 			overflow-wrap: anywhere;
 		}
 
+		.modal {
+			width: min(520px, 95vw);
+			padding: 16px;
+		}
+
+		.project-list-header,
+		.project-row {
+			grid-template-columns: 1.4fr 1fr;
+		}
+
+		p,
+		label,
 		.declaration p {
+			white-space: normal;
 			word-break: break-word;
 			overflow-wrap: anywhere;
 		}
@@ -923,23 +936,6 @@
 
 		.submit {
 			justify-content: center;
-		}
-
-		.modal {
-			width: 94vw;
-			padding: 16px;
-			max-height: 85vh;
-			overflow: auto;
-		}
-
-		.project-list-header,
-		.project-row {
-			grid-template-columns: 1fr;
-		}
-
-		.project-row-id {
-			text-align: left;
-			opacity: 0.85;
 		}
 	}
 </style>

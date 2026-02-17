@@ -789,6 +789,11 @@
 			margin-bottom: 14px;
 		}
 
+		.button-primary {
+			width: 100%;
+			justify-content: center;
+		}
+
 		.filter-bar {
 			flex-wrap: wrap;
 			gap: 12px;

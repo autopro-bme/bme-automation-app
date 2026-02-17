@@ -716,6 +716,12 @@
 			font-size: 18px;
 		}
 
+		.button-primary,
+		.button-submit {
+			width: 100%;
+			justify-content: center;
+		}
+
 		.project-box {
 			margin: 6px;
 			padding: 8px;

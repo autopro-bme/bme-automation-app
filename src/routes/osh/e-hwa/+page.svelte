@@ -162,7 +162,7 @@
 			<h3 class="subheading">{subsection.title}</h3>
 			<div class="checklist-grid">
 				{#each subsection.items as item, iIndex}
-					<p class="index">{iIndex + 1}</p>
+					<p class="index">{iIndex + 1}.</p>
 					<p class="item-label">{item.label}</p>
 					<p class="checklist-radio">
 						<input
@@ -468,7 +468,7 @@
 		}
 
 		.subheading {
-			font-size: 15px;
+			margin: 0;
 		}
 
 		.forms-p {
@@ -495,10 +495,12 @@
 
 		.index {
 			grid-column: 1;
+			margin-top: 5px;
 		}
 
 		.item-label {
 			grid-column: 2;
+			margin-top: 5px;
 		}
 
 		.checklist-radio {
