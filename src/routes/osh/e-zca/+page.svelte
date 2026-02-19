@@ -907,6 +907,7 @@
 
 	.info-details {
 		display: flex;
+		align-items: center;
 		gap: 8px;
 		margin: 3px 0;
 		font-size: 14px;
@@ -1069,17 +1070,17 @@
 		height: 200px;
 	}
 
-	/* span scores */
 	.one,
 	.two,
 	.three,
 	.four,
 	.five {
-		display: inline-block;
-		text-align: center;
+		display: flex;
 		align-items: center;
+		justify-content: center;
+		flex: 0 0 36px;
+		height: 36px;
 		color: #091747;
-		width: 50px;
 	}
 
 	.one {
@@ -1101,7 +1102,6 @@
 	.five {
 		background-color: #40dd40;
 	}
-	/* span scores */
 
 	.subsection-count,
 	.overall-count {
@@ -1290,8 +1290,7 @@
 		.audit-label {
 			grid-column: 2;
 			font-weight: 600;
-
-			word-wrap: break-word;
+			word-break: break-word;
 			overflow-wrap: break-word;
 			white-space: normal;
 		}
@@ -1300,6 +1299,7 @@
 			grid-column: 1;
 			display: flex;
 			align-items: center;
+			align-self: center;
 		}
 
 		.info-popup {
@@ -1325,7 +1325,7 @@
 
 		.audit-remarks {
 			grid-column: 1 / -1;
-			width: 200px;
+			width: 400px;
 			box-sizing: border-box;
 			height: 38px;
 			padding: 6px 10px;
@@ -1335,7 +1335,7 @@
 
 		.categories,
 		.audit-grid {
-			min-width: 820px;
+			min-width: 0;
 		}
 
 		.subsection-type,

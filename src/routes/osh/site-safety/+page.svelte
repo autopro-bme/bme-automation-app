@@ -347,7 +347,12 @@
 		<div class="project-box">
 			<div class="project-box-top">
 				<p class="project-name"><b>{r.project_no ?? '-'} {formType}</b></p>
-				<button class="button-primary" type="button" onclick={() => openDetailsModal(r)}>
+				<button
+					class="button-primary"
+					id="button-details"
+					type="button"
+					onclick={() => openDetailsModal(r)}
+				>
 					View Details
 				</button>
 			</div>
@@ -722,7 +727,6 @@
 		}
 
 		.form-details {
-			white-space: normal;
 			word-break: break-word;
 		}
 	}
@@ -783,6 +787,10 @@
 		.button-primary,
 		.button-download {
 			width: 100%;
+		}
+
+		#button-details {
+			margin-bottom: 10px;
 		}
 
 		.project-box {
