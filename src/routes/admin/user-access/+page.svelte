@@ -22,11 +22,11 @@
 	$: filteredUsers =
 		selectedDepartment === 'All'
 			? users
-			: users.filter((u) => {
+			: users.filter((u) =>
 					Array.isArray(u.department)
 						? u.department.includes(selectedDepartment)
-						: u.department === selectedDepartment;
-				});
+						: u.department === selectedDepartment
+				);
 
 	$: if (selectedDepartment) {
 		selectedUser = '';
