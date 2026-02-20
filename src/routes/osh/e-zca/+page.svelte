@@ -1369,15 +1369,5 @@
 		.declaration p {
 			font-size: 13px;
 		}
-
-		.project-search {
-			flex-direction: column;
-			gap: 8px;
-		}
-
-		.project-search-button {
-			width: 100%;
-			height: 38px;
-		}
 	}
 </style>

@@ -148,6 +148,10 @@
 		gap: 5px;
 	}
 
+	p {
+		font-size: 18px;
+	}
+
 	.welcome {
 		display: flex;
 		flex-direction: column;

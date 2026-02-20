@@ -271,7 +271,7 @@
 <div class="project-box">
 	<p>
 		Note: Only submitting Tool Box Meeting, PPE Visual Inspections and Housekeeping forms will
-		become Working Day (Start form December 2025)
+		become Working Day (Starting from December 2025)
 	</p>
 
 	<div class="download">

@@ -449,6 +449,20 @@
 		background-color: #091747b9;
 	}
 
+	.button-secondary {
+		background-color: #ffffff;
+		color: #091747;
+		border: 1px solid #091747;
+		padding: 8px 18px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-weight: bold;
+	}
+
+	.button-secondary:hover {
+		background-color: #dedede;
+	}
+
 	.container {
 		display: flex;
 		margin: 10px 0;

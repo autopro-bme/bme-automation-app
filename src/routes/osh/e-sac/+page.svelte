@@ -357,6 +357,20 @@
 		background-color: #091747b9;
 	}
 
+	.button-secondary {
+		background-color: #ffffff;
+		color: #091747;
+		border: 1px solid #091747;
+		padding: 8px 18px;
+		border-radius: 6px;
+		cursor: pointer;
+		font-weight: bold;
+	}
+
+	.button-secondary:hover {
+		background-color: #dedede;
+	}
+
 	.container {
 		display: flex;
 		margin: 10px 0;
@@ -742,14 +756,11 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 100%;
 			margin: 0;
 		}
 
 		.upload-text input[type='file'] {
-			width: 100%;
-			max-width: 100%;
-			font-size: 13px;
+			font-size: 14px;
 		}
 
 		.container {
