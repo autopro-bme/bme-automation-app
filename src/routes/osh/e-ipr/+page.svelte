@@ -687,10 +687,6 @@
 			height: 180px;
 		}
 
-		.container {
-			align-items: flex-start;
-		}
-
 		.declaration {
 			padding-left: 8px;
 		}
@@ -762,9 +758,7 @@
 		}
 
 		.container {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 8px;
+			gap: 10px;
 		}
 
 		.declaration {

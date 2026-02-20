@@ -801,9 +801,7 @@
 		}
 
 		.container {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 8px;
+			gap: 10px;
 		}
 
 		.declaration {

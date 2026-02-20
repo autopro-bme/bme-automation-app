@@ -679,11 +679,6 @@
 			box-sizing: border-box;
 		}
 
-		.container {
-			flex-wrap: wrap;
-			gap: 10px;
-		}
-
 		.declaration {
 			padding: 0;
 		}
@@ -753,8 +748,6 @@
 		}
 
 		.container {
-			flex-direction: row;
-			align-items: flex-start;
 			gap: 10px;
 		}
 

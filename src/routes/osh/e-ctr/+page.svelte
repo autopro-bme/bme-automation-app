@@ -684,11 +684,6 @@
 			word-break: break-word;
 		}
 
-		.container {
-			flex-wrap: wrap;
-			gap: 8px;
-		}
-
 		.button-primary,
 		.button-submit {
 			width: fit-content;
@@ -756,8 +751,6 @@
 		}
 
 		.container {
-			flex-direction: row;
-			align-items: flex-start;
 			gap: 10px;
 		}
 

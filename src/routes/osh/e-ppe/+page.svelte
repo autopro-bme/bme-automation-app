@@ -806,7 +806,6 @@
 		}
 
 		.container {
-			flex-direction: column;
 			gap: 10px;
 		}
 
