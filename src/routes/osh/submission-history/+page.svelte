@@ -20,9 +20,35 @@
 		open = { ...open, [type]: !open[type] };
 	}
 
-	function fmtDate(iso) {
-		const d = new Date(iso);
-		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	function formatDateTime(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		const hours = String(gmt8.getUTCHours()).padStart(2, '0');
+		const minutes = String(gmt8.getUTCMinutes()).padStart(2, '0');
+
+		return `${day} ${month} ${year} ${hours}:${minutes}`;
+	}
+
+	function formatDate(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		return `${day} ${month} ${year}`;
 	}
 
 	function withinRange(iso) {
@@ -156,8 +182,8 @@
 								<div class="history-card">
 									<p class="card-title">{r.project_no ?? '-'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
-									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
-									<p><b>Meeting Date:</b> {fmtDate(r.meeting_date) ?? '-'}</p>
+									<p><b>Submission Date:</b> {formatDateTime(r.created_at)}</p>
+									<p><b>Meeting Date:</b> {formatDate(r.meeting_date) ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photo of Filled TBM Form:</b>
@@ -230,8 +256,8 @@
 								<div class="history-card">
 									<p class="card-title">{r.project_no ?? '-'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
-									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
-									<p><b>Activity Date:</b> {r.activity_date ?? '-'}</p>
+									<p><b>Submission Date:</b> {formatDateTime(r.created_at)}</p>
+									<p><b>Activity Date:</b> {formatDate(r.activity_date) ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photos of Wearing PPE on Site:</b>
@@ -274,8 +300,8 @@
 								<div class="history-card">
 									<p class="card-title">{r.project_no ?? '—'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '—'}</p>
-									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
-									<p><b>Activity Date:</b> {r.activity_date ?? '-'}</p>
+									<p><b>Submission Date:</b> {formatDateTime(r.created_at)}</p>
+									<p><b>Activity Date:</b> {formatDate(r.activity_date) ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photo of Housekeeping:</b>

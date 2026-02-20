@@ -45,9 +45,18 @@
 		pic_end_date: ''
 	};
 
-	function fmtDate(iso) {
-		const d = new Date(iso);
-		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	function formatDate(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		return `${day} ${month} ${year}`;
 	}
 
 	$: filteredProjects = projects.filter((p) => {
@@ -293,8 +302,8 @@
 				<p><b>Region:</b> {p.region ?? '-'}</p>
 				<p><b>Location:</b> {p.location ?? '-'}</p>
 				<p><b>Created By:</b> {p.created_by ?? '-'}</p>
-				<p><b>Start Date:</b> {fmtDate(p.start_date) ?? '-'}</p>
-				<p><b>End Date:</b> {fmtDate(p.end_date) ?? '-'}</p>
+				<p><b>Start Date:</b> {formatDate(p.start_date) ?? '-'}</p>
+				<p><b>End Date:</b> {formatDate(p.end_date) ?? '-'}</p>
 				<br />
 				<h3>Person In Charge</h3>
 				<p><b>Name:</b> {p.pic_name ?? '-'}</p>

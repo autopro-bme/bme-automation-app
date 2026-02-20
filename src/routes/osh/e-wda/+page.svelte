@@ -31,9 +31,18 @@
 		return `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() || profile.email || '—';
 	}
 
-	function fmtDate(iso) {
-		const d = new Date(iso);
-		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	function formatDate(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		return `${day} ${month} ${year}`;
 	}
 
 	async function ensureSignedIn() {
@@ -172,7 +181,7 @@
 			<tbody>
 				{#each paginated as r (r.name)}
 					<tr>
-						<td style="text-align:center">{fmtDate(r.date)}</td>
+						<td style="text-align:center">{formatDate(r.date)}</td>
 						<td>{r.name}</td>
 						<td style="text-align:center">{r.etbm}</td>
 						<td style="text-align:center">{r.eppe}</td>

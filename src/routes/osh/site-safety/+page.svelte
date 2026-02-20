@@ -66,16 +66,42 @@
 		eZCA: ['project_no', 'project_name', 'created_by_name']
 	};
 
+	function formatDateTime(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		const hours = String(gmt8.getUTCHours()).padStart(2, '0');
+		const minutes = String(gmt8.getUTCMinutes()).padStart(2, '0');
+
+		return `${day} ${month} ${year} ${hours}:${minutes}`;
+	}
+
+	function formatDate(iso) {
+		if (!iso) return '';
+
+		const date = new Date(iso);
+
+		const gmt8 = new Date(date.getTime() + 8 * 60 * 60 * 1000);
+
+		const day = String(gmt8.getUTCDate()).padStart(2, '0');
+		const month = gmt8.toLocaleString('en-GB', { month: 'short', timeZone: 'UTC' });
+		const year = gmt8.getUTCFullYear();
+
+		return `${day} ${month} ${year}`;
+	}
+
 	function toISOStart(dateStr) {
 		return dateStr ? new Date(dateStr + 'T00:00:00').toISOString() : null;
 	}
 	function toISOEnd(dateStr) {
 		return dateStr ? new Date(dateStr + 'T23:59:59.999').toISOString() : null;
-	}
-
-	function fmtDate(iso) {
-		const d = new Date(iso);
-		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 	}
 
 	const bucketMap = {
@@ -348,9 +374,9 @@
 			<p><b>Project Name:&nbsp;</b>{r.project_name ?? '-'}</p>
 			<p><b>Project ID:&nbsp;</b>{r.project_no ?? '-'}</p>
 			<p><b>Submitted By:&nbsp;</b>{r.created_by_name ?? '-'}</p>
-			<p><b>Created Date:&nbsp;</b>{fmtDate(r.created_at)}</p>
+			<p><b>Created Date:&nbsp;</b>{formatDateTime(r.created_at)}</p>
 			{#if formType === 'eTBM'}
-				<p><b>Meeting Date:&nbsp;</b>{fmtDate(r.meeting_date)}</p>
+				<p><b>Meeting Date:&nbsp;</b>{formatDate(r.meeting_date)}</p>
 
 				<p class="doc-line">
 					<b>TBM Form:&nbsp;</b>
@@ -383,7 +409,7 @@
 					{/if}
 				</p>
 			{:else if formType === 'ePPE'}
-				<p><b>Activity Date:&nbsp;</b>{fmtDate(r.activity_date)}</p>
+				<p><b>Activity Date:&nbsp;</b>{formatDate(r.activity_date)}</p>
 				<p class="doc-line">
 					<b>PPE Photo:&nbsp;</b>
 					{#if r.ppe_photo_path}
@@ -395,7 +421,7 @@
 					{/if}
 				</p>
 			{:else if formType === 'eHKP'}
-				<p><b>Activity Date:&nbsp;</b>{fmtDate(r.activity_date)}</p>
+				<p><b>Activity Date:&nbsp;</b>{formatDate(r.activity_date)}</p>
 				<p class="doc-line">
 					<b>HKP Photo:&nbsp;</b>
 					{#if r.hkp_photo_path}
@@ -407,7 +433,7 @@
 					{/if}
 				</p>
 			{:else if formType === 'eZCA'}
-				<p><b>Audit Date:&nbsp;</b>{fmtDate(r.audit_date)}</p>
+				<p><b>Audit Date:&nbsp;</b>{formatDate(r.audit_date)}</p>
 			{/if}
 		</div>
 	{/each}
