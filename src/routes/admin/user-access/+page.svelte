@@ -24,7 +24,7 @@
 			? users
 			: users.filter((u) => {
 					Array.isArray(u.department)
-						? u.department.include(selectedDepartment)
+						? u.department.includes(selectedDepartment)
 						: u.department === selectedDepartment;
 				});
 

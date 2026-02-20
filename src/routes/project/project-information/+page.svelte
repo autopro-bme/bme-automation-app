@@ -46,19 +46,28 @@
 	};
 
 	$: filteredProjects = projects.filter((p) => {
-		const haystack =
-			`${p.project_name ?? ''} ${p.project_id ?? ''} ${p.status ?? ''}`.toLowerCase();
+		const search = searchText.toLowerCase();
 
-		const matchesSearch = haystack.includes(searchText.toLowerCase());
 		const matchesStatus =
 			selectedStatus === 'All' || (p.status ?? '').toLowerCase() === selectedStatus.toLowerCase();
-		const matchesDataOption =
-			selectedDataOption === 'All' ||
-			(p.project_id ?? []).includes(selectedDataOption) ||
-			(p.project_name ?? []).includes(selectedDataOption) ||
-			(p.region ?? []).includes(selectedDataOption);
 
-		return matchesSearch && matchesStatus && matchesDataOption;
+		let matchesSearch = true;
+
+		if (searchText.trim() !== '') {
+			if (selectedDataOption === 'project-id') {
+				matchesSearch = (p.project_id ?? '').toLowerCase().includes(search);
+			} else if (selectedDataOption === 'project-name') {
+				matchesSearch = (p.project_name ?? '').toLowerCase().includes(search);
+			} else if (selectedDataOption === 'region') {
+				matchesSearch = (p.region ?? '').toLowerCase().includes(search);
+			} else {
+				const haystack =
+					`${p.project_name ?? ''} ${p.project_id ?? ''} ${p.region ?? ''} ${p.status ?? ''}`.toLowerCase();
+				matchesSearch = haystack.includes(search);
+			}
+		}
+
+		return matchesSearch && matchesStatus;
 	});
 
 	onMount(async () => {
