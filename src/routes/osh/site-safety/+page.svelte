@@ -1,6 +1,7 @@
 <script>
 	import Search from '@lucide/svelte/icons/search';
 	import CloudDownload from '@lucide/svelte/icons/cloud-download';
+	import Close from '@lucide/svelte/icons/x';
 	import { supabase } from '$lib/supabase';
 
 	let formType = '';
@@ -253,10 +254,7 @@
 					const score = item?.score ?? '';
 					const remarks = (item?.remarks ?? '').trim();
 
-					// Include remarks when not empty:
-					// const remarksText = remarks ? ` — Remark: ${remarks}` : '';
-
-					return `• ${label} — Score: ${score}`; // + remarksText;
+					return `• ${label} — Score: ${score}`;
 				});
 
 				return [title, ...lines].filter(Boolean).join('\n');
@@ -423,8 +421,11 @@
 		</div>
 	{/each}
 	{#if showDetailsModal}
-		<div class="modal-overlay" role="dialog" aria-modal="true" aria-label="Select details">
-			<div class="modal">
+		<div class="modal-backdrop" role="presentation">
+			<div class="modal" role="dialog" aria-modal="true" aria-label="Show details">
+				<button class="modal-close" onclick={closeDetailsModal}>
+					<Close size={18} />
+				</button>
 				<h3 class="form-heading">eForm Details</h3>
 				{#if modalLoading}
 					<p>Loading...</p>
@@ -570,24 +571,45 @@
 		margin: 10px;
 	}
 
-	.modal-overlay {
+	.modal-backdrop {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.4);
+		background: rgba(9, 23, 71, 0.45);
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: center;
-		z-index: 9999;
+		padding: 32px 20px;
+		z-index: 10;
 	}
 
 	.modal {
-		background: white;
-		padding: 20px;
-		border-radius: 6px;
-		width: min(600px, 92vw);
-		max-height: 80vh;
+		position: relative;
+		width: min(560px, 100%);
+		max-height: calc(100vh - 64px);
 		overflow: auto;
-		overflow-wrap: anywhere;
+		background: #ffffff;
+		border-radius: 8px;
+		padding: 20px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+	}
+
+	.modal-close {
+		position: absolute;
+		top: 20px;
+		right: 12px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 4px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #091747;
+	}
+
+	.modal-close:hover {
+		background: rgba(0, 0, 0, 0.05);
+		border-radius: 50%;
 	}
 
 	.modal-actions {
