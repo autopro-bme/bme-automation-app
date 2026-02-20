@@ -45,6 +45,11 @@
 		pic_end_date: ''
 	};
 
+	function fmtDate(iso) {
+		const d = new Date(iso);
+		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+	}
+
 	$: filteredProjects = projects.filter((p) => {
 		const search = searchText.toLowerCase();
 
@@ -288,8 +293,8 @@
 				<p><b>Region:</b> {p.region ?? '-'}</p>
 				<p><b>Location:</b> {p.location ?? '-'}</p>
 				<p><b>Created By:</b> {p.created_by ?? '-'}</p>
-				<p><b>Start Date:</b> {p.start_date ?? '-'}</p>
-				<p><b>End Date:</b> {p.end_date ?? '-'}</p>
+				<p><b>Start Date:</b> {fmtDate(p.start_date) ?? '-'}</p>
+				<p><b>End Date:</b> {fmtDate(p.end_date) ?? '-'}</p>
 				<br />
 				<h3>Person In Charge</h3>
 				<p><b>Name:</b> {p.pic_name ?? '-'}</p>

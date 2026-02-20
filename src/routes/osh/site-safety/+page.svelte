@@ -73,18 +73,9 @@
 		return dateStr ? new Date(dateStr + 'T23:59:59.999').toISOString() : null;
 	}
 
-	function fmtDateTime(ts) {
-		if (!ts) return '-';
-		return new Date(ts).toLocaleString();
-	}
-
-	function fmtDateOnly(d) {
-		if (!d) return '-';
-		if (typeof d === 'string' && d.includes('-')) {
-			const [y, m, day] = d.split('-');
-			if (y && m && day) return `${day}/${m}/${y}`;
-		}
-		return String(d);
+	function fmtDate(iso) {
+		const d = new Date(iso);
+		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 	}
 
 	const bucketMap = {
@@ -357,9 +348,9 @@
 			<p><b>Project Name:&nbsp;</b>{r.project_name ?? '-'}</p>
 			<p><b>Project ID:&nbsp;</b>{r.project_no ?? '-'}</p>
 			<p><b>Submitted By:&nbsp;</b>{r.created_by_name ?? '-'}</p>
-			<p><b>Created Date:&nbsp;</b>{fmtDateTime(r.created_at)}</p>
+			<p><b>Created Date:&nbsp;</b>{fmtDate(r.created_at)}</p>
 			{#if formType === 'eTBM'}
-				<p><b>Meeting Date:&nbsp;</b>{fmtDateOnly(r.meeting_date)}</p>
+				<p><b>Meeting Date:&nbsp;</b>{fmtDate(r.meeting_date)}</p>
 
 				<p class="doc-line">
 					<b>TBM Form:&nbsp;</b>
@@ -392,7 +383,7 @@
 					{/if}
 				</p>
 			{:else if formType === 'ePPE'}
-				<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
+				<p><b>Activity Date:&nbsp;</b>{fmtDate(r.activity_date)}</p>
 				<p class="doc-line">
 					<b>PPE Photo:&nbsp;</b>
 					{#if r.ppe_photo_path}
@@ -404,7 +395,7 @@
 					{/if}
 				</p>
 			{:else if formType === 'eHKP'}
-				<p><b>Activity Date:&nbsp;</b>{fmtDateOnly(r.activity_date)}</p>
+				<p><b>Activity Date:&nbsp;</b>{fmtDate(r.activity_date)}</p>
 				<p class="doc-line">
 					<b>HKP Photo:&nbsp;</b>
 					{#if r.hkp_photo_path}
@@ -416,7 +407,7 @@
 					{/if}
 				</p>
 			{:else if formType === 'eZCA'}
-				<p><b>Audit Date:&nbsp;</b>{fmtDateOnly(r.audit_date)}</p>
+				<p><b>Audit Date:&nbsp;</b>{fmtDate(r.audit_date)}</p>
 			{/if}
 		</div>
 	{/each}

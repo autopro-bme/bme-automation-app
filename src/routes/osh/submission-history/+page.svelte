@@ -157,7 +157,7 @@
 									<p class="card-title">{r.project_no ?? '-'}</p>
 									<p><b>Project Name:</b> {r.project_name ?? '-'}</p>
 									<p><b>Submit Date:</b> {fmtDate(r.created_at)}</p>
-									<p><b>Meeting Date:</b> {r.meeting_date ?? '-'}</p>
+									<p><b>Meeting Date:</b> {fmtDate(r.meeting_date) ?? '-'}</p>
 
 									<p class="doc-line">
 										<b>Photo of Filled TBM Form:</b>

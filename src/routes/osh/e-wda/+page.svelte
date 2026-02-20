@@ -31,9 +31,9 @@
 		return `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() || profile.email || '—';
 	}
 
-	function formatDateDMY(dateStr) {
-		const [y, m, d] = (dateStr ?? '').split('-');
-		return y ? `${d}/${m}/${y}` : dateStr;
+	function fmtDate(iso) {
+		const d = new Date(iso);
+		return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 	}
 
 	async function ensureSignedIn() {
@@ -172,7 +172,7 @@
 			<tbody>
 				{#each paginated as r (r.name)}
 					<tr>
-						<td style="text-align:center">{formatDateDMY(r.date)}</td>
+						<td style="text-align:center">{fmtDate(r.date)}</td>
 						<td>{r.name}</td>
 						<td style="text-align:center">{r.etbm}</td>
 						<td style="text-align:center">{r.eppe}</td>
