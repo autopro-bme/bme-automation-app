@@ -339,7 +339,7 @@
 	</div>
 	<div>
 		<p class="hidden">Search</p>
-		<button class="button-primary" id="button-search" onclick={loadForms}
+		<button class="button-search" id="button-search" onclick={loadForms}
 			><Search />Search Project</button
 		>
 	</div>
@@ -361,7 +361,7 @@
 	{#each rows as r (r.id)}
 		<div class="project-box">
 			<div class="project-box-top">
-				<p class="project-name"><b>{r.project_no ?? '-'} {formType}</b></p>
+				<p class="project-name">{r.project_no ?? '-'} {formType}</p>
 				<button
 					class="button-primary"
 					id="button-details"
@@ -381,7 +381,11 @@
 				<p class="doc-line">
 					<b>TBM Form:&nbsp;</b>
 					{#if r.tbm_form_path}
-						<a href={fileUrlFor('eTBM', 'tbm_form_path', r.tbm_form_path)} target="_blank">
+						<a
+							href={fileUrlFor('eTBM', 'tbm_form_path', r.tbm_form_path)}
+							target="_blank"
+							class="file-url"
+						>
 							{fileName(r.tbm_form_path)}
 						</a>
 					{:else}
@@ -391,7 +395,11 @@
 				<p class="doc-line">
 					<b>TBM Photo:&nbsp;</b>
 					{#if r.tbm_photo_path}
-						<a href={fileUrlFor('eTBM', 'tbm_photo_path', r.tbm_photo_path)} target="_blank">
+						<a
+							href={fileUrlFor('eTBM', 'tbm_photo_path', r.tbm_photo_path)}
+							target="_blank"
+							class="file-url"
+						>
 							{fileName(r.tbm_photo_path)}
 						</a>
 					{:else}
@@ -401,7 +409,11 @@
 				<p class="doc-line">
 					<b>PTW Form:&nbsp;</b>
 					{#if r.ptw_form_path}
-						<a href={fileUrlFor('eTBM', 'ptw_form_path', r.ptw_form_path)} target="_blank">
+						<a
+							href={fileUrlFor('eTBM', 'ptw_form_path', r.ptw_form_path)}
+							target="_blank"
+							class="file-url"
+						>
 							{fileName(r.ptw_form_path)}
 						</a>
 					{:else}
@@ -413,7 +425,11 @@
 				<p class="doc-line">
 					<b>PPE Photo:&nbsp;</b>
 					{#if r.ppe_photo_path}
-						<a href={fileUrlFor('ePPE', 'ppe_photo_path', r.ppe_photo_path)} target="_blank">
+						<a
+							href={fileUrlFor('ePPE', 'ppe_photo_path', r.ppe_photo_path)}
+							target="_blank"
+							class="file-url"
+						>
 							{fileName(r.ppe_photo_path)}
 						</a>
 					{:else}
@@ -425,7 +441,11 @@
 				<p class="doc-line">
 					<b>HKP Photo:&nbsp;</b>
 					{#if r.hkp_photo_path}
-						<a href={fileUrlFor('eHKP', 'hkp_photo_path', r.hkp_photo_path)} target="_blank">
+						<a
+							href={fileUrlFor('eHKP', 'hkp_photo_path', r.hkp_photo_path)}
+							target="_blank"
+							class="file-url"
+						>
 							{fileName(r.hkp_photo_path)}
 						</a>
 					{:else}
@@ -548,6 +568,15 @@
 		font-size: 14px;
 	}
 
+	.file-url {
+		text-decoration: underline;
+		color: #064c6dd7;
+	}
+
+	.file-url:hover {
+		color: #064c6da4;
+	}
+
 	.filter-bar {
 		display: flex;
 		align-items: flex-end;
@@ -648,10 +677,12 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 12px;
+		margin-bottom: 10px;
 	}
 
 	.project-name {
 		font-size: 16px;
+		font-weight: bold;
 	}
 
 	.radio-item {

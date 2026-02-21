@@ -305,7 +305,7 @@
 				<p><b>Start Date:</b> {formatDate(p.start_date) ?? '-'}</p>
 				<p><b>End Date:</b> {formatDate(p.end_date) ?? '-'}</p>
 				<br />
-				<h3>Person In Charge</h3>
+				<p class="pic">Person In Charge</p>
 				<p><b>Name:</b> {p.pic_name ?? '-'}</p>
 				<p><b>Position:</b> {p.pic_position ?? '-'}</p>
 			</div>
@@ -636,7 +636,8 @@
 	}
 
 	h3 {
-		margin-bottom: 5px;
+		margin-bottom: 10px;
+		font-size: 16px;
 		font-weight: bold;
 	}
 
@@ -647,6 +648,11 @@
 		padding: 0 10px;
 		font-size: 14px;
 		cursor: pointer;
+	}
+
+	.pic {
+		margin-bottom: 10px;
+		font-weight: bold;
 	}
 
 	.project-card {

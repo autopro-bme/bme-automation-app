@@ -81,7 +81,7 @@
 	</div>
 	{#if !isAuthPage && hasUser}
 		<div class="welcome">
-			<p>Welcome, <b>{userName}</b>!</p>
+			<p>Welcome, <span>{userName}</span>!</p>
 			<div class="calendar-history">
 				<a href="/osh/notifications" class="navigation"><Bell size={20} />Notifications</a>
 				<a href="/osh/calendar-view" class="navigation"><Calendar size={20} />Calendar</a>
@@ -150,6 +150,10 @@
 
 	p {
 		font-size: 18px;
+	}
+
+	span {
+		font-weight: bold;
 	}
 
 	.welcome {

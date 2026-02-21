@@ -317,29 +317,33 @@
 				</label>
 				<label
 					>Photo:
-					<p class="upload-text">
-						<input
-							type="file"
-							name="noti_photo"
-							id="noti_photo"
-							accept="image/png, image/jpeg"
-							multiple
-							on:change={(e) => (noti_photo_file = e.target.files[0])}
-						/>
-					</p>
+					<div class="upload">
+						<p class="upload-text">
+							<input
+								type="file"
+								name="noti_photo"
+								id="noti_photo"
+								accept="image/png, image/jpeg"
+								multiple
+								on:change={(e) => (noti_photo_file = e.target.files[0])}
+							/>
+						</p>
+					</div>
 				</label>
 				<label
 					>File:
-					<p class="upload-text">
-						<input
-							type="file"
-							name="noti_file"
-							id="noti_file"
-							accept="image/png, image/jpeg"
-							multiple
-							on:change={(e) => (noti_file_file = e.target.files[0])}
-						/>
-					</p>
+					<div class="upload">
+						<p class="upload-text">
+							<input
+								type="file"
+								name="noti_file"
+								id="noti_file"
+								accept="image/png, image/jpeg"
+								multiple
+								on:change={(e) => (noti_file_file = e.target.files[0])}
+							/>
+						</p>
+					</div>
 				</label>
 			</div>
 			<div class="modal-actions">
@@ -607,6 +611,17 @@
 		padding: 0 10px;
 	}
 
+	.upload {
+		height: 200px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		text-align: center;
+		padding: 10px;
+		border: 1px solid #091747;
+		border-radius: 2px;
+	}
+
 	.upload-text {
 		width: fit-content;
 	}
@@ -713,8 +728,6 @@
 		}
 
 		.priority-date {
-			flex-direction: column;
-			align-items: flex-start;
 			gap: 8px;
 			padding: 8px 0;
 		}
