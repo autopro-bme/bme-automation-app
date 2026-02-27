@@ -339,7 +339,7 @@
 	</div>
 	<div>
 		<p class="hidden">Search</p>
-		<button class="button-search" id="button-search" onclick={loadForms}
+		<button class="button-primary" id="button-search" onclick={loadForms}
 			><Search />Search Project</button
 		>
 	</div>
