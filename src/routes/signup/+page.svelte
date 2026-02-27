@@ -5,6 +5,7 @@
 	let first_name = '';
 	let last_name = '';
 	let nickname = '';
+	let employee_no = '';
 	let email = '';
 	let password = '';
 	let phone = '';
@@ -64,6 +65,7 @@
 					first_name,
 					last_name,
 					nickname,
+					employee_no,
 					phone,
 					department: departments,
 					position,
@@ -114,6 +116,17 @@
 					type="text"
 					bind:value={nickname}
 					placeholder="John"
+					class="input-box"
+					required
+				/>
+			</p>
+			<p><label for="employee_no">Employee No.</label></p>
+			<p>
+				<input
+					name="employee_no"
+					type="text"
+					bind:value={employee_no}
+					placeholder="BM12345"
 					class="input-box"
 					required
 				/>
