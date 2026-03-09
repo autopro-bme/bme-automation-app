@@ -54,9 +54,10 @@
 		saving = true;
 
 		try {
-			const { data: auth, error: authErr } = await withTimeout(supabase.auth.getUser(), 15000);
-			if (authErr) throw authErr;
-			const user = auth?.user;
+			const auth = await requireUser();
+			if (!auth) return;
+
+			const { supabase, user } = auth;
 			if (!user) throw new Error('Not signed in.');
 
 			const { data: profile, error: profileError } = await withTimeout(
