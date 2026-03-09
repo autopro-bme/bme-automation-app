@@ -19,7 +19,10 @@
 			.single();
 
 		const dept = profile?.department ?? [];
-		if (!dept.includes('Admin')) return goto('/');
+		if (!dept.includes('Admin')) {
+			await goto('/');
+			return;
+		}
 
 		ready = true;
 	});

@@ -5,7 +5,7 @@ export async function requireUser(redirectTo = '/signin') {
 	const supabase = getSupabase();
 	if (!supabase) return null;
 
-	const session = await waitForSession(5000);
+	const session = await waitForSession(8000);
 	const user = session?.user ?? null;
 
 	if (!user) {

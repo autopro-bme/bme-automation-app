@@ -22,7 +22,7 @@ export function getSupabase() {
 
 export const supabase = getSupabase();
 
-export async function waitForSession(timeoutMs = 5000) {
+export async function waitForSession(timeoutMs = 8000) {
 	const client = getSupabase();
 	if (!client) return null;
 
@@ -33,9 +33,16 @@ export async function waitForSession(timeoutMs = 5000) {
 			data: { session }
 		} = await client.auth.getSession();
 
-		if (session) return session;
+		if (session?.user) return session;
 
-		await new Promise((resolve) => setTimeout(resolve, 150));
+		try {
+			const { data: refreshed } = await client.auth.refreshSession();
+			if (refreshed?.session?.user) return refreshed.session;
+		} catch {
+			// Ignore
+		}
+
+		await new Promise((resolve) => setTimeout(resolve, 250));
 	}
 
 	return null;

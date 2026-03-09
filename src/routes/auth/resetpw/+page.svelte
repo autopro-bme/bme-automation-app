@@ -1,7 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { getSupabase } from '$lib/supabase';
+	import { getSupabase, waitForSession } from '$lib/supabase';
 
 	const supabase = getSupabase();
 
@@ -25,8 +25,8 @@
 		});
 		unsub = () => data.subscription.unsubscribe();
 
-		const { data: sessionData } = await supabase.auth.getSession();
-		if (sessionData?.session) {
+		const session = await waitForSession(8000);
+		if (session?.session) {
 			canReset = true;
 		}
 	});
@@ -62,7 +62,7 @@
 
 			await supabase.auth.signOut();
 
-			goto('/auth/signin');
+			goto('/signin');
 		} catch (err) {
 			errorMsg = err?.message ?? String(err);
 		} finally {

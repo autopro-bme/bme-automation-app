@@ -10,9 +10,6 @@
 	import { getSupabase, waitForSession } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
-	/** @type {null | (() => void)} */
-	let authUnsub = null;
-
 	/** @type {{ children: any }} */
 	const { children } = $props();
 
@@ -34,25 +31,7 @@
 		);
 	});
 
-	onMount(async () => {
-		const supabase = getSupabase();
-		if (supabase) {
-			const initialSession = await waitForSession(5000);
-
-			if (!initialSession & !isAuthPage) {
-				await goto('/signin');
-				return;
-			}
-
-			const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
-				if (!session && !isAuthPage) {
-					await goto('/signin');
-				}
-			});
-
-			authUnsub = () => data.subscription.unsubscribe();
-		}
-
+	onMount(() => {
 		navUnsub = navigating.subscribe((nav) => {
 			if (nav) {
 				if (hideTimer) {
@@ -70,7 +49,6 @@
 	});
 
 	onDestroy(() => {
-		if (authUnsub) authUnsub();
 		// @ts-ignore
 		if (navUnsub) navUnsub();
 		if (hideTimer) clearTimeout(hideTimer);

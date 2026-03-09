@@ -21,7 +21,13 @@
 	let userName = $state('User');
 	let sub;
 
-	async function syncUser(sessionUser) {
+	async function syncUser() {
+		const supabase = getSupabase();
+		if (!supabase) return;
+
+		const session = await waitForSession(8000);
+		const sessionUser = session?.user ?? null;
+
 		if (!sessionUser) {
 			hasUser = false;
 			userName = 'User';
@@ -29,9 +35,6 @@
 		}
 
 		hasUser = true;
-
-		const supabase = getSupabase();
-		if (!supabase) return;
 
 		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
@@ -51,11 +54,10 @@
 		const supabase = getSupabase();
 		if (!supabase) return;
 
-		const session = await waitForSession(5000);
-		await syncUser(session?.user ?? null);
+		await syncUser();
 
-		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
-			await syncUser(session2?.user ?? null);
+		const { data } = supabase.auth.onAuthStateChange(async () => {
+			await syncUser();
 		});
 
 		sub = data?.subscription;
