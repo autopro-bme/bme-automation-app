@@ -47,12 +47,8 @@
 	}
 
 	async function ensureSignedIn() {
-		const supabase = getSupabase();
-		const session = await waitForSession(5000);
-		if (!session?.user) {
-			goto('/signin');
-			return null;
-		}
+		const auth = await requireUser();
+		if (!auth) return null;
 		return session.user;
 	}
 

@@ -13,6 +13,7 @@
 			path === '/signin' ||
 			path === '/signup' ||
 			path === '/auth/forgotpw' ||
+			path === '/auth/resetpw' ||
 			path === '/confirmation'
 		);
 	});
@@ -21,13 +22,7 @@
 	let userName = $state('User');
 	let sub;
 
-	async function syncUser() {
-		const supabase = getSupabase();
-		if (!supabase) return;
-
-		const session = await waitForSession(8000);
-		const sessionUser = session?.user ?? null;
-
+	async function syncUser(sessionUser) {
 		if (!sessionUser) {
 			hasUser = false;
 			userName = 'User';
@@ -35,6 +30,9 @@
 		}
 
 		hasUser = true;
+
+		const supabase = getSupabase();
+		if (!supabase) return;
 
 		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
@@ -54,10 +52,11 @@
 		const supabase = getSupabase();
 		if (!supabase) return;
 
+		const session = await waitForSession(8000);
 		await syncUser();
 
-		const { data } = supabase.auth.onAuthStateChange(async () => {
-			await syncUser();
+		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
+			await syncUser(session2?.user ?? null);
 		});
 
 		sub = data?.subscription;

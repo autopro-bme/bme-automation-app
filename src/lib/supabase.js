@@ -36,8 +36,8 @@ export async function waitForSession(timeoutMs = 8000) {
 		if (session?.user) return session;
 
 		try {
-			const { data: refreshed } = await client.auth.refreshSession();
-			if (refreshed?.session?.user) return refreshed.session;
+			const { data } = await client.auth.refreshSession();
+			if (data?.session?.user) return data.session;
 		} catch {
 			// Ignore
 		}
