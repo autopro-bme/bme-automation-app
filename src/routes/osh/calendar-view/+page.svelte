@@ -206,9 +206,10 @@
 		dayStatusByDate = {};
 
 		try {
-			const {
-				data: { user }
-			} = await supabase.auth.getUser();
+			const auth = await requireUser();
+			if (!auth) return;
+
+			const { supabase, user } = auth;
 
 			if (!user) {
 				monthStatusError = 'Please sign in to view submissions.';
