@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
-	import { getSupabase } from '$lib/supabase';
+	import { getSupabase, waitForSession } from '$lib/supabase';
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 	import Bell from '@lucide/svelte/icons/bell';
@@ -10,8 +10,8 @@
 	const isAuthPage = $derived.by(() => {
 		const path = $page.url.pathname;
 		return (
-			path === '/auth/signin' ||
-			path === '/auth/signup' ||
+			path === '/signin' ||
+			path === '/signup' ||
 			path === '/auth/forgotpw' ||
 			path === '/confirmation'
 		);
@@ -51,14 +51,13 @@
 		const supabase = getSupabase();
 		if (!supabase) return;
 
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		const session = await waitForSession(5000);
 		await syncUser(session?.user ?? null);
 
 		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
 			await syncUser(session2?.user ?? null);
 		});
+
 		sub = data?.subscription;
 	});
 
@@ -71,7 +70,7 @@
 		if (supabase) await supabase.auth.signOut();
 		hasUser = false;
 		userName = 'User';
-		goto('/auth/signin');
+		goto('/signin');
 	}
 </script>
 

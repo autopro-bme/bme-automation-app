@@ -23,26 +23,30 @@
 	/** @type {null | (() => void)} */
 	let navUnsub = null;
 
-	const isAuthPage = $derived(
-		$page.url.pathname === '/signin' ||
-			$page.url.pathname === '/signup' ||
-			$page.url.pathname === '/auth/forgotpw' ||
-			$page.url.pathname === '/auth/resetpw'
-	);
+	const isAuthPage = $derived.by(() => {
+		const path = $page.url.pathname;
+		return (
+			path === '/signin' ||
+			path === '/signup' ||
+			path === '/auth/forgotpw' ||
+			path === '/auth/resetpw' ||
+			path == '/confirmation'
+		);
+	});
 
 	onMount(async () => {
 		const supabase = getSupabase();
 		if (supabase) {
-			const initialSession = await waitForSession();
+			const initialSession = await waitForSession(5000);
 
 			if (!initialSession & !isAuthPage) {
-				goto('/signin');
+				await goto('/signin');
 				return;
 			}
 
-			const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+			const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
 				if (!session && !isAuthPage) {
-					goto('/signin');
+					await goto('/signin');
 				}
 			});
 

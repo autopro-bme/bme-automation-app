@@ -2,17 +2,20 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { supabase } from '$lib/supabase';
+	import { requireUser } from '$lib/auth-guard';
 
 	let ready = false;
 
 	onMount(async () => {
-		const { data: auth } = await supabase.auth.getUser();
-		if (!auth?.user) return goto('/auth/signin');
+		const auth = await requireUser();
+		if (!auth) return;
+
+		const { supabase, user } = auth;
 
 		const { data: profile } = await supabase
 			.from('profiles')
 			.select('department')
-			.eq('id', auth.user.id)
+			.eq('id', user.id)
 			.single();
 
 		const dept = profile?.department ?? [];

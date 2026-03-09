@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { getSupabase, waitForSession } from './supabase';
 
-export async function requireUser() {
+export async function requireUser(redirectTo = '/signin') {
 	const supabase = getSupabase();
 	if (!supabase) return null;
 
@@ -9,9 +9,9 @@ export async function requireUser() {
 	const user = session?.user ?? null;
 
 	if (!user) {
-		await goto('/signin');
+		await goto(redirectTo);
 		return null;
 	}
 
-	return { supabase, user };
+	return { supabase, user, session };
 }

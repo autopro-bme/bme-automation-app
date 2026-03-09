@@ -69,6 +69,7 @@
 			if (!auth) return;
 
 			const { supabase, user } = auth;
+			if (!user) throw new Error('Not signed in.');
 
 			const [tbmRes, ppeRes, hkpRes] = await Promise.all([
 				supabase

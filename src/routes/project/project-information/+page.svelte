@@ -90,6 +90,7 @@
 		if (!auth) return;
 
 		const { supabase, user } = auth;
+		if (!user) throw new Error('Not signed in.');
 
 		const { data: profileData, error: profileError } = await supabase
 			.from('profiles')
