@@ -121,7 +121,8 @@
 		display: grid;
 		align-items: center;
 		justify-content: center;
-		height: 70vh;
+		min-height: 100vh;
+		margin: 30px 0;
 	}
 
 	button {
