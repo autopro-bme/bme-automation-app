@@ -7,7 +7,7 @@
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { spinner } from '$lib/stores/spinner.js';
 	import { onMount, onDestroy } from 'svelte';
-	import { getSupabase } from '$lib/supabase';
+	import { getSupabase, waitForSession } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
 	/** @type {null | (() => void)} */
@@ -23,18 +23,29 @@
 	/** @type {null | (() => void)} */
 	let navUnsub = null;
 
-	onMount(() => {
+	const isAuthPage = $derived(
+		$page.url.pathname === '/signin' ||
+			$page.url.pathname === '/signup' ||
+			$page.url.pathname === '/auth/forgotpw' ||
+			$page.url.pathname === '/auth/resetpw'
+	);
+
+	onMount(async () => {
 		const supabase = getSupabase();
 		if (supabase) {
+			const initialSession = await waitForSession();
+
+			if (!initialSession & !isAuthPage) {
+				goto('/signin');
+				return;
+			}
+
 			const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-				if (
-					!session &&
-					$page.url.pathname !== '/auth/signin' &&
-					$page.url.pathname !== '/auth/signup'
-				) {
-					goto('/auth/signin');
+				if (!session && !isAuthPage) {
+					goto('/signin');
 				}
 			});
+
 			authUnsub = () => data.subscription.unsubscribe();
 		}
 
@@ -70,13 +81,17 @@
 <Spinner active={$spinner || spinnerActive} />
 
 <div class="app-shell">
-	<Header />
+	{#if !isAuthPage}
+		<Header />
+	{/if}
 
 	<main class="app-main">
 		{@render children()}
 	</main>
 
-	<Footer />
+	{#if !isAuthPage}
+		<Footer />
+	{/if}
 </div>
 
 <style>

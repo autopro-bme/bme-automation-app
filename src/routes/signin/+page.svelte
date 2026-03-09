@@ -1,5 +1,5 @@
 <script>
-	import { supabase } from '$lib/supabase';
+	import { supabase, waitForSession } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 
 	let email = '';
@@ -18,7 +18,9 @@
 			return;
 		}
 
-		const user = data?.user;
+		const session = data?.session ?? (await waitForSession());
+		const user = session?.user;
+
 		if (user) {
 			const meta = user.user_metadata ?? {};
 
