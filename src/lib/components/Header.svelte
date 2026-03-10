@@ -2,7 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
-	import { getSupabase, waitForUser } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
+	import { authUser } from '$lib/auth-store';
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 	import Bell from '@lucide/svelte/icons/bell';
@@ -20,7 +21,7 @@
 
 	let hasUser = $state(false);
 	let userName = $state('User');
-	let sub;
+	let unsubUser = null;
 
 	async function syncUser(user) {
 		if (!user) {
@@ -49,22 +50,13 @@
 	}
 
 	onMount(async () => {
-		const supabase = getSupabase();
-		if (!supabase) return;
-
-		const user = await waitForUser(8000);
-		await syncUser(user);
-
-		const { data } = supabase.auth.onAuthStateChange(async () => {
-			const nextUser = await waitForUser(8000);
-			await syncUser(nextUser);
+		unsubUser = authUser.subscribe(async (user) => {
+			await syncUser(user);
 		});
-
-		sub = data?.subscription;
 	});
 
 	onDestroy(() => {
-		sub?.unsubscribe?.();
+		unsubUser?.();
 	});
 
 	async function signOut() {
@@ -72,7 +64,7 @@
 		if (supabase) await supabase.auth.signOut();
 		hasUser = false;
 		userName = 'User';
-		goto('/signin');
+		await goto('/signin');
 	}
 </script>
 

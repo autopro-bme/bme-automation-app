@@ -20,27 +20,3 @@ export function getSupabase() {
 }
 
 export const supabase = getSupabase();
-
-export async function waitForUser(timeoutMs = 8000) {
-	const client = getSupabase();
-	if (!client) return null;
-
-	const started = Date.now();
-
-	while (Date.now() - started < timeoutMs) {
-		try {
-			const {
-				data: { user },
-				error
-			} = await client.auth.getUser();
-
-			if (!error && user) return user;
-		} catch {
-			// Ignore and retry
-		}
-
-		await new Promise((resolve) => setTimeout(resolve, 250));
-	}
-
-	return null;
-}

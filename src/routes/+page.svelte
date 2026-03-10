@@ -1,5 +1,5 @@
 <script>
-	import { getSupabase, waitForUser } from '$lib/supabase';
+	import { requireUser } from '$lib/auth-guard';
 	import { goto } from '$app/navigation';
 	import { menuSections } from '$lib/data/menu';
 	import { onDestroy, onMount } from 'svelte';
@@ -26,14 +26,10 @@
 	async function loadMenu() {
 		errorMsg = '';
 
-		const supabase = getSupabase();
-		if (!supabase) return;
+		const auth = await requireUser();
+		if (!auth) return;
 
-		const user = await waitForUser();
-		if (!user) {
-			await goto('/signin');
-			return;
-		}
+		const { supabase, user } = auth;
 
 		const { data: profile, error } = await supabase
 			.from('profiles')
@@ -51,14 +47,15 @@
 	}
 
 	onMount(async () => {
-		const supabase = getSupabase();
-		if (!supabase) return;
+		const auth = await requireUser();
+		if (!auth) return;
+
+		const { supabase } = auth;
 
 		await loadMenu();
 
-		const { data } = supabase.auth.onAuthStateChange(async () => {
-			const user = await waitForUser(8000);
-			if (!user) {
+		const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
+			if (!session?.user) {
 				await goto('/signin');
 				return;
 			}

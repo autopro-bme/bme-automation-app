@@ -1,11 +1,12 @@
 import { goto } from '$app/navigation';
-import { getSupabase, waitForUser } from '$lib/supabase';
+import { getSupabase } from '$lib/supabase';
+import { waitForAuthReady } from './auth-store';
 
 export async function requireUser(redirectTo = '/signin') {
 	const supabase = getSupabase();
 	if (!supabase) return null;
 
-	const user = await waitForUser(8000);
+	const { user } = await waitForAuthReady(8000);
 
 	if (!user) {
 		await goto(redirectTo);
