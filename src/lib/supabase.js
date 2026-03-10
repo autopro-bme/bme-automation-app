@@ -1,7 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { browser } from '$app/environment';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { resolve } from '$app/paths';
 
 let _client = null;
 
@@ -22,24 +21,22 @@ export function getSupabase() {
 
 export const supabase = getSupabase();
 
-export async function waitForSession(timeoutMs = 8000) {
+export async function waitForUser(timeoutMs = 8000) {
 	const client = getSupabase();
 	if (!client) return null;
 
 	const started = Date.now();
 
 	while (Date.now() - started < timeoutMs) {
-		const {
-			data: { session }
-		} = await client.auth.getSession();
-
-		if (session?.user) return session;
-
 		try {
-			const { data } = await client.auth.refreshSession();
-			if (data?.session?.user) return data.session;
+			const {
+				data: { user },
+				error
+			} = await client.auth.getUser();
+
+			if (!error && user) return user;
 		} catch {
-			// Ignore
+			// Ignore and retry
 		}
 
 		await new Promise((resolve) => setTimeout(resolve, 250));

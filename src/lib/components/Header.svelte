@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import { onDestroy, onMount } from 'svelte';
-	import { getSupabase, waitForSession } from '$lib/supabase';
+	import { getSupabase, waitForUser } from '$lib/supabase';
 	import History from '@lucide/svelte/icons/history';
 	import Calendar from '@lucide/svelte/icons/calendar-days';
 	import Bell from '@lucide/svelte/icons/bell';
@@ -22,8 +22,8 @@
 	let userName = $state('User');
 	let sub;
 
-	async function syncUser(sessionUser) {
-		if (!sessionUser) {
+	async function syncUser(user) {
+		if (!user) {
 			hasUser = false;
 			userName = 'User';
 			return;
@@ -37,26 +37,27 @@
 		const { data: profile, error: profileError } = await supabase
 			.from('profiles')
 			.select('nickname, first_name')
-			.eq('id', sessionUser.id)
+			.eq('id', user.id)
 			.single();
 
 		if (profileError) {
-			userName = sessionUser.email ?? 'User';
+			userName = user.email ?? 'User';
 			return;
 		}
 
-		userName = profile?.nickname || profile?.first_name || sessionUser.email;
+		userName = profile?.nickname || profile?.first_name || user.email;
 	}
 
 	onMount(async () => {
 		const supabase = getSupabase();
 		if (!supabase) return;
 
-		const session = await waitForSession(8000);
-		await syncUser(session?.user ?? null);
+		const user = await waitForUser(8000);
+		await syncUser(user);
 
-		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
-			await syncUser(session2?.user ?? null);
+		const { data } = supabase.auth.onAuthStateChange(async () => {
+			const nextUser = await waitForUser(8000);
+			await syncUser(nextUser);
 		});
 
 		sub = data?.subscription;
@@ -182,6 +183,11 @@
 
 		p {
 			font-size: 14px;
+		}
+
+		span {
+			font-size: 14px;
+			font-weight: bold;
 		}
 
 		.welcome {

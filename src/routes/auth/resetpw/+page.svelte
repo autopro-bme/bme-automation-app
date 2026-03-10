@@ -1,7 +1,8 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { getSupabase, waitForSession } from '$lib/supabase';
+	import { getSupabase, waitForUser } from '$lib/supabase';
+	import { use } from 'bcrypt/promises';
 
 	const supabase = getSupabase();
 
@@ -25,8 +26,8 @@
 		});
 		unsub = () => data.subscription.unsubscribe();
 
-		const session = await waitForSession(8000);
-		if (session?.session) {
+		const user = await waitForUser(8000);
+		if (user) {
 			canReset = true;
 		}
 	});

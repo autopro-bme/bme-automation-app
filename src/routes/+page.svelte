@@ -1,5 +1,5 @@
 <script>
-	import { getSupabase, supabase, waitForSession } from '$lib/supabase';
+	import { getSupabase, waitForUser } from '$lib/supabase';
 	import { goto } from '$app/navigation';
 	import { menuSections } from '$lib/data/menu';
 	import { onDestroy, onMount } from 'svelte';
@@ -29,16 +29,16 @@
 		const supabase = getSupabase();
 		if (!supabase) return;
 
-		const session = await waitForSession();
-		if (!session?.user) {
-			goto('/signin');
+		const user = await waitForUser();
+		if (!user) {
+			await goto('/signin');
 			return;
 		}
 
 		const { data: profile, error } = await supabase
 			.from('profiles')
 			.select('menu_access')
-			.eq('id', session.user.id)
+			.eq('id', user.id)
 			.single();
 
 		if (error) {
@@ -56,9 +56,10 @@
 
 		await loadMenu();
 
-		const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
-			if (!session) {
-				goto('/signin');
+		const { data } = supabase.auth.onAuthStateChange(async () => {
+			const user = await waitForUser(8000);
+			if (!user) {
+				await goto('/signin');
 				return;
 			}
 
