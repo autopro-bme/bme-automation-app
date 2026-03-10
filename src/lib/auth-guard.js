@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { getSupabase, waitForSession } from './supabase';
+import { getSupabase, waitForSession } from '$lib/supabase';
 
 export async function requireUser(redirectTo = '/signin') {
 	const supabase = getSupabase();

@@ -53,7 +53,7 @@
 		if (!supabase) return;
 
 		const session = await waitForSession(8000);
-		await syncUser();
+		await syncUser(session?.user ?? null);
 
 		const { data } = supabase.auth.onAuthStateChange(async (_event, session2) => {
 			await syncUser(session2?.user ?? null);
