@@ -1,5 +1,6 @@
 <script>
-	import { supabase, waitForUser } from '$lib/supabase';
+	import { supabase } from '$lib/supabase';
+	import { authUser } from '$lib/auth-store';
 	import { goto } from '$app/navigation';
 
 	let email = '';
@@ -18,7 +19,22 @@
 			return;
 		}
 
-		const user = data?.user ?? (await waitForUser(8000));
+		const user =
+			data?.user ??
+			data?.session?.user ??
+			(await new Promise((resolve) => {
+				const unsub = authUser.subscribe((u) => {
+					if (u) {
+						unsub();
+						resolve(u);
+					}
+				});
+
+				setTimeout(() => {
+					unsub();
+					resolve(null);
+				}, 8000);
+			}));
 
 		if (user) {
 			const meta = user.user_metadata ?? {};

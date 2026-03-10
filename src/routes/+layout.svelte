@@ -8,7 +8,6 @@
 	import { spinner } from '$lib/stores/spinner.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { initAuthStore, destroyAuthStore } from '$lib/auth-store';
-	import { goto } from '$app/navigation';
 
 	/** @type {{ children: any }} */
 	const { children } = $props();

@@ -1,8 +1,9 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { getSupabase, waitForUser } from '$lib/supabase';
+	import { getSupabase } from '$lib/supabase';
 	import { use } from 'bcrypt/promises';
+	import { authUser } from '$lib/auth-store';
 
 	const supabase = getSupabase();
 
@@ -26,10 +27,17 @@
 		});
 		unsub = () => data.subscription.unsubscribe();
 
-		const user = await waitForUser(8000);
-		if (user) {
-			canReset = true;
-		}
+		const unsubUser = authUser.subscribe((user) => {
+			if (user) {
+				canReset = true;
+			}
+		});
+
+		const oldUnsub = unsub;
+		unsub = () => {
+			oldUnsub?.();
+			unsubUser?.();
+		};
 	});
 
 	onDestroy(() => {

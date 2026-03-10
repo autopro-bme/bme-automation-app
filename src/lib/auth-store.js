@@ -1,6 +1,5 @@
 import { writable, get } from 'svelte/store';
 import { getSupabase } from './supabase';
-import { resolve } from '$app/paths';
 
 export const authReady = writable(false);
 export const authUser = writable(null);
@@ -45,6 +44,8 @@ export function destroyAuthStore() {
 	unsub?.();
 	unsub = null;
 	started = false;
+	authReady.set(false);
+	authUser.set(null);
 }
 
 export async function waitForAuthReady(timeoutMs = 8000) {
