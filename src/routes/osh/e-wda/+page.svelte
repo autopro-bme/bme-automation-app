@@ -49,7 +49,7 @@
 	async function ensureSignedIn() {
 		const auth = await requireUser();
 		if (!auth) return null;
-		return session.user;
+		return auth.user;
 	}
 
 	async function loadAttendance() {
