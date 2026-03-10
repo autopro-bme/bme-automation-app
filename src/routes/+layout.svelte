@@ -7,7 +7,7 @@
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { spinner } from '$lib/stores/spinner.js';
 	import { onMount, onDestroy } from 'svelte';
-	import { getSupabase, waitForSession } from '$lib/supabase';
+	import { initAuthStore, destroyAuthStore } from '$lib/auth-store';
 	import { goto } from '$app/navigation';
 
 	/** @type {{ children: any }} */
@@ -32,6 +32,8 @@
 	});
 
 	onMount(() => {
+		initAuthStore();
+
 		navUnsub = navigating.subscribe((nav) => {
 			if (nav) {
 				if (hideTimer) {
@@ -52,6 +54,7 @@
 		// @ts-ignore
 		if (navUnsub) navUnsub();
 		if (hideTimer) clearTimeout(hideTimer);
+		destroyAuthStore();
 	});
 </script>
 
