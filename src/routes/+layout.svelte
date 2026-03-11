@@ -1,23 +1,27 @@
 <script>
 	import './layout.css';
-	import { page } from '$app/stores';
-	import { navigating } from '$app/stores';
+	import { page, navigating } from '$app/stores';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Spinner from '$lib/components/Spinner.svelte';
 	import { spinner } from '$lib/stores/spinner.js';
 	import { onMount, onDestroy } from 'svelte';
 	import { initAuthStore, destroyAuthStore } from '$lib/auth-store';
+	import { getSupabase } from '$lib/supabase';
+	import { goto } from '$app/navigation';
 
 	/** @type {{ children: any }} */
 	const { children } = $props();
 
 	const MIN_SPINNER_MS = 400;
+	const INACTIVITY_MS = 30 * 60 * 1000;
+
 	let spinnerActive = $state(false);
 	/** @type {ReturnType<typeof setTimeout> | null} */
 	let hideTimer = null;
 	/** @type {null | (() => void)} */
 	let navUnsub = null;
+	let inactivityTimer = null;
 
 	const isAuthPage = $derived.by(() => {
 		const path = $page.url.pathname;
@@ -29,6 +33,29 @@
 			path == '/confirmation'
 		);
 	});
+
+	async function handleSessionTimeout() {
+		if (isAuthPage) return;
+
+		const supabase = getSupabase();
+		if (supabase) {
+			await supabase.auth.signOut();
+		}
+
+		await goto('/signin');
+	}
+
+	function resetInactivityTimer() {
+		if (isAuthPage) return;
+
+		if (inactivityTimer) {
+			clearTimeout(inactivityTimer);
+		}
+
+		inactivityTimer = setTimeout(() => {
+			handleSessionTimeout();
+		}, INACTIVITY_MS);
+	}
 
 	onMount(() => {
 		initAuthStore();
@@ -47,12 +74,27 @@
 				}, MIN_SPINNER_MS);
 			}
 		});
+
+		const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+
+		for (const events of activityEvents) {
+			window.addEventListener(event, resetInactivityTimer, true);
+		}
+
+		resetInactivityTimer();
+
+		return () => {
+			for (const events of activityEvents) {
+				window.removeEventListener(event, resetInactivityTimer, true);
+			}
+		};
 	});
 
 	onDestroy(() => {
 		// @ts-ignore
 		if (navUnsub) navUnsub();
 		if (hideTimer) clearTimeout(hideTimer);
+		if (inactivityTimer) clearTimeout(inactivityTimer);
 		destroyAuthStore();
 	});
 </script>
